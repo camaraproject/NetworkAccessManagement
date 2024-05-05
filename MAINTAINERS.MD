@@ -1,3 +1,6 @@
 | Org                    | Name                                      | GitHub Username        |
 | -----------------------| ------------------------------------------| -----------------------|
-| §company§ | §name§ | §github_username§ |
+| Charter Communications | Christopher Aubut | caubut-charter |
+| CableLabs | Randy Levensalor | RandyLevensalor |
+| Vodafone | Mayur Channegowda | mayur007 |
+| Charter Communications | Justin Pace | justin-pace-charter |
