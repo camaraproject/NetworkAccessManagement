@@ -27,7 +27,7 @@ The sub project has no (pre)releases yet, work in progress is within the main br
 * Meetings
     * [Registration/Join]() Update this link with your meeting join link
     * Schedule: tbd
-    * Minutes: Access [meeting minutes] (update this link to your wiki page using the "Share" link).
+    * Minutes: Access [meeting minutes](https://wiki.camaraproject.org/x/pwCeAQ).
 * Mailing List (tbd)
-    * Subscribe / Unsubscribe to the mailing list of this Sub Project <https://lists.camaraproject.org/g/sp-$tbd$>.
-    * A message to the community of this Sub Project can be sent using <sp-§tbd§@lists.camaraproject.org>.
+    * Subscribe / Unsubscribe to the mailing list of this Sub Project <https://lists.camaraproject.org/g/sp-nam>.
+    * A message to the community of this Sub Project can be sent using <sp-nam§@lists.camaraproject.org>.
