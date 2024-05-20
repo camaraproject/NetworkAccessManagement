@@ -7,9 +7,11 @@
 <a href="https://github.com/camaraproject/NetworkAccessManagement/releases/latest" title="Latest Release"><img src="https://img.shields.io/github/release/camaraproject/NetworkAccessManagement?style=plastic"></a>
 
 # Home Device - Network Access Management
+
 Repository to describe, develop, document, and test the Network Access Management with the Home Devices API family
 
 ## Scope
+
 * Service APIs for “Network Access Management” of Home Devices (see APIBacklog.md)  
 * It provides the customer with the ability to:  
   * manage fixed devices provided by network operators that reside at customer premises.
@@ -24,10 +26,11 @@ The sub project has no (pre)releases yet, work in progress is within the main br
 <!-- For changes see [CHANGELOG.md](https://github.com/camaraproject/§repo_name§/blob/main/CHANGELOG.md) -->
 
 ## Contributing
+
 * Meetings
-    * [Registration/Join]() Update this link with your meeting join link
-    * Schedule: tbd
-    * Minutes: Access [meeting minutes](https://wiki.camaraproject.org/x/pwCeAQ).
+  * [Registration/Join]() Update this link with your meeting join link
+  * Schedule: tbd
+  * Minutes: Access [meeting minutes](https://wiki.camaraproject.org/x/pwCeAQ).
 * Mailing List
-    * Subscribe / Unsubscribe to the mailing list of this Sub Project <https://lists.camaraproject.org/g/sp-nam>.
-    * A message to the community of this Sub Project can be sent using <sp-nam§@lists.camaraproject.org>.
+  * Subscribe / Unsubscribe to the mailing list of this Sub Project <https://lists.camaraproject.org/g/sp-nam>.
+  * A message to the community of this Sub Project can be sent using <sp-nam@lists.camaraproject.org>.
