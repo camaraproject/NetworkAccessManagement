@@ -6,7 +6,7 @@
 <a href="https://github.com/camaraproject/NetworkAccessManagement/blob/main/LICENSE" title="License"><img src="https://img.shields.io/badge/License-Apache%202.0-green.svg?style=plastic"></a>
 <a href="https://github.com/camaraproject/NetworkAccessManagement/releases/latest" title="Latest Release"><img src="https://img.shields.io/github/release/camaraproject/NetworkAccessManagement?style=plastic"></a>
 
-# Home Device - Network Access Management
+# Network Access Management
 Repository to describe, develop, document, and test the Network Access Management with the Home Devices API family
 
 ## Scope
