@@ -7,7 +7,7 @@
 <a href="https://github.com/camaraproject/NetworkAccessManagement/releases/latest" title="Latest Release"><img src="https://img.shields.io/github/release/camaraproject/NetworkAccessManagement?style=plastic"></a>
 
 # Network Access Management
-Repository to describe, develop, document, and test the Network Access Management with the Home Devices API family
+Repository to describe, develop, document, and test the Network Access Management within the Home Devices API family
 
 ## Scope
 * Service APIs for “Network Access Management” of Home Devices (see APIBacklog.md)  
