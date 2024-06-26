@@ -277,7 +277,6 @@ paths:
     get:
       tags:
         - Service Sites
-        - Isolated Networks
       summary: Get all networks at a service site
       operationId: getNetworksByServiceSite
       description: |
