@@ -501,7 +501,6 @@ paths:
     patch:
       tags:
         - Devices
-        - Isolated Networks
       summary: Bulk insert, remove or replace many networks from the configuration of a device
       operationId: patchDeviceWithNetworks
       description: |
