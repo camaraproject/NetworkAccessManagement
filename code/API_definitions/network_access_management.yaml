@@ -452,7 +452,6 @@ paths:
   /devices/{deviceId}/isolated-networks:
     get:
       tags:
-        - Devices
         - Isolated Networks
       summary: Get all networks configured on a device
       operationId: getNetworksByDevice
