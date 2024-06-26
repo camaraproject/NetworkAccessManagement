@@ -826,8 +826,6 @@ paths:
           $ref: "#/components/responses/Generic503"
 
   /isolated-networks/{netId}/devices:
-    parameters:
-      - $ref: "#/components/parameters/netId"
     get:
       tags:
         - Devices
