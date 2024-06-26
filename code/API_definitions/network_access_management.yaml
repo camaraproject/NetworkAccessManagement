@@ -887,7 +887,6 @@ paths:
     patch:
       tags:
         - Devices
-        - Isolated Networks
       summary: Bulk insert, remove, or replace a network from the configuration of many devices
       operationId: patchDevicesWithNetwork
       description: |
