@@ -385,8 +385,6 @@ paths:
           $ref: "#/components/responses/Generic503"
 
   /devices/{deviceId}:
-    parameters:
-      - $ref: "#/components/parameters/deviceId"
     get:
       tags:
         - Devices
