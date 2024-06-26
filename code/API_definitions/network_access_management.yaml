@@ -901,6 +901,8 @@ paths:
             - `cpe-management-isolated-networks-primary-write`
             - `cpe-management-isolated-networks-auxiliary-read`
             - `cpe-management-isolated-networks-auxiliary-write`
+      parameters:
+        - $ref: "#/components/parameters/netId"
       requestBody:
         required: true
         content:
