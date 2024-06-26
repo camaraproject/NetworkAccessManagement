@@ -829,7 +829,6 @@ paths:
     get:
       tags:
         - Devices
-        - Isolated Networks
       summary: Get all devices configured with a network
       operationId: getDevicesByNetwork
       description: |
