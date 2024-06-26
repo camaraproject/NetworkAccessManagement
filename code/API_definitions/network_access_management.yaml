@@ -2,7 +2,8 @@ openapi: 3.0.3
 
 info:
   title: CPE Management API
-  version: 0.0.1
+  version: wip
+
   description: |
     Service enabling API for managing network operator supplied network access devices. This APIs initial focus is on managing **Isolated Networks** and device reboot requests.
 
