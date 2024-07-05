@@ -1637,41 +1637,69 @@ components:
       default: "auxiliary"
       example: &network-role "primary"
 
-    NetworkDeviceIntersectionCreate:
+    NetworkDeviceRoleConfiguration:
       type: object
       description: >-
+        A specific network configuration with an implied network to configure on a specific network access device with
+        specified role.
+      properties:
+        device:
+          description: "ID of the device with the network"
+          allOf:
+            - $ref: "#/components/schemas/DeviceId"
+            - example: *device-id
+        role:
+          description: >-
+            Role of the network on the device.  Defaults to "auxiliary" if unspecified.
+          default: "auxiliary"
+          allOf:
+            - $ref: "#/components/schemas/NetworkRole"
+            - example: *network-role
+      required: ["device"]
+      example: &network-device-role-configuration
+        device: *device-id
+        role: *network-role
+
+    NetworkDeviceReplacement:
+      type: object
+      description: >-
+        A specific network configuration with an implied network to replace an existing network on specific network 
+        access device.
+      properties:
+        device:
+          description: "ID of the device with the network"
+          allOf:
+            - $ref: "#/components/schemas/DeviceId"
+            - example: *device-id
+        replace:
+          description: >-
+            Network to replace on the device.
+          allOf:
+            - $ref: "#/components/schemas/NetworkId"
+            - example: *network-id
+      required: ["device", "replace"]
+      example: &network-device-replacement
+        device: *device-id
+        replace: *network-id
+
+    NetworkDeviceIntersectionCreate:
+      type: object
+      description: |
         Properties of a specific network configuration with an implied network on a specific network access device.
-      oneOf:
-        - required: ["device", "role"]
-          properties:
-            device:
-              description: "ID of the device with the network"
-              allOf:
-                - $ref: "#/components/schemas/DeviceId"
-              example: *device-id
-            role:
-              description: >-
-                Role of the network on the device.  Defaults to "auxiliary" if unspecified.
-              default: "auxiliary"
-              allOf:
-                - $ref: "#/components/schemas/NetworkRole"
-              example: *network-role
-        - required: ["device", "replace"]
-          properties:
-            device:
-              description: "ID of the device with the network"
-              allOf:
-                - $ref: "#/components/schemas/DeviceId"
-              example: *device-id
-            replace:
-              description: >-
-                Network to replace on the device.
-              allOf:
-                - $ref: "#/components/schemas/NetworkId"
-              example: *network-id
+      properties:
+        intersectionType:
+          type: string
+          enum: ["NetworkDeviceRoleConfiguration", "NetworkDeviceReplacement"]
+          example: &network-device-intersection-type "NetworkDeviceRoleConfiguration"
       required:
-        - device
+        - intersectionType
+      discriminator:
+        propertyName: intersectionType 
+        mappings:                   
+            - NetworkDeviceRoleConfiguration: '#/components/schemas/NetworkDeviceRoleConfiguration'
+            - NetworkDeviceReplacement: '#/components/schemas/NetworkDeviceReplacement'
       example: &network-device-intersection-create
+        intersectionType: *network-device-intersection-type
         device: *device-id
         role: *network-role
 
@@ -1682,27 +1710,28 @@ components:
       example: &network-device-intersection-create-list
         - *network-device-intersection-create
         - &network-device-intersection-create-2
+          intersectionType: *network-device-intersection-type
           device: *device-id2
           replace: *network-id2
 
     NetworkDeviceIntersection:
       allOf:
         - $ref: "#/components/schemas/NetworkDeviceIntersectionCreate"
-      description: >-
-        Properties of a specific network configuration with an implied network on a specific network access device.
-      properties:
-        removable:
-          type: boolean
-          description: >-
-            Flag indicating if the network can be removed.  Defaults to `true` if unspecified.
-          default: true
-          example: &network-removable false
-      required:
-        - device
-      example: &network-device-intersection
-        device: *device-id
-        role: *network-role
-        removable: *network-removable
+        - description: >-
+            Properties of a specific network configuration with an implied network on a specific network access device.
+          properties:
+            removable:
+              type: boolean
+              description: >-
+                Flag indicating if the network can be removed.  Defaults to `true` if unspecified.
+              default: true
+              example: &network-removable false
+          required:
+            - device
+          example: &network-device-intersection
+            device: *device-id
+            role: *network-role
+            removable: *network-removable
 
     NetworkDeviceIntersectionList:
       type: array
@@ -1720,14 +1749,14 @@ components:
           description: "ID of the network."
           allOf:
             - $ref: "#/components/schemas/NetworkId"
-          example: *network-id
+            - example: *network-id
         role:
           description: >-
             Role of the network.  Defaults to "auxiliary" if unspecified.
           default: "auxiliary"
           allOf:
             - $ref: "#/components/schemas/NetworkRole"
-          example: *network-role
+            - example: *network-role
         removable:
           type: boolean
           description: >-
@@ -1791,8 +1820,8 @@ components:
         networks:
           allOf:
             - $ref: "#/components/schemas/DeviceNetworkIntersectionList"
-          description: The IDs of networks attached to the device
-          example: *device-network-intersection-list
+            - description: The IDs of networks attached to the device
+              example: *device-network-intersection-list
         maxAuxiliaryNetworks:
           type: integer
           description: >-
@@ -1930,13 +1959,14 @@ components:
           description: The access details for the network
           allOf:
             - $ref: "#/components/schemas/AccessDetail"
-          example: *wifi-access-detail
+            - example: *wifi-access-detail
         expiration:
-          $ref: "#/components/schemas/DateTime"
-          description: |
-            The expiration date and time of the network.  It must follow [RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339#section-5.6)
-            and must have time zone. Recommended format is yyyy-MM-dd'T'HH:mm:ss.SSSZ (i.e. which allows
-            2023-07-03T14:27:08.312+02:00 or 2023-07-03T12:27:08.312Z).
+          allOf:
+            - $ref: "#/components/schemas/DateTime"
+            - description: |
+                The expiration date and time of the network.  It must follow [RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339#section-5.6)
+                and must have time zone. Recommended format is yyyy-MM-dd'T'HH:mm:ss.SSSZ (i.e. which allows
+                2023-07-03T14:27:08.312+02:00 or 2023-07-03T12:27:08.312Z).
       example: &network-update
         description: *network-description
         accessDetail: *wifi-access-detail
@@ -1945,75 +1975,75 @@ components:
     NetworkCreate:
       allOf:
         - $ref: "#/components/schemas/NetworkUpdate"
-      properties:
-        devices:
-          allOf:
-            - $ref: "#/components/schemas/NetworkDeviceIntersectionCreateList"
-          minLength: 1
-          description: >-
-            List of network role and device pairs to configure the created network.
-          example:
-            - *network-device-intersection-create-list
-      required:
-        - accessDetail
-      example: &network-create
-        description: *network-description
-        accessDetail: *wifi-access-detail
-        expiration: *date-time
-        devices: *network-device-intersection-create-list
+        - properties:
+            devices:
+              allOf:
+                - $ref: "#/components/schemas/NetworkDeviceIntersectionCreateList"
+                - minLength: 1
+                  description: >-
+                    List of network role and device pairs to configure the created network.
+                  example:
+                    - *network-device-intersection-create-list
+          required:
+            - accessDetail
+          example: &network-create
+            description: *network-description
+            accessDetail: *wifi-access-detail
+            expiration: *date-time
+            devices: *network-device-intersection-create-list
 
     Network:
       allOf:
         - $ref: "#/components/schemas/NetworkUpdate"
-      properties:
-        id:
-          $ref: "#/components/schemas/NetworkId"
-        devices:
-          allOf:
-            - $ref: "#/components/schemas/NetworkDeviceIntersectionList"
-          minLength: 1
-          description: >-
-            List of devices the network is configured on.
-          example:
-            - *network-device-intersection-create-list
-        createdAt:
-          $ref: "#/components/schemas/DateTime"
-          description: |
-            The creation date and time of the network.  It must follow [RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339#section-5.6)
-            and must have time zone. Recommended format is yyyy-MM-dd'T'HH:mm:ss.SSSZ (i.e. which allows
-            2023-07-03T14:27:08.312+02:00 or 2023-07-03T12:27:08.312Z).
-        createdBy:
-          type: string
-          maxLength: 100
-          description: The user who created the network
-          example: &network-created-by "user-1"
-        modifiedAt:
-          $ref: "#/components/schemas/DateTime"
-          description: |
-            The last update date and time of the network.  It must follow [RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339#section-5.6)
-            and must have time zone. Recommended format is yyyy-MM-dd'T'HH:mm:ss.SSSZ (i.e. which allows
-            2023-07-03T14:27:08.312+02:00 or 2023-07-03T12:27:08.312Z).
-        modifiedBy:
-          type: string
-          maxLength: 100
-          description: The user who last updated the network
-          example: &network-modified-by "user-2"
-        version:
-          $ref: "#/components/schemas/NetworkVersion"
-      required:
-        - id
-        - accessDetail
-      example: &network
-        id: *network-id
-        description: *network-description
-        accessDetail: *wifi-access-detail
-        expiration: *date-time
-        devices: *network-device-intersection-list
-        createdAt: *date-time
-        createdBy: *network-created-by
-        modifiedAt: *date-time
-        modifiedBy: *network-modified-by
-        version: *network-version
+        - properties:
+            id:
+              $ref: "#/components/schemas/NetworkId"
+            devices:
+              allOf:
+                - $ref: "#/components/schemas/NetworkDeviceIntersectionList"
+                - minLength: 1
+                  description: >-
+                    List of devices the network is configured on.
+                  example:
+                    - *network-device-intersection-create-list
+            createdAt:
+              $ref: "#/components/schemas/DateTime"
+              description: |
+                The creation date and time of the network.  It must follow [RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339#section-5.6)
+                and must have time zone. Recommended format is yyyy-MM-dd'T'HH:mm:ss.SSSZ (i.e. which allows
+                2023-07-03T14:27:08.312+02:00 or 2023-07-03T12:27:08.312Z).
+            createdBy:
+              type: string
+              maxLength: 100
+              description: The user who created the network
+              example: &network-created-by "user-1"
+            modifiedAt:
+              $ref: "#/components/schemas/DateTime"
+              description: |
+                The last update date and time of the network.  It must follow [RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339#section-5.6)
+                and must have time zone. Recommended format is yyyy-MM-dd'T'HH:mm:ss.SSSZ (i.e. which allows
+                2023-07-03T14:27:08.312+02:00 or 2023-07-03T12:27:08.312Z).
+            modifiedBy:
+              type: string
+              maxLength: 100
+              description: The user who last updated the network
+              example: &network-modified-by "user-2"
+            version:
+              $ref: "#/components/schemas/NetworkVersion"
+          required:
+            - id
+            - accessDetail
+          example: &network
+            id: *network-id
+            description: *network-description
+            accessDetail: *wifi-access-detail
+            expiration: *date-time
+            devices: *network-device-intersection-list
+            createdAt: *date-time
+            createdBy: *network-created-by
+            modifiedAt: *date-time
+            modifiedBy: *network-modified-by
+            version: *network-version
 
     NetworkList:
       type: array
@@ -2129,7 +2159,7 @@ components:
           allOf:
             - $ref: "#/components/schemas/NetworkIdList"
             - example: &bulk-network-update-delete
-                - "wifi-3"
+              - "wifi-3"
         replace:
           description: List of network replacements.
           allOf:
@@ -2162,59 +2192,59 @@ components:
     RebootRequestCreate:
       allOf:
         - $ref: "#/components/schemas/RebootRequestUpdate"
-      properties:
-        devices:
-          type: array
-          items:
-            $ref: "#/components/schemas/DeviceId"
-          description: >-
-            List of devices to reboot. When undefined, the reboot targets the 'default' device (simple use case that
-            wouldn't use locations or devices). Throws an error when creating if there is no 'default' device.
-          example: *device-id-list
-      example: &reboot-create
-        message: *reboot-message
-        atTime: *date-time
-        devices: *device-id-list
+        - properties:
+            devices:
+              type: array
+              items:
+                $ref: "#/components/schemas/DeviceId"
+              description: >-
+                List of devices to reboot. When undefined, the reboot targets the 'default' device (simple use case that
+                wouldn't use locations or devices). Throws an error when creating if there is no 'default' device.
+              example: *device-id-list
+          example: &reboot-create
+            message: *reboot-message
+            atTime: *date-time
+            devices: *device-id-list
 
     RebootRequest:
       allOf:
         - $ref: "#/components/schemas/RebootRequestCreate"
-      properties:
-        id:
-          $ref: "#/components/schemas/RebootId"
-        createdAt:
-          $ref: "#/components/schemas/DateTime"
-          description: |
-            The creation date and time of the reboot request.  It must follow [RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339#section-5.6)
-            and must have time zone.  Recommended format is yyyy-MM-dd'T'HH:mm:ss.SSSZ (i.e. which allows
-            2023-07-03T14:27:08.312+02:00 or 2023-07-03T12:27:08.312Z).
-        createdBy:
-          type: string
-          maxLength: 100
-          description: The user who created the reboot request
-          example: &reboot-created-by "user-1"
-        modifiedAt:
-          $ref: "#/components/schemas/DateTime"
-          description: |
-            The last update date and time of the reboot request.  It must follow [RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339#section-5.6)
-            and must have time zone.  Recommended format is yyyy-MM-dd'T'HH:mm:ss.SSSZ (i.e. which allows
-            2023-07-03T14:27:08.312+02:00 or 2023-07-03T12:27:08.312Z).
-        modifiedBy:
-          type: string
-          maxLength: 100
-          description: The user who last updated the reboot request
-          example: &reboot-modified-by "user-2"
-      required:
-        - id
-      example: &reboot-request
-        id: *reboot-id
-        message: *reboot-message
-        atTime: *date-time
-        devices: *device-id-list
-        createdAt: *date-time
-        createdBy: *reboot-created-by
-        modifiedAt: *date-time
-        modifiedBy: *reboot-modified-by
+        - properties:
+            id:
+              $ref: "#/components/schemas/RebootId"
+            createdAt:
+              $ref: "#/components/schemas/DateTime"
+              description: |
+                The creation date and time of the reboot request.  It must follow [RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339#section-5.6)
+                and must have time zone.  Recommended format is yyyy-MM-dd'T'HH:mm:ss.SSSZ (i.e. which allows
+                2023-07-03T14:27:08.312+02:00 or 2023-07-03T12:27:08.312Z).
+            createdBy:
+              type: string
+              maxLength: 100
+              description: The user who created the reboot request
+              example: &reboot-created-by "user-1"
+            modifiedAt:
+              $ref: "#/components/schemas/DateTime"
+              description: |
+                The last update date and time of the reboot request.  It must follow [RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339#section-5.6)
+                and must have time zone.  Recommended format is yyyy-MM-dd'T'HH:mm:ss.SSSZ (i.e. which allows
+                2023-07-03T14:27:08.312+02:00 or 2023-07-03T12:27:08.312Z).
+            modifiedBy:
+              type: string
+              maxLength: 100
+              description: The user who last updated the reboot request
+              example: &reboot-modified-by "user-2"
+          required:
+            - id
+          example: &reboot-request
+            id: *reboot-id
+            message: *reboot-message
+            atTime: *date-time
+            devices: *device-id-list
+            createdAt: *date-time
+            createdBy: *reboot-created-by
+            modifiedAt: *date-time
+            modifiedBy: *reboot-modified-by
 
     RebootRequestList:
       type: array
