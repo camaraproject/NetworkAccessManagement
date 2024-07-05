@@ -1,9 +1,7 @@
-openapi: 3.0.3
+openapi: 3.1.0
 
 info:
-  title: CPE Management API
-  version: wip
-
+  title: Home Devices - Network Access Management
   description: |
     Service enabling API for managing network operator supplied network access devices. This APIs initial focus is on managing **Isolated Networks** and device reboot requests.
 
@@ -79,12 +77,13 @@ info:
 
     ### Mesh Systems
     Mesh systems SHOULD be represented as a single device when implementing this API due to the undefined behavior of LAN connectivity across multiple devices with the same isolated network.  The recommendation is to use the gateway hardware address of the mesh system when exposing that field, though the hardware address of any node in the mesh may be used.  If an end-user replaces the equipment, all existing isolated networks SHOULD be synced to the new device representing this mesh.  Alternatively, a synthetic hardware address may also be used if the specification for the address type allows.
-
+  version: wip
   license:
     name: Apache 2.0
-    url: https://www.apache.org/licenses/LICENSE-2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+  x-camara-commonalities: 0.4.0
   contact:
-    email: project-manager@cablelabs.com
+    email: sp-nam@lists.camaraproject.org
 
 tags:
   - name: Service Sites
