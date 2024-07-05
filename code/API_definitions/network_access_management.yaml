@@ -146,10 +146,20 @@ servers:
         description: API root, defined by the service provider, e.g. `api.example.com` or `api.example.com/somepath`
 
 tags:
-  - name: Service Sites
-  - name: Devices
-  - name: Isolated Networks
-  - name: Reboot Requests
+  - name: Retrieve Service Site
+    description: Operations to retrieve information about service sites
+  - name: Retrieve Device
+    description: Operations to retrieve information about devices
+  - name: Apply Device Network Configuration
+    description: Operations to apply isolated network configurations to devices
+  - name: Retrieve Isolated Network
+    description: Operations to retrieve information about isolated networks
+  - name: Configure and Apply Isolated Network
+    description: Operations to modify isolated networks and apply to devices
+  - name: Retrieve Reboot Request
+    description: Operations to retrieve information about reboot requests
+  - name: Configure Reboot Requests
+    description: Operations to modify reboot requests
 
 security:
   - oauth2: []
@@ -158,7 +168,7 @@ paths:
   /service-sites:
     get:
       tags:
-        - Service Sites
+        - Retrieve Service Site
       summary: Get all service sites
       security:
         - oauth2:
@@ -209,7 +219,7 @@ paths:
   /service-sites/{siteId}:
     get:
       tags:
-        - Service Sites
+        - Retrieve Service Site
       summary: Get a service site by ID
       security:
         - oauth2:
@@ -264,8 +274,8 @@ paths:
   /service-sites/{siteId}/devices:
     get:
       tags:
-        - Devices
-      summary: Get all devices at the service site
+        - Retrieve Device
+      summary: Get all devices at a service site
       security:
         - oauth2:
             - cpe-management-service-sites-read
@@ -327,7 +337,7 @@ paths:
   /service-sites/{siteId}/isolated-networks:
     get:
       tags:
-        - Service Sites
+        - Retrieve Service Site
       summary: Get all networks at a service site
       operationId: getNetworksByServiceSite
       description: |
@@ -378,7 +388,7 @@ paths:
   /devices:
     get:
       tags:
-        - Devices
+        - Retrieve Device
       summary: Get all devices
       operationId: getDevices
       description: |
@@ -438,7 +448,7 @@ paths:
   /devices/{deviceId}:
     get:
       tags:
-        - Devices
+        - Retrieve Device
       summary: Get a device by ID
       operationId: getDevice
       description: |
@@ -505,7 +515,7 @@ paths:
   /devices/{deviceId}/isolated-networks:
     get:
       tags:
-        - Isolated Networks
+        - Retrieve Isolated Network
       summary: Get all networks configured on a device
       operationId: getNetworksByDevice
       description: |
@@ -553,7 +563,7 @@ paths:
 
     patch:
       tags:
-        - Devices
+        - Device Configure
       summary: Bulk insert, remove or replace many networks from the configuration of a device
       operationId: patchDeviceWithNetworks
       description: |
@@ -600,7 +610,7 @@ paths:
   /isolated-networks:
     get:
       tags:
-        - Isolated Networks
+        - Retrieve Isolated Network
       summary: Get all Networks
       operationId: getNetworks
       description: |
@@ -655,7 +665,7 @@ paths:
 
     post:
       tags:
-        - Isolated Networks
+        - Configure and Apply Isolated Network
       summary: Create a new network
       operationId: createNetwork
       description: |
@@ -721,7 +731,7 @@ paths:
   /isolated-networks/{netId}:
     get:
       tags:
-        - Isolated Networks
+        - Retrieve Isolated Network
       summary: Get a Network by ID
       operationId: getNetwork
       description: |
@@ -782,7 +792,7 @@ paths:
 
     patch:
       tags:
-        - Isolated Networks
+        - Configure and Apply Isolated Network
       summary: Update an existing network
       operationId: updateNetwork
       description: |
@@ -843,7 +853,7 @@ paths:
 
     delete:
       tags:
-        - Isolated Networks
+        - Configure and Apply Isolated Network
       summary: Delete a network
       operationId: deleteNetwork
       description: |
@@ -887,7 +897,7 @@ paths:
   /isolated-networks/{netId}/devices:
     get:
       tags:
-        - Devices
+        - Retrieve Device
       summary: Get all devices configured with a network
       operationId: getDevicesByNetwork
       description: |
@@ -946,7 +956,7 @@ paths:
 
     patch:
       tags:
-        - Devices
+        - Device Configure
       summary: Bulk insert, remove, or replace a network from the configuration of many devices
       operationId: patchDevicesWithNetwork
       description: |
@@ -990,7 +1000,7 @@ paths:
   /reboot-requests:
     get:
       tags:
-        - Reboot Requests
+        - Retrieve Reboot Request
       summary: Get all Reboot Requests
       operationId: getRebootRequests
       description: |
@@ -1037,7 +1047,7 @@ paths:
 
     post:
       tags:
-        - Reboot Requests
+        - Configure Reboot Request
       summary: Create a new reboot request
       operationId: createRebootRequest
       description: |
@@ -1099,7 +1109,7 @@ paths:
   /reboot-requests/{rebootId}:
     get:
       tags:
-        - Reboot Requests
+        - Retrieve Reboot Request
       summary: Get a Reboot Request by ID
       operationId: getRebootRequest
       description: |
@@ -1152,7 +1162,7 @@ paths:
 
     patch:
       tags:
-        - Reboot Requests
+        - Configure Reboot Request
       summary: Update an existing reboot request
       operationId: updateRebootRequest
       description: |
@@ -1210,7 +1220,7 @@ paths:
 
     delete:
       tags:
-        - Reboot Requests
+        - Configure Reboot Request
       summary: Delete a reboot request
       operationId: deleteRebootRequest
       description: |
