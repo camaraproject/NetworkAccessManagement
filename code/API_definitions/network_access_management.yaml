@@ -1663,7 +1663,7 @@ components:
     NetworkDeviceReplacement:
       type: object
       description: >-
-        A specific network configuration with an implied network to replace an existing network on specific network 
+        A specific network configuration with an implied network to replace an existing network on specific network
         access device.
       properties:
         device:
@@ -1694,10 +1694,10 @@ components:
       required:
         - intersectionType
       discriminator:
-        propertyName: intersectionType 
-        mappings:                   
-            - NetworkDeviceRoleConfiguration: '#/components/schemas/NetworkDeviceRoleConfiguration'
-            - NetworkDeviceReplacement: '#/components/schemas/NetworkDeviceReplacement'
+        propertyName: intersectionType
+        mappings:
+          - NetworkDeviceRoleConfiguration: '#/components/schemas/NetworkDeviceRoleConfiguration'
+          - NetworkDeviceReplacement: '#/components/schemas/NetworkDeviceReplacement'
       example: &network-device-intersection-create
         intersectionType: *network-device-intersection-type
         device: *device-id
