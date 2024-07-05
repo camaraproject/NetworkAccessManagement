@@ -3,44 +3,81 @@ openapi: 3.0.3
 info:
   title: Home Devices - Network Access Management
   description: |
-    Service enabling API for managing network operator supplied network access devices. This APIs initial focus is on managing **Isolated Networks** and device reboot requests.
+    Service enabling API for managing network operator supplied network access devices. This APIs initial focus is on
+    managing **Isolated Networks** and device reboot requests.
 
     # Introduction
-    An isolated network is a network access configuration where each configuration is for a logically separated Local Area Network (LAN). Application developers can create, modify, or remove these networks which could be useful in scenarios such as:
+    An isolated network is a network access configuration where each configuration is for a logically separated Local
+    Area Network (LAN). Application developers can create, modify, or remove these networks which could be useful in
+    scenarios such as:
 
     - A property owner wants to create a temporary network for the duration of a short-term booking or long-term rental.
-    - A property manager wants to replicate the network access details across multiple network access devices at one or more locations such as common areas, offices, etc.
-    - A security/privacy-minded user wants to create one or more networks for their guests or Internet-of-Thing (IoT) network clients.
+    - A property manager wants to replicate the network access details across multiple network access devices at one or
+      more locations such as common areas, offices, etc.
+    - A security/privacy-minded user wants to create one or more networks for their guests or Internet-of-Thing (IoT)
+      network clients.
 
-    A reboot request is simply a request to reboot a network operator supplied network access device. Application developers can create these requests which could be useful in scenarios such as:
+    A reboot request is simply a request to reboot a network operator supplied network access device. Application
+    developers can create these requests which could be useful in scenarios such as:
 
     - A property owner wants to recover from a faulty network state by rebooting a gateway device.
     - A property manager wants to reboot multiple devices at one or more locations such as common areas, offices, etc.
 
     # Relevant Terms and Definitions
-    - **Isolated Network**: Network access configuration where each configuration is for a logically separated Local Area Network (LAN) when on the same network access device. Isolation in this context means that traffic will not be forwarded or routed from one logical LAN to another on the same device. The isolation implementation must be considered a logical construct only. Network operators are free to choose how to implement this behavior using any number of technologies such as with VLANs or OpenFlow rules. Traffic between two network clients using the same isolated network access details, but across different network access devices, is currently undefined behavior.
+    - **Isolated Network**: Network access configuration where each configuration is for a logically separated Local
+    Area Network (LAN) when on the same network access device. Isolation in this context means that traffic will not be
+    forwarded or routed from one logical LAN to another on the same device. The isolation implementation must be
+    considered a logical construct only. Network operators are free to choose how to implement this behavior using any
+    number of technologies such as with VLANs or OpenFlow rules. Traffic between two network clients using the same
+    isolated network access details, but across different network access devices, is currently undefined behavior.
     - **Reboot Request**: A request to reboot a network operator supplied network access device.
-    - **Device**: A network operator supplied network access device that supports isolated networks.  Multiple devices that support LAN connectivity across the same isolated network (e.g., mesh Wi-Fi, Thread personal area network, etc.) SHOULD be presented as a single device for implementations of this API.
+    - **Device**: A network operator supplied network access device that supports isolated networks.  Multiple devices
+    that support LAN connectivity across the same isolated network (e.g., mesh Wi-Fi, Thread personal area network,
+    etc.) SHOULD be presented as a single device for implementations of this API.
     - **Network Operator**: Service provider that implements this API and has operational control of supporting devices.
-    - **Service Owner**: Customer of a network operator and resource owner with one or more devices that supports this API across one or more service sites.
-    - **Service Site**: A distinct service owner location, as interpreted by the network operator, with one or more devices.  A service site typically has a one-to-one relationship with the mailing address of the location.  Network operators that support a single identity or interchangeable identities for multiple service sites at the same mailing address (e.g., a residential and business account, an office and common area account, etc.) MUST provide some distinction in the property address (e.g., attn: Home Office, attn: Common Area, etc.).  Multiple service sites, for the same mailing address, but for unrelated service owner identities, do not have this requirement.
+    - **Service Owner**: Customer of a network operator and resource owner with one or more devices that supports this
+    API across one or more service sites.
+    - **Service Site**: A distinct service owner location, as interpreted by the network operator, with one or more
+    devices.  A service site typically has a one-to-one relationship with the mailing address of the location.  Network
+    operators that support a single identity or interchangeable identities for multiple service sites at the same
+    mailing address (e.g., a residential and business account, an office and common area account, etc.) MUST provide
+    some distinction in the property address (e.g., attn: Home Office, attn: Common Area, etc.).  Multiple service
+    sites, for the same mailing address, but for unrelated service owner identities, do not have this requirement.
     - **End-User**: The user connecting to an isolated network with a network client.
     - **Network Client**: End-user equipment connecting to an isolated network (e.g., laptop, phone, IoT device, etc.).
     - **API Client**: A first- or third-party software system using this API.
 
     # API Functionality
-    This API allows API clients to manage isolated networks and reboot network access devices. OAuth 2.0 is used for authorizing an identity (resource holder) and scopes are used for role-based authorization.
+    This API allows API clients to manage isolated networks and reboot network access devices. OAuth 2.0 is used for
+    authorizing an identity (resource holder) and scopes are used for role-based authorization.
 
     ## Authorization
-    Authorization of API clients SHOULD be performed with OAuth 2.0 using the authorization code grant type such that service owners delegate access to their resources exposed by this API to the API client.  PKCE MUST be used when the API client secret cannot be secured (e.g., mobile application or single page application without a secure back-end).  This API MAY also be used with the client credentials grant type, though such a use case only makes sense for first-party network operator API clients or when the service owner operates their own API client (client ID is bound to the service owner's identity).
+    Authorization of API clients SHOULD be performed with OAuth 2.0 using the authorization code grant type such that
+    service owners delegate access to their resources exposed by this API to the API client.  PKCE MUST be used when the
+    API client secret cannot be secured (e.g., mobile application or single page application without a secure back-end).
+    This API MAY also be used with the client credentials grant type, though such a use case only makes sense for 
+    first-party network operator API clients or when the service owner operates their own API client (client ID is bound 
+    to the service owner's identity).
 
     ### Scopes
-    OAuth 2.0 scopes are used to protect the service owner's information and privacy.  The general format is `<API_name>-<Resource>-<Permission>`.  A resource may be further broken down into `<Resource_name>-<Field>` or `<Resource_name>-<Role>` for granular permissions. Scopes also control output information as opposed to just authorizing endpoints. Each endpoint definition will clearly state what scopes are needed for access and which are needed to access additional information. Below are some general rules for scopes in this API.
+    OAuth 2.0 scopes are used to protect the service owner's information and privacy.  The general format is 
+    `<API_name>-<Resource>-<Permission>`.  A resource may be further broken down into `<Resource_name>-<Field>` or 
+    `<Resource_name>-<Role>` for granular permissions. Scopes also control output information as opposed to just 
+    authorizing endpoints. Each endpoint definition will clearly state what scopes are needed for access and which are 
+    needed to access additional information. Below are some general rules for scopes in this API.
 
-    - Regulated information, such as physical locations or hardware addresses of network devices, have special scopes.  Network operators are expected to follow any local regulations when sharing this information with an API client.
+    - Regulated information, such as physical locations or hardware addresses of network devices, have special scopes.  
+    Network operators are expected to follow any local regulations when sharing this information with an API client.
     - Scopes have inheritance when one scope would otherwise require the inherited scope.
-    - Read scopes for one resource impacts the output of another resource when the requested resource has a relationship with the first (e.g., listing networks on a device requires both device and network read scopes).
-    - Isolated networks are broken down into 3 roles allowing service owners to grant granular permissions to API clients: only-own, primary, and auxiliary. The primary role allows API clients to manage the main network access configuration. The auxiliary role allows API clients to manage all auxiliary (i.e., secondary) networks. The only-own role allows API clients to manage networks it has created. Only-own networks SHOULD be an auxiliary, or secondary, network. Note that there is an edge case when a service owner revokes the primary role authorization. An API client SHOULD be able to continue managing primary isolated networks created by the client. Complete administrative control requires both the primary and auxiliary roles.
+    - Read scopes for one resource impacts the output of another resource when the requested resource has a relationship 
+    with the first (e.g., listing networks on a device requires both device and network read scopes).
+    - Isolated networks are broken down into 3 roles allowing service owners to grant granular permissions to API 
+    clients: only-own, primary, and auxiliary. The primary role allows API clients to manage the main network access 
+    configuration. The auxiliary role allows API clients to manage all auxiliary (i.e., secondary) networks. The 
+    only-own role allows API clients to manage networks it has created. Only-own networks SHOULD be an auxiliary, or 
+    secondary, network. Note that there is an edge case when a service owner revokes the primary role authorization. An 
+    API client SHOULD be able to continue managing primary isolated networks created by the client. Complete 
+    administrative control requires both the primary and auxiliary roles.
 
     | Scope | Description | Inherits
     |-------|-------------|---------
@@ -62,21 +99,37 @@ info:
     OAuth 2.0 claims are not used by this API to allow for the use of JSON Web Encryption (JWE) access tokens.
 
     ## General Usage
-    This API is intended for creating, modifying, or deleting isolated networks using the `/isolated-networks` endpoints to build access detail configurations. The `/service-sites` endpoints are used for iterating over a service owner's locations. The exact location may be requested with an additional scope to assist with reconciling information about service sites when the API client operator has an existing relationship with the service owner. Similarly, the `/devices` endpoints are used for iterating over and configuring a service owner's devices.  The hardware address may be requested for the same purpose of reconciling information from another source (e.g., database, persons with physical device access, etc.).
+    This API is intended for creating, modifying, or deleting isolated networks using the `/isolated-networks` endpoints 
+    to build access detail configurations. The `/service-sites` endpoints are used for iterating over a service owner's 
+    locations. The exact location may be requested with an additional scope to assist with reconciling information about
+    service sites when the API client operator has an existing relationship with the service owner. Similarly, the 
+    `/devices` endpoints are used for iterating over and configuring a service owner's devices.  The hardware address 
+    may be requested for the same purpose of reconciling information from another source (e.g., database, persons with 
+    physical device access, etc.).
 
     ## Optional Modes
 
     ### Default Device
-    When an identity for OAuth 2.0 access token has a "default device", such as a typical residential customer with one service site and one network access device, service site and device scopes MAY be omitted.  Any fields referencing a network access device using the `/isolated-networks` or `/isolated-networks/*` APIs MUST be left blank by API clients.   Network operators SHOULD substitute the missing field with the default device.  API definitions include additional details for error responses so API clients can detect if this mode is available.
+    When an identity for OAuth 2.0 access token has a "default device", such as a typical residential customer with one 
+    service site and one network access device, service site and device scopes MAY be omitted.  Any fields referencing a 
+    network access device using the `/isolated-networks` or `/isolated-networks/*` APIs MUST be left blank by API 
+    clients.  Network operators SHOULD substitute the missing field with the default device.  API definitions include 
+    additional details for error responses so API clients can detect if this mode is available.
 
     ## Comments for Network Operators
     The following comments are for Network Operators implementing this API.
 
     ### Auto-Deleting Isolated Networks
-    When an isolated network is not configured on any device the network configuration and its identifier SHOULD be auto-deleted.  API clients MUST not be expected to delete networks not configured on any device.
+    When an isolated network is not configured on any device the network configuration and its identifier SHOULD be
+    auto-deleted.  API clients MUST not be expected to delete networks not configured on any device.
 
     ### Mesh Systems
-    Mesh systems SHOULD be represented as a single device when implementing this API due to the undefined behavior of LAN connectivity across multiple devices with the same isolated network.  The recommendation is to use the gateway hardware address of the mesh system when exposing that field, though the hardware address of any node in the mesh may be used.  If an end-user replaces the equipment, all existing isolated networks SHOULD be synced to the new device representing this mesh.  Alternatively, a synthetic hardware address may also be used if the specification for the address type allows.
+    Mesh systems SHOULD be represented as a single device when implementing this API due to the undefined behavior of
+    LAN connectivity across multiple devices with the same isolated network.  The recommendation is to use the gateway 
+    hardware address of the mesh system when exposing that field, though the hardware address of any node in the mesh 
+    may be used.  If an end-user replaces the equipment, all existing isolated networks SHOULD be synced to the new 
+    device representing this mesh.  Alternatively, a synthetic hardware address may also be used if the specification 
+    for the address type allows.
   version: wip
   license:
     name: Apache 2.0
@@ -114,7 +167,8 @@ paths:
             - cpe-management-devices-read
       operationId: getServiceSites
       description: |
-        Returns all service sites.  Scopes impact the output of this endpoint.  See the examples for various permutations.
+        Returns all service sites.  Scopes impact the output of this endpoint.  See the examples for various 
+        permutations.
 
         **Required Scopes:**
           - **any of**
@@ -162,7 +216,8 @@ paths:
             - cpe-management-service-sites-read
       operationId: getServiceSite
       description: |
-        Returns a service site that matches the given ID.  Scopes impact the output of this endpoint.  See the examples for various permutations.
+        Returns a service site that matches the given ID.  Scopes impact the output of this endpoint.  See the examples
+        for various permutations.
 
         **Required Scopes:**
           - **any of**
@@ -216,7 +271,8 @@ paths:
             - cpe-management-service-sites-read
       operationId: getDevicesByServiceSite
       description: |
-        Returns all devices at a service site that matches the given ID.  Scopes impact the output of this endpoint.  See the examples for various permutations.
+        Returns all devices at a service site that matches the given ID.  Scopes impact the output of this endpoint. 
+        See the examples for various permutations.
 
         **Required Scopes:**
           - **any of**
@@ -386,7 +442,8 @@ paths:
       summary: Get a device by ID
       operationId: getDevice
       description: |
-        Returns a device that matches the given ID.  Scopes impact the output of this endpoint.  See the examples for various permutations.
+        Returns a device that matches the given ID.  Scopes impact the output of this endpoint.  See the examples for 
+        various permutations.
 
         **Required Scopes:**
           - **any of**
@@ -452,7 +509,8 @@ paths:
       summary: Get all networks configured on a device
       operationId: getNetworksByDevice
       description: |
-        Returns all networks configured on a device that matches the given ID.  Scopes impact the output of this endpoint.  See the examples for various permutations.
+        Returns all networks configured on a device that matches the given ID.  Scopes impact the output of this 
+        endpoint.  See the examples for various permutations.
 
         **Required Scopes:**
           - **any of**
@@ -601,10 +659,13 @@ paths:
       summary: Create a new network
       operationId: createNetwork
       description: |
-        Creates and returns the new network.  Scopes impact the function and output of this endpoint. See the examples for various permutations.
+        Creates and returns the new network.  Scopes impact the function and output of this endpoint. See the examples
+        for various permutations.
 
         ## With Default Device
-        For eligible service owner's with a default device, create the network and configure it to the service owner's one and only one device at their one and only one service location.  The `devices` field MUST NOT be set or it MUST be set to `undefined`.
+        For eligible service owner's with a default device, create the network and configure it to the service owner's 
+        one and only one device at their one and only one service location.  The `devices` field MUST NOT be set or it 
+        MUST be set to `undefined`.
 
         **Required Scopes:**
           - **any of**
@@ -664,7 +725,8 @@ paths:
       summary: Get a Network by ID
       operationId: getNetwork
       description: |
-        Returns the network that matches the given ID.  Scopes impact the output of this endpoint.  See the examples for various permutations.
+        Returns the network that matches the given ID.  Scopes impact the output of this endpoint.  See the examples for 
+        various permutations.
 
         ## With Default Device
         **Required Scopes:**
@@ -724,7 +786,8 @@ paths:
       summary: Update an existing network
       operationId: updateNetwork
       description: |
-        Updates the network, reconfigures any devices configured with the network, and returns the network that matches the given ID.  Scopes impact the output of this endpoint.  See the examples for various permutations.
+        Updates the network, reconfigures any devices configured with the network, and returns the network that matches
+        the given ID.  Scopes impact the output of this endpoint.  See the examples for various permutations.
 
         ## With Default Device
         **Required Scopes:**
@@ -784,7 +847,8 @@ paths:
       summary: Delete a network
       operationId: deleteNetwork
       description: |
-        Deletes the network and removes the configuration from any devices configured with the network that matches the given ID.
+        Deletes the network and removes the configuration from any devices configured with the network that matches the
+        given ID.
 
         ## With Default Device
         **Required Scopes:**
@@ -827,7 +891,8 @@ paths:
       summary: Get all devices configured with a network
       operationId: getDevicesByNetwork
       description: |
-        Returns all devices configured with a network that matches the given ID.  Scopes impact the output of this endpoint.  See the examples for various permutations.
+        Returns all devices configured with a network that matches the given ID.  Scopes impact the output of this 
+        endpoint.  See the examples for various permutations.
 
         **Required Scopes:**
           - **any of**
@@ -929,7 +994,8 @@ paths:
       summary: Get all Reboot Requests
       operationId: getRebootRequests
       description: |
-        Returns all reboot requests.  Scopes impact the output of this endpoint.  See the examples for various permutations.
+        Returns all reboot requests.  Scopes impact the output of this endpoint.  See the examples for various 
+        permutations.
 
         ## With Default Device
         **Required Scopes:**
@@ -975,17 +1041,20 @@ paths:
       summary: Create a new reboot request
       operationId: createRebootRequest
       description: |
-        Creates and returns the new reboot request.  Scopes impact the function and output of this endpoint. See the examples for various permutations.
+        Creates and returns the new reboot request.  Scopes impact the function and output of this endpoint. See the 
+        examples for various permutations.
 
         ## With Default Device
-        Creates the reboot request and issues it to the service owner's one and only one device at their one and only one service location.  The `devices` field MUST NOT be set or it MUST be set to `undefined`.
+        Creates the reboot request and issues it to the service owner's one and only one device at their one and only 
+        one service location.  The `devices` field MUST NOT be set or it MUST be set to `undefined`.
 
         **Required Scopes:**
           - **any of**
             - `cpe-management-reboot-requests-write`
 
         ## Without Default Device
-        Creates the reboot request and issues it to one or more devices.  The `devices` field MUST be set to a non-empty `list of device IDs`.
+        Creates the reboot request and issues it to one or more devices.  The `devices` field MUST be set to a non-empty 
+        `list of device IDs`.
 
         **Required Scopes:**
           - `cpe-management-devices-write`
@@ -1034,7 +1103,8 @@ paths:
       summary: Get a Reboot Request by ID
       operationId: getRebootRequest
       description: |
-        Returns the reboot request that matches the given ID.  Scopes impact the output of this endpoint.  See the examples for various permutations.
+        Returns the reboot request that matches the given ID.  Scopes impact the output of this endpoint.  See the 
+        examples for various permutations.
 
         ## With Default Device
         **Required Scopes:**
@@ -1086,7 +1156,9 @@ paths:
       summary: Update an existing reboot request
       operationId: updateRebootRequest
       description: |
-        Updates the reboot request, reboot for any devices targeted with the reboot request, and returns the reboot request that matches the given ID.  Scopes impact the output of this endpoint.  See the examples for various permutations.
+        Updates the reboot request, reboot for any devices targeted with the reboot request, and returns the reboot 
+        request that matches the given ID.  Scopes impact the output of this endpoint.  See the examples for various 
+        permutations.
 
         ## With Default Device
         **Required Scopes:**
@@ -1185,19 +1257,32 @@ components:
           tokenUrl: &token-url "https://api.example.com/oauth2/token"
           refreshUrl: &token-refresh-url "https://api.example.com/refresh"
           scopes: &scopes
-            cpe-management-service-sites-read: List a service owner's service sites
-            cpe-management-service-sites-location-read: Read a service site's physical location
-            cpe-management-devices-read: List a service owner's devices
-            cpe-management-devices-hardware-address-read: Read a service owner's device's hardware address
-            cpe-management-devices-write: Modify which networks are configured on a service owner's devices
-            cpe-management-isolated-networks-read: List a service owner's isolated networks created by the calling API client
-            cpe-management-isolated-networks-write: Create or modify a service owner's isolated networks created by the calling API client
-            cpe-management-isolated-networks-primary-read: Access information about a service owner's primary isolated network
-            cpe-management-isolated-networks-primary-write: Modify a service owner's primary isolated network
-            cpe-management-isolated-networks-auxiliary-read: List service owner's auxiliary isolated networks
-            cpe-management-isolated-networks-auxiliary-write: Create or modify a service owner's auxiliary isolated networks
-            cpe-management-reboot-requests-read: List a service owner's reboot requests created by the calling API client
-            cpe-management-reboot-requests-write: Create or modify a service owner's reboot request created by the calling API client
+            cpe-management-service-sites-read: |
+              List a service owner's service sites
+            cpe-management-service-sites-location-read: |
+              Read a service site's physical location
+            cpe-management-devices-read: |
+              List a service owner's devices
+            cpe-management-devices-hardware-address-read: |
+              Read a service owner's device's hardware address
+            cpe-management-devices-write: |
+              Modify which networks are configured on a service owner's devices
+            cpe-management-isolated-networks-read: |
+              List a service owner's isolated networks created by the calling API client
+            cpe-management-isolated-networks-write: |
+              Create or modify a service owner's isolated networks created by the calling API client
+            cpe-management-isolated-networks-primary-read: |
+              Access information about a service owner's primary isolated network
+            cpe-management-isolated-networks-primary-write: |
+              Modify a service owner's primary isolated network
+            cpe-management-isolated-networks-auxiliary-read: |
+              List service owner's auxiliary isolated networks
+            cpe-management-isolated-networks-auxiliary-write: |
+              Create or modify a service owner's auxiliary isolated networks
+            cpe-management-reboot-requests-read: |
+              List a service owner's reboot requests created by the calling API client
+            cpe-management-reboot-requests-write: |
+              Create or modify a service owner's reboot request created by the calling API client
         clientCredentials:
           tokenUrl: *token-url
           refreshUrl: *token-refresh-url
@@ -2059,7 +2144,8 @@ components:
           items:
             $ref: "#/components/schemas/DeviceId"
           description: >-
-            List of devices to reboot. When undefined, the reboot targets the 'default' device (simple use case that wouldn't use locations or devices). Throws an error when creating if there is no 'default' device.
+            List of devices to reboot. When undefined, the reboot targets the 'default' device (simple use case that 
+            wouldn't use locations or devices). Throws an error when creating if there is no 'default' device.
           example: *device-id-list
       example: &reboot-create
         message: *reboot-message
