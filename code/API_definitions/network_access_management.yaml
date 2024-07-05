@@ -48,19 +48,24 @@ info:
     - **API Client**: A first- or third-party software system using this API.
 
     # API Functionality
-    This API allows API clients to manage isolated networks and reboot network access devices. OAuth 2.0 is used for
-    authorizing an identity (resource holder) and scopes are used for role-based authorization.
+    This API allows API clients to manage isolated networks and reboot network access devices.
 
-    ## Authorization
-    Authorization of API clients SHOULD be performed with OAuth 2.0 using the authorization code grant type such that
-    service owners delegate access to their resources exposed by this API to the API client.  PKCE MUST be used when the
-    API client secret cannot be secured (e.g., mobile application or single page application without a secure back-end).
-    This API MAY also be used with the client credentials grant type, though such a use case only makes sense for
-    first-party network operator API clients or when the service owner operates their own API client (client ID is bound
-    to the service owner's identity).
+    ## Authorization and authentication
+
+    [Camara Security and Interoperability Profile](https://github.com/camaraproject/IdentityAndConsentManagement/blob/main/documentation/CAMARA-Security-Interoperability.md)
+    provides details on how a client requests an access token.
+
+    Which specific authorization flows are to be used will be determined during onboarding process, happening between
+    the API Client and the Telco Operator exposing the API, taking into account the declared purpose for accessing the
+    API, while also being subject to the prevailing legal framework dictated by local legislation.
+
+    It is important to remark that in cases where personal user data is processed by the API, and users can exercise
+    their rights through mechanisms such as opt-in and/or opt-out, the use of 3-legged access tokens becomes mandatory.
+    This measure ensures that the API remains in strict compliance with user privacy preferences and regulatory
+    obligations, upholding the principles of transparency and user-centric data control.
 
     ### Scopes
-    OAuth 2.0 scopes are used to protect the service owner's information and privacy.  The general format is
+    Scopes are used to protect the service owner's information and privacy.  The general format is
     `<API_name>-<Resource>-<Permission>`.  A resource may be further broken down into `<Resource_name>-<Field>` or
     `<Resource_name>-<Role>` for granular permissions. Scopes also control output information as opposed to just
     authorizing endpoints. Each endpoint definition will clearly state what scopes are needed for access and which are
@@ -81,22 +86,19 @@ info:
 
     | Scope | Description | Inherits
     |-------|-------------|---------
-    | **cpe-management-service-sites-read** | List a service owner's service sites
-    | **cpe-management-service-sites-location-read** | Read a service site's physical location | cpe-management-service-sites-read
-    | **cpe-management-devices-read** | List a service owner's devices
-    | **cpe-management-devices-hardware-address-read** | Read a service owner's device's hardware address | cpe-management-devices-read
-    | **cpe-management-devices-write** | Modify which networks are configured on a service owner's devices | cpe-management-devices-read
-    | **cpe-management-isolated-networks-read** | List a service owner's isolated networks created by the calling API client
-    | **cpe-management-isolated-networks-write** | Create or modify a service owner's isolated networks created by the calling API client | cpe-management-isolated-networks-read
-    | **cpe-management-isolated-networks-primary-read** | Access information about a service owner's primary isolated network
-    | **cpe-management-isolated-networks-primary-write** | Modify a service owner's primary isolated network | cpe-management-isolated-networks-primary-read
-    | **cpe-management-isolated-networks-auxiliary-read** | List a service owner's auxiliary isolated networks | cpe-management-isolated-networks-read
-    | **cpe-management-isolated-networks-auxiliary-write** | Create or modify a service owner's auxiliary isolated networks | cpe-management-isolated-networks-auxiliary-read<br />cpe-management-isolated-networks-write
-    | **cpe-management-reboot-requests-read** | List a service owner's reboot requests created by the calling API client
-    | **cpe-management-reboot-requests-write** | Create or modify a service owner's reboot request created by the calling API client | cpe-management-reboot-request-read
-
-    ### Claims
-    OAuth 2.0 claims are not used by this API to allow for the use of JSON Web Encryption (JWE) access tokens.
+    | **network-access-management:service-sites:read** | List a service owner's service sites
+    | **network-access-management:service-sites.location:read** | Read a service site's physical location | network-access-management:service-sites:read
+    | **network-access-management:devices:read** | List a service owner's devices
+    | **network-access-management:devices.hardware-address:read** | Read a service owner's device's hardware address | network-access-management:devices:read
+    | **network-access-management:devices:write** | Modify which networks are configured on a service owner's devices | network-access-management:devices:read
+    | **network-access-management:isolated-networks:read** | List a service owner's isolated networks created by the calling API client
+    | **network-access-management:isolated-networks:write** | Create or modify a service owner's isolated networks created by the calling API client | network-access-management:isolated-networks:read
+    | **network-access-management:isolated-networks.primary:read** | Access information about a service owner's primary isolated network
+    | **network-access-management:isolated-networks.primary:write** | Modify a service owner's primary isolated network | network-access-management:isolated-networks.primary:read
+    | **network-access-management:isolated-networks.auxiliary:read** | List a service owner's auxiliary isolated networks | network-access-management:isolated-networks:read
+    | **network-access-management:isolated-networks.auxiliary:write** | Create or modify a service owner's auxiliary isolated networks | network-access-management:isolated-networks.auxiliary:read<br />network-access-management:isolated-networks:write
+    | **network-access-management:reboot-requests:read** | List a service owner's reboot requests created by the calling API client
+    | **network-access-management:reboot-requests:write** | Create or modify a service owner's reboot request created by the calling API client | network-access-management:reboot-request:read
 
     ## General Usage
     This API is intended for creating, modifying, or deleting isolated networks using the `/isolated-networks` endpoints
@@ -110,8 +112,8 @@ info:
     ## Optional Modes
 
     ### Default Device
-    When an identity for OAuth 2.0 access token has a "default device", such as a typical residential customer with one
-    service site and one network access device, service site and device scopes MAY be omitted.  Any fields referencing a
+    When an identity for access token has a "default device", such as a typical residential customer with one service
+    site and one network access device, service site and device scopes MAY be omitted.  Any fields referencing a
     network access device using the `/isolated-networks` or `/isolated-networks/*` APIs MUST be left blank by API
     clients.  Network operators SHOULD substitute the missing field with the default device.  API definitions include
     additional details for error responses so API clients can detect if this mode is available.
@@ -169,9 +171,9 @@ paths:
       summary: Get all service sites
       security:
         - openId:
-            - cpe-management-service-sites-read
-            - cpe-management-service-sites-location-read
-            - cpe-management-devices-read
+            - network-access-management:service-sites:read
+            - network-access-management:service-sites.location:read
+            - network-access-management:devices:read
       operationId: getServiceSites
       description: |
         Returns all service sites.  Scopes impact the output of this endpoint.  See the examples for various
@@ -179,13 +181,13 @@ paths:
 
         **Required Scopes:**
           - **any of**
-            - `cpe-management-service-sites-read`
-            - `cpe-management-service-sites-location-read`
+            - `network-access-management:service-sites:read`
+            - `network-access-management:service-sites.location:read`
 
         **Optional Scopes:**
-          - `cpe-management-devices-read`
-          - `cpe-management-devices-write`
-          - `cpe-management-devices-hardware-address-read`
+          - `network-access-management:devices:read`
+          - `network-access-management:devices:write`
+          - `network-access-management:devices.hardware-address:read`
       responses:
         "200":
           description: Contains information about all service sites
@@ -220,7 +222,7 @@ paths:
       summary: Get a service site by ID
       security:
         - openId:
-            - cpe-management-service-sites-read
+            - network-access-management:service-sites:read
       operationId: getServiceSite
       description: |
         Returns a service site that matches the given ID.  Scopes impact the output of this endpoint.  See the examples
@@ -228,13 +230,13 @@ paths:
 
         **Required Scopes:**
           - **any of**
-            - `cpe-management-service-sites-read`
-            - `cpe-management-service-sites-location-read`
+            - `network-access-management:service-sites:read`
+            - `network-access-management:service-sites.location:read`
 
         **Optional Scopes:**
-          - `cpe-management-devices-read`
-          - `cpe-management-devices-write`
-          - `cpe-management-devices-hardware-address-read`
+          - `network-access-management:devices:read`
+          - `network-access-management:devices:write`
+          - `network-access-management:devices.hardware-address:read`
       parameters:
         - $ref: "#/components/parameters/siteId"
       responses:
@@ -275,7 +277,7 @@ paths:
       summary: Get all devices at a service site
       security:
         - openId:
-            - cpe-management-service-sites-read
+            - network-access-management:service-sites:read
       operationId: getDevicesByServiceSite
       description: |
         Returns all devices at a service site that matches the given ID.  Scopes impact the output of this endpoint.
@@ -283,20 +285,20 @@ paths:
 
         **Required Scopes:**
           - **any of**
-            - `cpe-management-service-sites-read`
-            - `cpe-management-service-sites-location-read`
+            - `network-access-management:service-sites:read`
+            - `network-access-management:service-sites.location:read`
           - **any of**
-            - `cpe-management-devices-read`
-            - `cpe-management-devices-write`
-            - `cpe-management-devices-hardware-address-read`
+            - `network-access-management:devices:read`
+            - `network-access-management:devices:write`
+            - `network-access-management:devices.hardware-address:read`
 
         **Optional Scopes:**
-          - `cpe-management-isolated-networks-read`
-          - `cpe-management-isolated-networks-write`
-          - `cpe-management-isolated-networks-primary-read`
-          - `cpe-management-isolated-networks-primary-write`
-          - `cpe-management-isolated-networks-auxiliary-read`
-          - `cpe-management-isolated-networks-auxiliary-write`
+          - `network-access-management:isolated-networks:read`
+          - `network-access-management:isolated-networks:write`
+          - `network-access-management:isolated-networks.primary:read`
+          - `network-access-management:isolated-networks.primary:write`
+          - `network-access-management:isolated-networks.auxiliary:read`
+          - `network-access-management:isolated-networks.auxiliary:write`
 
       parameters:
         - $ref: "#/components/parameters/siteId"
@@ -342,19 +344,19 @@ paths:
 
         **Required Scopes:**
           - **any of**
-            - `cpe-management-service-sites-read`
-            - `cpe-management-service-sites-location-read`
+            - `network-access-management:service-sites:read`
+            - `network-access-management:service-sites.location:read`
           - **any of**
-            - `cpe-management-devices-read`
-            - `cpe-management-devices-write`
-            - `cpe-management-devices-hardware-address-read`
+            - `network-access-management:devices:read`
+            - `network-access-management:devices:write`
+            - `network-access-management:devices.hardware-address:read`
           - **any of**
-            - `cpe-management-isolated-networks-read`
-            - `cpe-management-isolated-networks-write`
-            - `cpe-management-isolated-networks-primary-read`
-            - `cpe-management-isolated-networks-primary-write`
-            - `cpe-management-isolated-networks-auxiliary-read`
-            - `cpe-management-isolated-networks-auxiliary-write`
+            - `network-access-management:isolated-networks:read`
+            - `network-access-management:isolated-networks:write`
+            - `network-access-management:isolated-networks.primary:read`
+            - `network-access-management:isolated-networks.primary:write`
+            - `network-access-management:isolated-networks.auxiliary:read`
+            - `network-access-management:isolated-networks.auxiliary:write`
       parameters:
         - $ref: "#/components/parameters/siteId"
       responses:
@@ -393,20 +395,20 @@ paths:
 
         **Required Scopes:**
           - **any of**
-            - `cpe-management-devices-read`
-            - `cpe-management-devices-write`
-            - `cpe-management-devices-hardware-address-read`
+            - `network-access-management:devices:read`
+            - `network-access-management:devices:write`
+            - `network-access-management:devices.hardware-address:read`
 
         **Optional Scopes:**
            - **any of**
-              - `cpe-management-service-sites-read`
-              - `cpe-management-service-sites-location-read`
-              - `cpe-management-isolated-networks-read`
-              - `cpe-management-isolated-networks-write`
-              - `cpe-management-isolated-networks-primary-read`
-              - `cpe-management-isolated-networks-primary-write`
-              - `cpe-management-isolated-networks-auxiliary-read`
-              - `cpe-management-isolated-networks-auxiliary-write`
+              - `network-access-management:service-sites:read`
+              - `network-access-management:service-sites.location:read`
+              - `network-access-management:isolated-networks:read`
+              - `network-access-management:isolated-networks:write`
+              - `network-access-management:isolated-networks.primary:read`
+              - `network-access-management:isolated-networks.primary:write`
+              - `network-access-management:isolated-networks.auxiliary:read`
+              - `network-access-management:isolated-networks.auxiliary:write`
       responses:
         "200":
           description: Contains information about all devices
@@ -454,20 +456,20 @@ paths:
 
         **Required Scopes:**
           - **any of**
-            - `cpe-management-devices-read`
-            - `cpe-management-devices-write`
-            - `cpe-management-devices-hardware-address-read`
+            - `network-access-management:devices:read`
+            - `network-access-management:devices:write`
+            - `network-access-management:devices.hardware-address:read`
 
         **Optional Scopes:**
            - **any of**
-              - `cpe-management-service-sites-read`
-              - `cpe-management-service-sites-location-read`
-              - `cpe-management-isolated-networks-read`
-              - `cpe-management-isolated-networks-write`
-              - `cpe-management-isolated-networks-primary-read`
-              - `cpe-management-isolated-networks-primary-write`
-              - `cpe-management-isolated-networks-auxiliary-read`
-              - `cpe-management-isolated-networks-auxiliary-write`
+              - `network-access-management:service-sites:read`
+              - `network-access-management:service-sites.location:read`
+              - `network-access-management:isolated-networks:read`
+              - `network-access-management:isolated-networks:write`
+              - `network-access-management:isolated-networks.primary:read`
+              - `network-access-management:isolated-networks.primary:write`
+              - `network-access-management:isolated-networks.auxiliary:read`
+              - `network-access-management:isolated-networks.auxiliary:write`
       parameters:
         - $ref: "#/components/parameters/deviceId"
       responses:
@@ -521,16 +523,16 @@ paths:
 
         **Required Scopes:**
           - **any of**
-            - `cpe-management-devices-read`
-            - `cpe-management-devices-write`
-            - `cpe-management-devices-hardware-address-read`
+            - `network-access-management:devices:read`
+            - `network-access-management:devices:write`
+            - `network-access-management:devices.hardware-address:read`
           - **any of**
-            - `cpe-management-isolated-networks-read`
-            - `cpe-management-isolated-networks-write`
-            - `cpe-management-isolated-networks-primary-read`
-            - `cpe-management-isolated-networks-primary-write`
-            - `cpe-management-isolated-networks-auxiliary-read`
-            - `cpe-management-isolated-networks-auxiliary-write`
+            - `network-access-management:isolated-networks:read`
+            - `network-access-management:isolated-networks:write`
+            - `network-access-management:isolated-networks.primary:read`
+            - `network-access-management:isolated-networks.primary:write`
+            - `network-access-management:isolated-networks.auxiliary:read`
+            - `network-access-management:isolated-networks.auxiliary:write`
       parameters:
         - $ref: "#/components/parameters/deviceId"
       responses:
@@ -570,14 +572,14 @@ paths:
         is replaced and is no longer assigned to any device, it is considered automatically deleted.
 
         **Required Scopes:**
-           - `cpe-management-devices-write`
+           - `network-access-management:devices:write`
           - **any of**
-            - `cpe-management-isolated-networks-read`
-            - `cpe-management-isolated-networks-write`
-            - `cpe-management-isolated-networks-primary-read`
-            - `cpe-management-isolated-networks-primary-write`
-            - `cpe-management-isolated-networks-auxiliary-read`
-            - `cpe-management-isolated-networks-auxiliary-write`
+            - `network-access-management:isolated-networks:read`
+            - `network-access-management:isolated-networks:write`
+            - `network-access-management:isolated-networks.primary:read`
+            - `network-access-management:isolated-networks.primary:write`
+            - `network-access-management:isolated-networks.auxiliary:read`
+            - `network-access-management:isolated-networks.auxiliary:write`
       parameters:
         - $ref: "#/components/parameters/deviceId"
       requestBody:
@@ -616,26 +618,26 @@ paths:
         ## With Default Device
         **Required Scopes:**
           - **any of**
-            - `cpe-management-isolated-networks-read`
-            - `cpe-management-isolated-networks-write`
-            - `cpe-management-isolated-networks-primary-read`
-            - `cpe-management-isolated-networks-primary-write`
-            - `cpe-management-isolated-networks-auxiliary-read`
-            - `cpe-management-isolated-networks-auxiliary-write`
+            - `network-access-management:isolated-networks:read`
+            - `network-access-management:isolated-networks:write`
+            - `network-access-management:isolated-networks.primary:read`
+            - `network-access-management:isolated-networks.primary:write`
+            - `network-access-management:isolated-networks.auxiliary:read`
+            - `network-access-management:isolated-networks.auxiliary:write`
 
         ## Without Default Device
         **Required Scopes:**
         - **any of**
-          - `cpe-management-isolated-networks-read`
-          - `cpe-management-isolated-networks-write`
-          - `cpe-management-isolated-networks-primary-read`
-          - `cpe-management-isolated-networks-primary-write`
-          - `cpe-management-isolated-networks-auxiliary-read`
-          - `cpe-management-isolated-networks-auxiliary-write`
+          - `network-access-management:isolated-networks:read`
+          - `network-access-management:isolated-networks:write`
+          - `network-access-management:isolated-networks.primary:read`
+          - `network-access-management:isolated-networks.primary:write`
+          - `network-access-management:isolated-networks.auxiliary:read`
+          - `network-access-management:isolated-networks.auxiliary:write`
         - **any of**
-          - `cpe-management-devices-read`
-          - `cpe-management-devices-write`
-          - `cpe-management-devices-hardware-address-read`
+          - `network-access-management:devices:read`
+          - `network-access-management:devices:write`
+          - `network-access-management:devices.hardware-address:read`
 
       responses:
         "200":
@@ -676,19 +678,19 @@ paths:
 
         **Required Scopes:**
           - **any of**
-            - `cpe-management-isolated-networks-write`
-            - `cpe-management-isolated-networks-primary-write`
-            - `cpe-management-isolated-networks-auxiliary-write`
+            - `network-access-management:isolated-networks:write`
+            - `network-access-management:isolated-networks.primary:write`
+            - `network-access-management:isolated-networks.auxiliary:write`
 
         ## Without Default Device
         Create the network and configure it to one or more devices.  The `devices` field MUST NOT be empty.
 
         **Required Scopes:**
-          - `cpe-management-devices-write`
+          - `network-access-management:devices:write`
           - **any of**
-            - `cpe-management-isolated-networks-write`
-            - `cpe-management-isolated-networks-primary-write`
-            - `cpe-management-isolated-networks-auxiliary-write`
+            - `network-access-management:isolated-networks:write`
+            - `network-access-management:isolated-networks.primary:write`
+            - `network-access-management:isolated-networks.auxiliary:write`
       requestBody:
         required: true
         content:
@@ -738,26 +740,26 @@ paths:
         ## With Default Device
         **Required Scopes:**
           - **any of**
-            - `cpe-management-isolated-networks-read`
-            - `cpe-management-isolated-networks-write`
-            - `cpe-management-isolated-networks-primary-read`
-            - `cpe-management-isolated-networks-primary-write`
-            - `cpe-management-isolated-networks-auxiliary-read`
-            - `cpe-management-isolated-networks-auxiliary-write`
+            - `network-access-management:isolated-networks:read`
+            - `network-access-management:isolated-networks:write`
+            - `network-access-management:isolated-networks.primary:read`
+            - `network-access-management:isolated-networks.primary:write`
+            - `network-access-management:isolated-networks.auxiliary:read`
+            - `network-access-management:isolated-networks.auxiliary:write`
 
         ## Without Default Device
           **Required Scopes:**
           - **any of**
-            - `cpe-management-isolated-networks-read`
-            - `cpe-management-isolated-networks-write`
-            - `cpe-management-isolated-networks-primary-read`
-            - `cpe-management-isolated-networks-primary-write`
-            - `cpe-management-isolated-networks-auxiliary-read`
-            - `cpe-management-isolated-networks-auxiliary-write`
+            - `network-access-management:isolated-networks:read`
+            - `network-access-management:isolated-networks:write`
+            - `network-access-management:isolated-networks.primary:read`
+            - `network-access-management:isolated-networks.primary:write`
+            - `network-access-management:isolated-networks.auxiliary:read`
+            - `network-access-management:isolated-networks.auxiliary:write`
           - **any of**
-            - `cpe-management-devices-read`
-            - `cpe-management-devices-write`
-            - `cpe-management-devices-hardware-address-read`
+            - `network-access-management:devices:read`
+            - `network-access-management:devices:write`
+            - `network-access-management:devices.hardware-address:read`
       parameters:
         - $ref: "#/components/parameters/netId"
       responses:
@@ -799,17 +801,17 @@ paths:
         ## With Default Device
         **Required Scopes:**
           - **any of**
-            - `cpe-management-isolated-networks-write`
-            - `cpe-management-isolated-networks-primary-write`
-            - `cpe-management-isolated-networks-auxiliary-write`
+            - `network-access-management:isolated-networks:write`
+            - `network-access-management:isolated-networks.primary:write`
+            - `network-access-management:isolated-networks.auxiliary:write`
 
         ## Without Default Device
         **Required Scopes:**
-          - `cpe-management-devices-write`
+          - `network-access-management:devices:write`
           - **any of**
-            - `cpe-management-isolated-networks-write`
-            - `cpe-management-isolated-networks-primary-write`
-            - `cpe-management-isolated-networks-auxiliary-write`
+            - `network-access-management:isolated-networks:write`
+            - `network-access-management:isolated-networks.primary:write`
+            - `network-access-management:isolated-networks.auxiliary:write`
       parameters:
         - $ref: "#/components/parameters/netId"
       requestBody:
@@ -860,17 +862,17 @@ paths:
         ## With Default Device
         **Required Scopes:**
           - **any of**
-            - `cpe-management-isolated-networks-write`
-            - `cpe-management-isolated-networks-primary-write`
-            - `cpe-management-isolated-networks-auxiliary-write`
+            - `network-access-management:isolated-networks:write`
+            - `network-access-management:isolated-networks.primary:write`
+            - `network-access-management:isolated-networks.auxiliary:write`
 
         ## Without Default Device
         **Required Scopes:**
-          - `cpe-management-devices-write`
+          - `network-access-management:devices:write`
           - **any of**
-            - `cpe-management-isolated-networks-write`
-            - `cpe-management-isolated-networks-primary-write`
-            - `cpe-management-isolated-networks-auxiliary-write`
+            - `network-access-management:isolated-networks:write`
+            - `network-access-management:isolated-networks.primary:write`
+            - `network-access-management:isolated-networks.auxiliary:write`
       parameters:
         - $ref: "#/components/parameters/netId"
       responses:
@@ -903,21 +905,21 @@ paths:
 
         **Required Scopes:**
           - **any of**
-            - `cpe-management-devices-read`
-            - `cpe-management-devices-write`
-            - `cpe-management-devices-hardware-address-read`
+            - `network-access-management:devices:read`
+            - `network-access-management:devices:write`
+            - `network-access-management:devices.hardware-address:read`
           - **any of**
-            - `cpe-management-isolated-networks-read`
-            - `cpe-management-isolated-networks-write`
-            - `cpe-management-isolated-networks-primary-read`
-            - `cpe-management-isolated-networks-primary-write`
-            - `cpe-management-isolated-networks-auxiliary-read`
-            - `cpe-management-isolated-networks-auxiliary-write`
+            - `network-access-management:isolated-networks:read`
+            - `network-access-management:isolated-networks:write`
+            - `network-access-management:isolated-networks.primary:read`
+            - `network-access-management:isolated-networks.primary:write`
+            - `network-access-management:isolated-networks.auxiliary:read`
+            - `network-access-management:isolated-networks.auxiliary:write`
 
         **Optional Scopes:**
            - **any of**
-              - `cpe-management-service-sites-read`
-              - `cpe-management-service-sites-location-read`
+              - `network-access-management:service-sites:read`
+              - `network-access-management:service-sites.location:read`
       parameters:
         - $ref: "#/components/parameters/netId"
       responses:
@@ -960,14 +962,14 @@ paths:
         Bulk inserts, removes, replaces a network from the configuration of many devices by the given IDs.
 
         **Required Scopes:**
-           - `cpe-management-devices-write`
+           - `network-access-management:devices:write`
           - **any of**
-            - `cpe-management-isolated-networks-read`
-            - `cpe-management-isolated-networks-write`
-            - `cpe-management-isolated-networks-primary-read`
-            - `cpe-management-isolated-networks-primary-write`
-            - `cpe-management-isolated-networks-auxiliary-read`
-            - `cpe-management-isolated-networks-auxiliary-write`
+            - `network-access-management:isolated-networks:read`
+            - `network-access-management:isolated-networks:write`
+            - `network-access-management:isolated-networks.primary:read`
+            - `network-access-management:isolated-networks.primary:write`
+            - `network-access-management:isolated-networks.auxiliary:read`
+            - `network-access-management:isolated-networks.auxiliary:write`
       parameters:
         - $ref: "#/components/parameters/netId"
       requestBody:
@@ -1007,18 +1009,18 @@ paths:
         ## With Default Device
         **Required Scopes:**
           - **any of**
-            - `cpe-management-reboot-requests-read`
-            - `cpe-management-reboot-requests-write`
+            - `network-access-management:reboot-requests:read`
+            - `network-access-management:reboot-requests:write`
 
         ## Without Default Device
           **Required Scopes:**
           - **any of**
-            - `cpe-management-reboot-requests-read`
-            - `cpe-management-reboot-requests-write`
+            - `network-access-management:reboot-requests:read`
+            - `network-access-management:reboot-requests:write`
           - **any of**
-            - `cpe-management-devices-read`
-            - `cpe-management-devices-write`
-            - `cpe-management-devices-hardware-address-read`
+            - `network-access-management:devices:read`
+            - `network-access-management:devices:write`
+            - `network-access-management:devices.hardware-address:read`
       responses:
         "200":
           description: Contains information about all reboot requests
@@ -1057,16 +1059,16 @@ paths:
 
         **Required Scopes:**
           - **any of**
-            - `cpe-management-reboot-requests-write`
+            - `network-access-management:reboot-requests:write`
 
         ## Without Default Device
         Creates the reboot request and issues it to one or more devices.  The `devices` field MUST be set to a non-empty
         `list of device IDs`.
 
         **Required Scopes:**
-          - `cpe-management-devices-write`
+          - `network-access-management:devices:write`
           - **any of**
-            - `cpe-management-reboot-requests-write`
+            - `network-access-management:reboot-requests:write`
       requestBody:
         required: true
         content:
@@ -1116,18 +1118,18 @@ paths:
         ## With Default Device
         **Required Scopes:**
           - **any of**
-            - `cpe-management-reboot-requests-read`
-            - `cpe-management-reboot-requests-write`
+            - `network-access-management:reboot-requests:read`
+            - `network-access-management:reboot-requests:write`
 
         ## Without Default Device
           **Required Scopes:**
           - **any of**
-            - `cpe-management-reboot-requests-read`
-            - `cpe-management-reboot-requests-write`
+            - `network-access-management:reboot-requests:read`
+            - `network-access-management:reboot-requests:write`
           - **any of**
-            - `cpe-management-devices-read`
-            - `cpe-management-devices-write`
-            - `cpe-management-devices-hardware-address-read`
+            - `network-access-management:devices:read`
+            - `network-access-management:devices:write`
+            - `network-access-management:devices.hardware-address:read`
       parameters:
         - $ref: "#/components/parameters/rebootId"
       responses:
@@ -1170,13 +1172,13 @@ paths:
         ## With Default Device
         **Required Scopes:**
           - **any of**
-            - `cpe-management-reboot-requests-write`
+            - `network-access-management:reboot-requests:write`
 
         ## Without Default Device
         **Required Scopes:**
-          - `cpe-management-devices-write`
+          - `network-access-management:devices:write`
           - **any of**
-            - `cpe-management-reboot-requests-write`
+            - `network-access-management:reboot-requests:write`
       parameters:
         - $ref: "#/components/parameters/rebootId"
       requestBody:
@@ -1226,13 +1228,13 @@ paths:
         ## With Default Device
         **Required Scopes:**
           - **any of**
-            - `cpe-management-reboot-requests-write`
+            - `network-access-management:reboot-requests:write`
 
         ## Without Default Device
         **Required Scopes:**
-          - `cpe-management-devices-write`
+          - `network-access-management:devices:write`
           - **any of**
-            - `cpe-management-reboot-requests-write`
+            - `network-access-management:reboot-requests:write`
       parameters:
         - $ref: "#/components/parameters/rebootId"
       responses:
@@ -1763,19 +1765,19 @@ components:
                 hardwareAddressType:
                   type: string
                   enum: ["EUI-48"]
-                  example: &device-hardware-address-type "EUI-48"
+                  example: &device.hardware-address-type "EUI-48"
                 value:
                   type: string
                   pattern: "^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$"
-                  example: &device-hardware-address-value "12:34:56:78:9A:BC"
+                  example: &device.hardware-address-value "12:34:56:78:9A:BC"
               required:
                 - hardwareAddressType
                 - value
           discriminator:
             propertyName: hardwareAddressType
-          example: &device-hardware-address
-            hardwareAddressType: *device-hardware-address-type
-            value: *device-hardware-address-value
+          example: &device.hardware-address
+            hardwareAddressType: *device.hardware-address-type
+            value: *device.hardware-address-value
         serviceSite:
           $ref: "#/components/schemas/ServiceSiteId"
         networks:
@@ -1798,7 +1800,7 @@ components:
         id: *device-id
         name: *device-name
         description: *device-description
-        hardwareAddress: *device-hardware-address
+        hardwareAddress: *device.hardware-address
         serviceSite: *service-site-id
         networks: *device-network-intersection-list
         maxAuxiliaryNetworks: *device-max-networks
@@ -1812,7 +1814,7 @@ components:
         - id: *device-id2
           name: &device-name2 "Gateway-2"
           description: &device-description2 "A second Wi-Fi gateway devices"
-          hardwareAddress: &device-hardware-address2
+          hardwareAddress: &device.hardware-address2
             hardwareAddressType: "EUI-48"
             value: "AB:CD:EF:12:34:56"
           serviceSite: *service-site-id2
@@ -2251,7 +2253,7 @@ components:
       summary: Base Service Site
       description: |
         Output with the following scope(s):
-          - `cpe-management-service-sites-read`
+          - `network-access-management:service-sites:read`
       value: &base-service-site
         id: *service-site-id
 
@@ -2259,7 +2261,7 @@ components:
       summary: Service Site with Location
       description: |
         Output with the following scope(s):
-          - `cpe-management-service-sites-location-read`
+          - `network-access-management:service-sites.location:read`
       value: &service-site-with-location
         id: *service-site-id
         name: *service-site-name
@@ -2270,11 +2272,11 @@ components:
       summary: Service Site with Devices
       description: |
         Output with the following scope(s):
-          - `cpe-management-service-sites-read`
+          - `network-access-management:service-sites:read`
           - **any of**
-            - `cpe-management-devices-read`
-            - `cpe-management-devices-write`
-            - `cpe-management-devices-hardware-address-read`
+            - `network-access-management:devices:read`
+            - `network-access-management:devices:write`
+            - `network-access-management:devices.hardware-address:read`
       value: &service-site-with-devices
         id: *service-site-id
         devices: *device-id-list
@@ -2283,18 +2285,18 @@ components:
       summary: Service Site with Location and Devices
       description: |
         Output with the following scope(s):
-          - `cpe-management-service-sites-location-read`
+          - `network-access-management:service-sites.location:read`
           - **any of**
-            - `cpe-management-devices-read`
-            - `cpe-management-devices-write`
-            - `cpe-management-devices-hardware-address-read`
+            - `network-access-management:devices:read`
+            - `network-access-management:devices:write`
+            - `network-access-management:devices.hardware-address:read`
       value: *service-site
 
     BaseServiceSiteList:
       summary: Base Service Site List
       description: |
         Output with the following scope(s):
-          - `cpe-management-service-sites-read`
+          - `network-access-management:service-sites:read`
       value:
         - *base-service-site
         - id: *service-site-id2
@@ -2303,7 +2305,7 @@ components:
       summary: Service Site List with Location
       description: |
         Output with the following scope(s):
-          - `cpe-management-service-sites-location-read`
+          - `network-access-management:service-sites.location:read`
       value:
         - *service-site-with-location
         - id: *service-site-id2
@@ -2315,11 +2317,11 @@ components:
       summary: Service Site List with Devices
       description: |
         Output with the following scope(s):
-          - `cpe-management-service-sites-read`
+          - `network-access-management:service-sites:read`
           - **any of**
-            - `cpe-management-devices-read`
-            - `cpe-management-devices-write`
-            - `cpe-management-devices-hardware-address-read`
+            - `network-access-management:devices:read`
+            - `network-access-management:devices:write`
+            - `network-access-management:devices.hardware-address:read`
       value:
         - *service-site-with-devices
         - id: *service-site-id2
@@ -2329,11 +2331,11 @@ components:
       summary: Service Site List with Location and Devices
       description: |
         Output with the following scope(s):
-          - `cpe-management-service-sites-location-read`
+          - `network-access-management:service-sites.location:read`
           - **any of**
-            - `cpe-management-devices-read`
-            - `cpe-management-devices-write`
-            - `cpe-management-devices-hardware-address-read`
+            - `network-access-management:devices:read`
+            - `network-access-management:devices:write`
+            - `network-access-management:devices.hardware-address:read`
       value: *service-site-list
 
     BaseDevice:
@@ -2341,8 +2343,8 @@ components:
       description: |
         Output with the following scope(s):
           - **any of**
-            - `cpe-management-devices-read`
-            - `cpe-management-devices-write`
+            - `network-access-management:devices:read`
+            - `network-access-management:devices:write`
       value: &base-device
         id: *device-id
         name: *device-name
@@ -2352,23 +2354,23 @@ components:
       summary: Device with Hardware Address
       description: |
         Output with the following scope(s):
-          - `cpe-management-devices-hardware-address-read`
-      value: &device-with-hardware-address
+          - `network-access-management:devices.hardware-address:read`
+      value: &device-with.hardware-address
         id: *device-id
         name: *device-name
         description: *device-description
-        hardwareAddress: *device-hardware-address
+        hardwareAddress: *device.hardware-address
 
     DeviceWithServiceSite:
       summary: Device with Service Site
       description: |
         Output with the following scope(s):
           - **any of**
-            - `cpe-management-devices-read`
-            - `cpe-management-devices-write`
+            - `network-access-management:devices:read`
+            - `network-access-management:devices:write`
           - **any of**
-            - `cpe-management-service-sites-read`
-            - `cpe-management-service-sites-location-read`
+            - `network-access-management:service-sites:read`
+            - `network-access-management:service-sites.location:read`
       value: &device-with-service-site
         id: *device-id
         name: *device-name
@@ -2380,15 +2382,15 @@ components:
       description: |
         Output with the following scope(s):
           - **any of**
-            - `cpe-management-devices-read`
-            - `cpe-management-devices-write`
+            - `network-access-management:devices:read`
+            - `network-access-management:devices:write`
           - **any of**
-            - `cpe-management-isolated-networks-read`
-            - `cpe-management-isolated-networks-write`
-            - `cpe-management-isolated-networks-primary-read`
-            - `cpe-management-isolated-networks-primary-write`
-            - `cpe-management-isolated-networks-auxiliary-read`
-            - `cpe-management-isolated-networks-auxiliary-write`
+            - `network-access-management:isolated-networks:read`
+            - `network-access-management:isolated-networks:write`
+            - `network-access-management:isolated-networks.primary:read`
+            - `network-access-management:isolated-networks.primary:write`
+            - `network-access-management:isolated-networks.auxiliary:read`
+            - `network-access-management:isolated-networks.auxiliary:write`
       value: &device-with-networks
         id: *device-id
         name: *device-name
@@ -2400,34 +2402,34 @@ components:
       summary: Device with Hardware Address and Service Site
       description: |
         Output with the following scope(s):
-          - `cpe-management-devices-hardware-address-read`
+          - `network-access-management:devices.hardware-address:read`
           - **any of**
-            - `cpe-management-service-sites-read`
-            - `cpe-management-service-sites-location-read`
-      value: &device-with-hardware-address-and-service-site
+            - `network-access-management:service-sites:read`
+            - `network-access-management:service-sites.location:read`
+      value: &device-with.hardware-address-and-service-site
         id: *device-id
         name: *device-name
         description: *device-description
-        hardwareAddress: *device-hardware-address
+        hardwareAddress: *device.hardware-address
         serviceSite: *service-site-id
 
     DeviceWithHardwareAddressAndNetworks:
       summary: Device with Hardware Address and Networks
       description: |
         Output with the following scope(s):
-          - `cpe-management-devices-hardware-address-read`
+          - `network-access-management:devices.hardware-address:read`
           - **any of**
-            - `cpe-management-isolated-networks-read`
-            - `cpe-management-isolated-networks-write`
-            - `cpe-management-isolated-networks-primary-read`
-            - `cpe-management-isolated-networks-primary-write`
-            - `cpe-management-isolated-networks-auxiliary-read`
-            - `cpe-management-isolated-networks-auxiliary-write`
-      value: &device-with-hardware-address-and-networks
+            - `network-access-management:isolated-networks:read`
+            - `network-access-management:isolated-networks:write`
+            - `network-access-management:isolated-networks.primary:read`
+            - `network-access-management:isolated-networks.primary:write`
+            - `network-access-management:isolated-networks.auxiliary:read`
+            - `network-access-management:isolated-networks.auxiliary:write`
+      value: &device-with.hardware-address-and-networks
         id: *device-id
         name: *device-name
         description: *device-description
-        hardwareAddress: *device-hardware-address
+        hardwareAddress: *device.hardware-address
         networks: *device-network-intersection-list
         maxAuxiliaryNetworks: *device-max-networks
 
@@ -2436,18 +2438,18 @@ components:
       description: |
         Output with the following scope(s):
           - **any of**
-            - `cpe-management-devices-read`
-            - `cpe-management-devices-write`
+            - `network-access-management:devices:read`
+            - `network-access-management:devices:write`
           - **any of**
-            - `cpe-management-service-sites-read`
-            - `cpe-management-service-sites-location-read`
+            - `network-access-management:service-sites:read`
+            - `network-access-management:service-sites.location:read`
           - **any of**
-            - `cpe-management-isolated-networks-read`
-            - `cpe-management-isolated-networks-write`
-            - `cpe-management-isolated-networks-primary-read`
-            - `cpe-management-isolated-networks-primary-write`
-            - `cpe-management-isolated-networks-auxiliary-read`
-            - `cpe-management-isolated-networks-auxiliary-write`
+            - `network-access-management:isolated-networks:read`
+            - `network-access-management:isolated-networks:write`
+            - `network-access-management:isolated-networks.primary:read`
+            - `network-access-management:isolated-networks.primary:write`
+            - `network-access-management:isolated-networks.auxiliary:read`
+            - `network-access-management:isolated-networks.auxiliary:write`
       value: &device-with-service-site-and-networks
         id: *device-id
         name: *device-name
@@ -2460,17 +2462,17 @@ components:
       summary: Device with Hardware Address, Service Site, and Networks
       description: |
         Output with the following scope(s):
-          - `cpe-management-devices-hardware-address-read`
+          - `network-access-management:devices.hardware-address:read`
           - **any of**
-            - `cpe-management-service-sites-read`
-            - `cpe-management-service-sites-location-read`
+            - `network-access-management:service-sites:read`
+            - `network-access-management:service-sites.location:read`
           - **any of**
-            - `cpe-management-isolated-networks-read`
-            - `cpe-management-isolated-networks-write`
-            - `cpe-management-isolated-networks-primary-read`
-            - `cpe-management-isolated-networks-primary-write`
-            - `cpe-management-isolated-networks-auxiliary-read`
-            - `cpe-management-isolated-networks-auxiliary-write`
+            - `network-access-management:isolated-networks:read`
+            - `network-access-management:isolated-networks:write`
+            - `network-access-management:isolated-networks.primary:read`
+            - `network-access-management:isolated-networks.primary:write`
+            - `network-access-management:isolated-networks.auxiliary:read`
+            - `network-access-management:isolated-networks.auxiliary:write`
       value: *device
 
     BaseDeviceList:
@@ -2478,8 +2480,8 @@ components:
       description: |
         Output with the following scope(s):
           - **any of**
-            - `cpe-management-devices-read`
-            - `cpe-management-devices-write`
+            - `network-access-management:devices:read`
+            - `network-access-management:devices:write`
       value:
         - *base-device
         - id: *device-id2
@@ -2490,24 +2492,24 @@ components:
       summary: Device List with Hardware Address
       description: |
         Output with the following scope(s):
-          - `cpe-management-devices-hardware-address-read`
+          - `network-access-management:devices.hardware-address:read`
       value:
-        - *device-with-hardware-address
+        - *device-with.hardware-address
         - id: *device-id2
           name: *device-name2
           description: *device-description2
-          hardwareAddress: *device-hardware-address2
+          hardwareAddress: *device.hardware-address2
 
     DeviceListWithServiceSite:
       summary: Device List with Service Site
       description: |
         Output with the following scope(s):
           - **any of**
-            - `cpe-management-devices-read`
-            - `cpe-management-devices-write`
+            - `network-access-management:devices:read`
+            - `network-access-management:devices:write`
           - **any of**
-            - `cpe-management-service-sites-read`
-            - `cpe-management-service-sites-location-read`
+            - `network-access-management:service-sites:read`
+            - `network-access-management:service-sites.location:read`
       value:
         - *device-with-service-site
         - id: *device-id2
@@ -2520,15 +2522,15 @@ components:
       description: |
         Output with the following scope(s):
           - **any of**
-            - `cpe-management-devices-read`
-            - `cpe-management-devices-write`
+            - `network-access-management:devices:read`
+            - `network-access-management:devices:write`
           - **any of**
-            - `cpe-management-isolated-networks-read`
-            - `cpe-management-isolated-networks-write`
-            - `cpe-management-isolated-networks-primary-read`
-            - `cpe-management-isolated-networks-primary-write`
-            - `cpe-management-isolated-networks-auxiliary-read`
-            - `cpe-management-isolated-networks-auxiliary-write`
+            - `network-access-management:isolated-networks:read`
+            - `network-access-management:isolated-networks:write`
+            - `network-access-management:isolated-networks.primary:read`
+            - `network-access-management:isolated-networks.primary:write`
+            - `network-access-management:isolated-networks.auxiliary:read`
+            - `network-access-management:isolated-networks.auxiliary:write`
       value:
         - *device-with-networks
         - id: *device-id2
@@ -2541,36 +2543,36 @@ components:
       summary: Device List with Hardware Address and Service Site
       description: |
         Output with the following scope(s):
-          - `cpe-management-devices-hardware-address-read`
+          - `network-access-management:devices.hardware-address:read`
           - **any of**
-            - `cpe-management-service-sites-read`
-            - `cpe-management-service-sites-location-read`
+            - `network-access-management:service-sites:read`
+            - `network-access-management:service-sites.location:read`
       value:
-        - *device-with-hardware-address-and-service-site
+        - *device-with.hardware-address-and-service-site
         - id: *device-id2
           name: *device-name2
           description: *device-description2
-          hardwareAddress: *device-hardware-address2
+          hardwareAddress: *device.hardware-address2
           serviceSite: *service-site-id2
 
     DeviceListWithHardwareAddressAndNetworks:
       summary: Device List with Hardware Address and Networks
       description: |
         Output with the following scope(s):
-          - `cpe-management-devices-hardware-address-read`
+          - `network-access-management:devices.hardware-address:read`
           - **any of**
-            - `cpe-management-isolated-networks-read`
-            - `cpe-management-isolated-networks-write`
-            - `cpe-management-isolated-networks-primary-read`
-            - `cpe-management-isolated-networks-primary-write`
-            - `cpe-management-isolated-networks-auxiliary-read`
-            - `cpe-management-isolated-networks-auxiliary-write`
+            - `network-access-management:isolated-networks:read`
+            - `network-access-management:isolated-networks:write`
+            - `network-access-management:isolated-networks.primary:read`
+            - `network-access-management:isolated-networks.primary:write`
+            - `network-access-management:isolated-networks.auxiliary:read`
+            - `network-access-management:isolated-networks.auxiliary:write`
       value:
-        - *device-with-hardware-address-and-networks
+        - *device-with.hardware-address-and-networks
         - id: *device-id2
           name: *device-name2
           description: *device-description2
-          hardwareAddress: *device-hardware-address2
+          hardwareAddress: *device.hardware-address2
           networks: *device-network-intersection-list
           maxAuxiliaryNetworks: *device-max-networks2
 
@@ -2579,18 +2581,18 @@ components:
       description: |
         Output with the following scope(s):
           - **any of**
-            - `cpe-management-devices-read`
-            - `cpe-management-devices-write`
+            - `network-access-management:devices:read`
+            - `network-access-management:devices:write`
           - **any of**
-            - `cpe-management-service-sites-read`
-            - `cpe-management-service-sites-location-read`
+            - `network-access-management:service-sites:read`
+            - `network-access-management:service-sites.location:read`
           - **any of**
-            - `cpe-management-isolated-networks-read`
-            - `cpe-management-isolated-networks-write`
-            - `cpe-management-isolated-networks-primary-read`
-            - `cpe-management-isolated-networks-primary-write`
-            - `cpe-management-isolated-networks-auxiliary-read`
-            - `cpe-management-isolated-networks-auxiliary-write`
+            - `network-access-management:isolated-networks:read`
+            - `network-access-management:isolated-networks:write`
+            - `network-access-management:isolated-networks.primary:read`
+            - `network-access-management:isolated-networks.primary:write`
+            - `network-access-management:isolated-networks.auxiliary:read`
+            - `network-access-management:isolated-networks.auxiliary:write`
       value:
         - *device-with-service-site-and-networks
         - id: *device-id2
@@ -2604,17 +2606,17 @@ components:
       summary: Device List with Hardware Address, Service Site, and Networks
       description: |
         Output with the following scope(s):
-          - `cpe-management-devices-hardware-address-read`
+          - `network-access-management:devices.hardware-address:read`
           - **any of**
-            - `cpe-management-service-sites-read`
-            - `cpe-management-service-sites-location-read`
+            - `network-access-management:service-sites:read`
+            - `network-access-management:service-sites.location:read`
           - **any of**
-            - `cpe-management-isolated-networks-read`
-            - `cpe-management-isolated-networks-write`
-            - `cpe-management-isolated-networks-primary-read`
-            - `cpe-management-isolated-networks-primary-write`
-            - `cpe-management-isolated-networks-auxiliary-read`
-            - `cpe-management-isolated-networks-auxiliary-write`
+            - `network-access-management:isolated-networks:read`
+            - `network-access-management:isolated-networks:write`
+            - `network-access-management:isolated-networks.primary:read`
+            - `network-access-management:isolated-networks.primary:write`
+            - `network-access-management:isolated-networks.auxiliary:read`
+            - `network-access-management:isolated-networks.auxiliary:write`
       value: *device-list
 
     BaseNetwork:
@@ -2622,12 +2624,12 @@ components:
       description: |
         Output with the following scope(s):
           - **any of**
-            - `cpe-management-isolated-networks-read`
-            - `cpe-management-isolated-networks-write`
-            - `cpe-management-isolated-networks-primary-read`
-            - `cpe-management-isolated-networks-primary-write`
-            - `cpe-management-isolated-networks-auxiliary-read`
-            - `cpe-management-isolated-networks-auxiliary-write`
+            - `network-access-management:isolated-networks:read`
+            - `network-access-management:isolated-networks:write`
+            - `network-access-management:isolated-networks.primary:read`
+            - `network-access-management:isolated-networks.primary:write`
+            - `network-access-management:isolated-networks.auxiliary:read`
+            - `network-access-management:isolated-networks.auxiliary:write`
       value: &base-network
         id: *network-id
         description: *network-description
@@ -2644,16 +2646,16 @@ components:
       description: |
         Output with the following scope(s):
           - **any of**
-            - `cpe-management-isolated-networks-read`
-            - `cpe-management-isolated-networks-write`
-            - `cpe-management-isolated-networks-primary-read`
-            - `cpe-management-isolated-networks-primary-write`
-            - `cpe-management-isolated-networks-auxiliary-read`
-            - `cpe-management-isolated-networks-auxiliary-write`
+            - `network-access-management:isolated-networks:read`
+            - `network-access-management:isolated-networks:write`
+            - `network-access-management:isolated-networks.primary:read`
+            - `network-access-management:isolated-networks.primary:write`
+            - `network-access-management:isolated-networks.auxiliary:read`
+            - `network-access-management:isolated-networks.auxiliary:write`
           - **any of**
-            - `cpe-management-devices-read`
-            - `cpe-management-devices-write`
-            - `cpe-management-devices-hardware-address-read`
+            - `network-access-management:devices:read`
+            - `network-access-management:devices:write`
+            - `network-access-management:devices.hardware-address:read`
       value: *network
 
     NetworkUpdate:
@@ -2661,9 +2663,9 @@ components:
       description: |
         Post with the following scope(s):
           - **any of**
-            - `cpe-management-isolated-networks-write`
-            - `cpe-management-isolated-networks-primary-write`
-            - `cpe-management-isolated-networks-auxiliary-write`
+            - `network-access-management:isolated-networks:write`
+            - `network-access-management:isolated-networks.primary:write`
+            - `network-access-management:isolated-networks.auxiliary:write`
       value: *network-update
 
     BaseNetworkCreate:
@@ -2671,9 +2673,9 @@ components:
       description: |
         Post with the following scope(s):
           - **any of**
-            - `cpe-management-isolated-networks-write`
-            - `cpe-management-isolated-networks-primary-write`
-            - `cpe-management-isolated-networks-auxiliary-write`
+            - `network-access-management:isolated-networks:write`
+            - `network-access-management:isolated-networks.primary:write`
+            - `network-access-management:isolated-networks.auxiliary:write`
       value:
         description: *network-description
         accessDetail: *wifi-access-detail
@@ -2684,10 +2686,10 @@ components:
       description: |
         Post with the following scope(s):
           - **any of**
-            - `cpe-management-isolated-networks-write`
-            - `cpe-management-isolated-networks-primary-write`
-            - `cpe-management-isolated-networks-auxiliary-write`
-          - `cpe-management-devices-write`
+            - `network-access-management:isolated-networks:write`
+            - `network-access-management:isolated-networks.primary:write`
+            - `network-access-management:isolated-networks.auxiliary:write`
+          - `network-access-management:devices:write`
       value: *network-create
 
     BaseNetworkList:
@@ -2695,12 +2697,12 @@ components:
       description: |
         Output with the following scope(s):
           - **any of**
-            - `cpe-management-isolated-networks-read`
-            - `cpe-management-isolated-networks-write`
-            - `cpe-management-isolated-networks-primary-read`
-            - `cpe-management-isolated-networks-primary-write`
-            - `cpe-management-isolated-networks-auxiliary-read`
-            - `cpe-management-isolated-networks-auxiliary-write`
+            - `network-access-management:isolated-networks:read`
+            - `network-access-management:isolated-networks:write`
+            - `network-access-management:isolated-networks.primary:read`
+            - `network-access-management:isolated-networks.primary:write`
+            - `network-access-management:isolated-networks.auxiliary:read`
+            - `network-access-management:isolated-networks.auxiliary:write`
       value:
         - *base-network
         - id: *network-id2
@@ -2718,16 +2720,16 @@ components:
       description: |
         Output with the following scope(s):
           - **any of**
-            - `cpe-management-isolated-networks-read`
-            - `cpe-management-isolated-networks-write`
-            - `cpe-management-isolated-networks-primary-read`
-            - `cpe-management-isolated-networks-primary-write`
-            - `cpe-management-isolated-networks-auxiliary-read`
-            - `cpe-management-isolated-networks-auxiliary-write`
+            - `network-access-management:isolated-networks:read`
+            - `network-access-management:isolated-networks:write`
+            - `network-access-management:isolated-networks.primary:read`
+            - `network-access-management:isolated-networks.primary:write`
+            - `network-access-management:isolated-networks.auxiliary:read`
+            - `network-access-management:isolated-networks.auxiliary:write`
           - **any of**
-            - `cpe-management-devices-read`
-            - `cpe-management-devices-write`
-            - `cpe-management-devices-hardware-address-read`
+            - `network-access-management:devices:read`
+            - `network-access-management:devices:write`
+            - `network-access-management:devices.hardware-address:read`
       value: *network-list
 
     BaseRebootRequest:
@@ -2735,8 +2737,8 @@ components:
       description: |
         Output with the following scope(s):
           - **any of**
-            - `cpe-management-reboot-requests-read`
-            - `cpe-management-reboot-requests-write`
+            - `network-access-management:reboot-requests:read`
+            - `network-access-management:reboot-requests:write`
       value: &base-reboot-request
         id: *reboot-id
         message: *reboot-message
@@ -2751,12 +2753,12 @@ components:
       description: |
         Output with the following scope(s):
           - **any of**
-            - `cpe-management-reboot-requests-read`
-            - `cpe-management-reboot-requests-write`
+            - `network-access-management:reboot-requests:read`
+            - `network-access-management:reboot-requests:write`
           - **any of**
-            - `cpe-management-devices-read`
-            - `cpe-management-devices-write`
-            - `cpe-management-devices-hardware-address-read`
+            - `network-access-management:devices:read`
+            - `network-access-management:devices:write`
+            - `network-access-management:devices.hardware-address:read`
       value: *reboot-request
 
     RebootRequestUpdate:
@@ -2764,7 +2766,7 @@ components:
       description: |
         Post with the following scope(s):
           - **any of**
-            - `cpe-management-reboot-requests-write`
+            - `network-access-management:reboot-requests:write`
       value: *reboot-request-update
 
     BaseRebootRequestCreate:
@@ -2772,7 +2774,7 @@ components:
       description: |
         Post with the following scope(s):
           - **any of**
-            - `cpe-management-reboot-requests-write`
+            - `network-access-management:reboot-requests:write`
       value: &reboot-request-update
         message: *reboot-message
         atTime: *date-time
@@ -2782,8 +2784,8 @@ components:
       description: |
         Post with the following scope(s):
           - **any of**
-            - `cpe-management-reboot-requests-write`
-          - `cpe-management-devices-write`
+            - `network-access-management:reboot-requests:write`
+          - `network-access-management:devices:write`
       value: *reboot-create
 
     BaseRebootRequestList:
@@ -2791,8 +2793,8 @@ components:
       description: |
         Output with the following scope(s):
           - **any of**
-            - `cpe-management-reboot-requests-read`
-            - `cpe-management-reboot-requests-write`
+            - `network-access-management:reboot-requests:read`
+            - `network-access-management:reboot-requests:write`
       value:
         - *base-reboot-request
         - id: *reboot-id2
@@ -2808,12 +2810,12 @@ components:
       description: |
         Output with the following scope(s):
           - **any of**
-            - `cpe-management-reboot-requests-read`
-            - `cpe-management-reboot-requests-write`
+            - `network-access-management:reboot-requests:read`
+            - `network-access-management:reboot-requests:write`
           - **any of**
-            - `cpe-management-devices-read`
-            - `cpe-management-devices-write`
-            - `cpe-management-devices-hardware-address-read`
+            - `network-access-management:devices:read`
+            - `network-access-management:devices:write`
+            - `network-access-management:devices.hardware-address:read`
       value: *reboot-request-list
 
   responses:
