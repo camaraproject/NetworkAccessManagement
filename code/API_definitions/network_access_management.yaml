@@ -2008,22 +2008,24 @@ components:
                   example:
                     - *network-device-intersection-create-list
             createdAt:
-              $ref: "#/components/schemas/DateTime"
-              description: |
-                The creation date and time of the network.  It must follow [RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339#section-5.6)
-                and must have time zone. Recommended format is yyyy-MM-dd'T'HH:mm:ss.SSSZ (i.e. which allows
-                2023-07-03T14:27:08.312+02:00 or 2023-07-03T12:27:08.312Z).
+              allOf:
+                - $ref: "#/components/schemas/DateTime"
+                - description: |
+                    The creation date and time of the network.  It must follow [RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339#section-5.6)
+                    and must have time zone. Recommended format is yyyy-MM-dd'T'HH:mm:ss.SSSZ (i.e. which allows
+                    2023-07-03T14:27:08.312+02:00 or 2023-07-03T12:27:08.312Z).
             createdBy:
               type: string
               maxLength: 100
               description: The user who created the network
               example: &network-created-by "user-1"
             modifiedAt:
-              $ref: "#/components/schemas/DateTime"
-              description: |
-                The last update date and time of the network.  It must follow [RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339#section-5.6)
-                and must have time zone. Recommended format is yyyy-MM-dd'T'HH:mm:ss.SSSZ (i.e. which allows
-                2023-07-03T14:27:08.312+02:00 or 2023-07-03T12:27:08.312Z).
+              allOf:
+                - $ref: "#/components/schemas/DateTime"
+                - description: |
+                    The last update date and time of the network.  It must follow [RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339#section-5.6)
+                    and must have time zone. Recommended format is yyyy-MM-dd'T'HH:mm:ss.SSSZ (i.e. which allows
+                    2023-07-03T14:27:08.312+02:00 or 2023-07-03T12:27:08.312Z).
             modifiedBy:
               type: string
               maxLength: 100
@@ -2180,12 +2182,13 @@ components:
           description: A message related to the reboot request
           example: &reboot-message "reboot to correct performance"
         atTime:
-          $ref: "#/components/schemas/DateTime"
-          description: |
-            The date and time to reboot the device. Do not include 'atTime' to request immediate reboot.  It must
-            follow [RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339#section-5.6) and must have time zone.
-            Recommended format is yyyy-MM-dd'T'HH:mm:ss.SSSZ (i.e. which allows 2023-07-03T14:27:08.312+02:00 or
-            2023-07-03T12:27:08.312Z).
+          allOf:
+            - $ref: "#/components/schemas/DateTime"
+            - description: |
+                The date and time to reboot the device. Do not include 'atTime' to request immediate reboot.  It must
+                follow [RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339#section-5.6) and must have time zone.
+                Recommended format is yyyy-MM-dd'T'HH:mm:ss.SSSZ (i.e. which allows 2023-07-03T14:27:08.312+02:00 or
+                2023-07-03T12:27:08.312Z).
       example: &reboot-request-update
         message: *reboot-message
         atTime: *date-time
@@ -2214,22 +2217,24 @@ components:
             id:
               $ref: "#/components/schemas/RebootId"
             createdAt:
-              $ref: "#/components/schemas/DateTime"
-              description: |
-                The creation date and time of the reboot request.  It must follow [RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339#section-5.6)
-                and must have time zone.  Recommended format is yyyy-MM-dd'T'HH:mm:ss.SSSZ (i.e. which allows
-                2023-07-03T14:27:08.312+02:00 or 2023-07-03T12:27:08.312Z).
+              allOf:
+                - $ref: "#/components/schemas/DateTime"
+                - description: |
+                    The creation date and time of the reboot request.  It must follow [RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339#section-5.6)
+                    and must have time zone.  Recommended format is yyyy-MM-dd'T'HH:mm:ss.SSSZ (i.e. which allows
+                    2023-07-03T14:27:08.312+02:00 or 2023-07-03T12:27:08.312Z).
             createdBy:
               type: string
               maxLength: 100
               description: The user who created the reboot request
               example: &reboot-created-by "user-1"
             modifiedAt:
-              $ref: "#/components/schemas/DateTime"
-              description: |
-                The last update date and time of the reboot request.  It must follow [RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339#section-5.6)
-                and must have time zone.  Recommended format is yyyy-MM-dd'T'HH:mm:ss.SSSZ (i.e. which allows
-                2023-07-03T14:27:08.312+02:00 or 2023-07-03T12:27:08.312Z).
+              allOf:
+                - $ref: "#/components/schemas/DateTime"
+                - description: |
+                    The last update date and time of the reboot request.  It must follow [RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339#section-5.6)
+                    and must have time zone.  Recommended format is yyyy-MM-dd'T'HH:mm:ss.SSSZ (i.e. which allows
+                    2023-07-03T14:27:08.312+02:00 or 2023-07-03T12:27:08.312Z).
             modifiedBy:
               type: string
               maxLength: 100
