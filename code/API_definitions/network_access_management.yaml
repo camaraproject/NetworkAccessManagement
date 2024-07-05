@@ -278,6 +278,7 @@ paths:
       security:
         - openId:
             - network-access-management:service-sites:read
+            - network-access-management:devices:read
       operationId: getDevicesByServiceSite
       description: |
         Returns all devices at a service site that matches the given ID.  Scopes impact the output of this endpoint.
@@ -1765,19 +1766,19 @@ components:
                 hardwareAddressType:
                   type: string
                   enum: ["EUI-48"]
-                  example: &device.hardware-address-type "EUI-48"
+                  example: &device-hardware-address-type "EUI-48"
                 value:
                   type: string
                   pattern: "^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$"
-                  example: &device.hardware-address-value "12:34:56:78:9A:BC"
+                  example: &device-hardware-address-value "12:34:56:78:9A:BC"
               required:
                 - hardwareAddressType
                 - value
           discriminator:
             propertyName: hardwareAddressType
-          example: &device.hardware-address
-            hardwareAddressType: *device.hardware-address-type
-            value: *device.hardware-address-value
+          example: &device-hardware-address
+            hardwareAddressType: *device-hardware-address-type
+            value: *device-hardware-address-value
         serviceSite:
           $ref: "#/components/schemas/ServiceSiteId"
         networks:
@@ -1800,7 +1801,7 @@ components:
         id: *device-id
         name: *device-name
         description: *device-description
-        hardwareAddress: *device.hardware-address
+        hardwareAddress: *device-hardware-address
         serviceSite: *service-site-id
         networks: *device-network-intersection-list
         maxAuxiliaryNetworks: *device-max-networks
@@ -1814,7 +1815,7 @@ components:
         - id: *device-id2
           name: &device-name2 "Gateway-2"
           description: &device-description2 "A second Wi-Fi gateway devices"
-          hardwareAddress: &device.hardware-address2
+          hardwareAddress: &device-hardware-address2
             hardwareAddressType: "EUI-48"
             value: "AB:CD:EF:12:34:56"
           serviceSite: *service-site-id2
@@ -2359,7 +2360,7 @@ components:
         id: *device-id
         name: *device-name
         description: *device-description
-        hardwareAddress: *device.hardware-address
+        hardwareAddress: *device-hardware-address
 
     DeviceWithServiceSite:
       summary: Device with Service Site
@@ -2410,7 +2411,7 @@ components:
         id: *device-id
         name: *device-name
         description: *device-description
-        hardwareAddress: *device.hardware-address
+        hardwareAddress: *device-hardware-address
         serviceSite: *service-site-id
 
     DeviceWithHardwareAddressAndNetworks:
@@ -2429,7 +2430,7 @@ components:
         id: *device-id
         name: *device-name
         description: *device-description
-        hardwareAddress: *device.hardware-address
+        hardwareAddress: *device-hardware-address
         networks: *device-network-intersection-list
         maxAuxiliaryNetworks: *device-max-networks
 
@@ -2498,7 +2499,7 @@ components:
         - id: *device-id2
           name: *device-name2
           description: *device-description2
-          hardwareAddress: *device.hardware-address2
+          hardwareAddress: *device-hardware-address2
 
     DeviceListWithServiceSite:
       summary: Device List with Service Site
@@ -2552,7 +2553,7 @@ components:
         - id: *device-id2
           name: *device-name2
           description: *device-description2
-          hardwareAddress: *device.hardware-address2
+          hardwareAddress: *device-hardware-address2
           serviceSite: *service-site-id2
 
     DeviceListWithHardwareAddressAndNetworks:
@@ -2572,7 +2573,7 @@ components:
         - id: *device-id2
           name: *device-name2
           description: *device-description2
-          hardwareAddress: *device.hardware-address2
+          hardwareAddress: *device-hardware-address2
           networks: *device-network-intersection-list
           maxAuxiliaryNetworks: *device-max-networks2
 
