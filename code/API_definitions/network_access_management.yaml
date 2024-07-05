@@ -1710,7 +1710,7 @@ components:
       example: &network-device-intersection-create-list
         - *network-device-intersection-create
         - &network-device-intersection-create-2
-          intersectionType: *network-device-intersection-type
+          intersectionType: &network-device-intersection-type-2 "NetworkDeviceReplacement"
           device: *device-id2
           replace: *network-id2
 
@@ -1729,6 +1729,7 @@ components:
           required:
             - device
           example: &network-device-intersection
+            intersectionType: *network-device-intersection-type
             device: *device-id
             role: *network-role
             removable: *network-removable
@@ -2159,7 +2160,7 @@ components:
           allOf:
             - $ref: "#/components/schemas/NetworkIdList"
             - example: &bulk-network-update-delete
-              - "wifi-3"
+                - "wifi-3"
         replace:
           description: List of network replacements.
           allOf:
