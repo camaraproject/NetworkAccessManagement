@@ -171,7 +171,7 @@ paths:
       summary: Get all service sites
       security:
         - openId:
-          - network-access-management:service-sites:read
+            - network-access-management:service-sites:read
       operationId: getServiceSites
       description: |
         Returns all service sites.  Scopes impact the output of this endpoint.  See the examples for various
@@ -220,7 +220,7 @@ paths:
       summary: Get a service site by ID
       security:
         - openId:
-          - network-access-management:service-sites:read
+            - network-access-management:service-sites:read
       operationId: getServiceSite
       description: |
         Returns a service site that matches the given ID.  Scopes impact the output of this endpoint.  See the examples
@@ -275,8 +275,8 @@ paths:
       summary: Get all devices at a service site
       security:
         - openId:
-          - network-access-management:service-sites:read
-          - network-access-management:devices:read
+            - network-access-management:service-sites:read
+            - network-access-management:devices:read
       operationId: getDevicesByServiceSite
       description: |
         Returns all devices at a service site that matches the given ID.  Scopes impact the output of this endpoint.
@@ -340,9 +340,9 @@ paths:
       summary: Get all networks at a service site
       security:
         - openId:
-          - network-access-management:service-sites:read
-          - network-access-management:devices:read
-          - network-access-management:isolated-networks:read
+            - network-access-management:service-sites:read
+            - network-access-management:devices:read
+            - network-access-management:isolated-networks:read
       operationId: getNetworksByServiceSite
       description: |
         Returns all networks at a service site that matches the given ID.
@@ -397,7 +397,7 @@ paths:
       summary: Get all devices
       security:
         - openId:
-          - network-access-management:devices:read
+            - network-access-management:devices:read
       operationId: getDevices
       description: |
         Returns all devices.  Scopes impact the output of this endpoint.  See the examples for various permutations.
@@ -460,7 +460,7 @@ paths:
       summary: Get a device by ID
       security:
         - openId:
-          - network-access-management:devices:read
+            - network-access-management:devices:read
       operationId: getDevice
       description: |
         Returns a device that matches the given ID.  Scopes impact the output of this endpoint.  See the examples for
@@ -530,8 +530,8 @@ paths:
       summary: Get all networks configured on a device
       security:
         - openId:
-          - network-access-management:devices:read
-          - network-access-management:isolated-networks:read
+            - network-access-management:devices:read
+            - network-access-management:isolated-networks:read
       operationId: getNetworksByDevice
       description: |
         Returns all networks configured on a device that matches the given ID.  Scopes impact the output of this
@@ -583,8 +583,8 @@ paths:
       summary: Bulk insert, remove or replace many networks from the configuration of a device
       security:
         - openId:
-          - network-access-management:devices:write
-          - network-access-management:isolated-networks:read
+            - network-access-management:devices:write
+            - network-access-management:isolated-networks:read
       operationId: patchDeviceWithNetworks
       description: |
         Bulk inserts, removes, or replaces many networks from the configuration of the device by the given IDs.
@@ -635,7 +635,7 @@ paths:
       summary: Get all Networks
       security:
         - openId:
-          - network-access-management:isolated-networks:read
+            - network-access-management:isolated-networks:read
       operationId: getNetworks
       description: |
         Returns all networks.  Scopes impact the output of this endpoint.  See the examples for various permutations.
@@ -695,7 +695,7 @@ paths:
       operationId: createNetwork
       security:
         - openId:
-          - network-access-management:isolated-networks:write
+            - network-access-management:isolated-networks:write
       description: |
         Creates and returns the new network.  Scopes impact the function and output of this endpoint. See the examples
         for various permutations.
@@ -764,7 +764,7 @@ paths:
       summary: Get a Network by ID
       security:
         - openId:
-          - network-access-management:isolated-networks:read
+            - network-access-management:isolated-networks:read
       operationId: getNetwork
       description: |
         Returns the network that matches the given ID.  Scopes impact the output of this endpoint.  See the examples for
