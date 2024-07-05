@@ -85,21 +85,18 @@ info:
   contact:
     email: sp-nam@lists.camaraproject.org
 
+servers:
+  - url: "{apiRoot}/network-access-management/v0"
+    variables:
+      apiRoot:
+        default: http://localhost:9091
+        description: API root, defined by the service provider, e.g. `api.example.com` or `api.example.com/somepath`
+
 tags:
   - name: Service Sites
   - name: Devices
   - name: Isolated Networks
   - name: Reboot Requests
-
-servers:
-  - url: "{apiRoot}/{basePath}"
-    variables:
-      apiRoot:
-        default: http://localhost:5000
-        description: API root
-      basePath:
-        default: cpe-management/v0
-        description: Base path for the CPE Management API
 
 security:
   - oauth2: []
