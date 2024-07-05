@@ -161,9 +161,6 @@ tags:
   - name: Configure Reboot Requests
     description: Operations to modify reboot requests
 
-security:
-  - oauth2: []
-
 paths:
   /service-sites:
     get:
@@ -171,7 +168,7 @@ paths:
         - Retrieve Service Site
       summary: Get all service sites
       security:
-        - oauth2:
+        - openId:
             - cpe-management-service-sites-read
             - cpe-management-service-sites-location-read
             - cpe-management-devices-read
@@ -222,7 +219,7 @@ paths:
         - Retrieve Service Site
       summary: Get a service site by ID
       security:
-        - oauth2:
+        - openId:
             - cpe-management-service-sites-read
       operationId: getServiceSite
       description: |
@@ -277,7 +274,7 @@ paths:
         - Retrieve Device
       summary: Get all devices at a service site
       security:
-        - oauth2:
+        - openId:
             - cpe-management-service-sites-read
       operationId: getDevicesByServiceSite
       description: |
@@ -2031,7 +2028,7 @@ components:
               role: &network-role2 "auxiliary"
           createdAt: *date-time
           createdBy: &network-created-by2 "user-3"
-          modifiedAt: date-time
+          modifiedAt: *date-time
           modifiedBy: &network-modified-by2 "user-4"
           version: &network-version2 "0000FFFF"
 
