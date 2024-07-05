@@ -583,8 +583,8 @@ paths:
       summary: Bulk insert, remove or replace many networks from the configuration of a device
       security:
         - openId:
-           - network-access-management:devices:write
-            - network-access-management:isolated-networks:read
+          - network-access-management:devices:write
+          - network-access-management:isolated-networks:read
       operationId: patchDeviceWithNetworks
       description: |
         Bulk inserts, removes, or replaces many networks from the configuration of the device by the given IDs.
