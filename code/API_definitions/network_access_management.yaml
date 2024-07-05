@@ -55,28 +55,28 @@ info:
     Authorization of API clients SHOULD be performed with OAuth 2.0 using the authorization code grant type such that
     service owners delegate access to their resources exposed by this API to the API client.  PKCE MUST be used when the
     API client secret cannot be secured (e.g., mobile application or single page application without a secure back-end).
-    This API MAY also be used with the client credentials grant type, though such a use case only makes sense for 
-    first-party network operator API clients or when the service owner operates their own API client (client ID is bound 
+    This API MAY also be used with the client credentials grant type, though such a use case only makes sense for
+    first-party network operator API clients or when the service owner operates their own API client (client ID is bound
     to the service owner's identity).
 
     ### Scopes
-    OAuth 2.0 scopes are used to protect the service owner's information and privacy.  The general format is 
-    `<API_name>-<Resource>-<Permission>`.  A resource may be further broken down into `<Resource_name>-<Field>` or 
-    `<Resource_name>-<Role>` for granular permissions. Scopes also control output information as opposed to just 
-    authorizing endpoints. Each endpoint definition will clearly state what scopes are needed for access and which are 
+    OAuth 2.0 scopes are used to protect the service owner's information and privacy.  The general format is
+    `<API_name>-<Resource>-<Permission>`.  A resource may be further broken down into `<Resource_name>-<Field>` or
+    `<Resource_name>-<Role>` for granular permissions. Scopes also control output information as opposed to just
+    authorizing endpoints. Each endpoint definition will clearly state what scopes are needed for access and which are
     needed to access additional information. Below are some general rules for scopes in this API.
 
-    - Regulated information, such as physical locations or hardware addresses of network devices, have special scopes.  
+    - Regulated information, such as physical locations or hardware addresses of network devices, have special scopes.
     Network operators are expected to follow any local regulations when sharing this information with an API client.
     - Scopes have inheritance when one scope would otherwise require the inherited scope.
-    - Read scopes for one resource impacts the output of another resource when the requested resource has a relationship 
+    - Read scopes for one resource impacts the output of another resource when the requested resource has a relationship
     with the first (e.g., listing networks on a device requires both device and network read scopes).
-    - Isolated networks are broken down into 3 roles allowing service owners to grant granular permissions to API 
-    clients: only-own, primary, and auxiliary. The primary role allows API clients to manage the main network access 
-    configuration. The auxiliary role allows API clients to manage all auxiliary (i.e., secondary) networks. The 
-    only-own role allows API clients to manage networks it has created. Only-own networks SHOULD be an auxiliary, or 
-    secondary, network. Note that there is an edge case when a service owner revokes the primary role authorization. An 
-    API client SHOULD be able to continue managing primary isolated networks created by the client. Complete 
+    - Isolated networks are broken down into 3 roles allowing service owners to grant granular permissions to API
+    clients: only-own, primary, and auxiliary. The primary role allows API clients to manage the main network access
+    configuration. The auxiliary role allows API clients to manage all auxiliary (i.e., secondary) networks. The
+    only-own role allows API clients to manage networks it has created. Only-own networks SHOULD be an auxiliary, or
+    secondary, network. Note that there is an edge case when a service owner revokes the primary role authorization. An
+    API client SHOULD be able to continue managing primary isolated networks created by the client. Complete
     administrative control requires both the primary and auxiliary roles.
 
     | Scope | Description | Inherits
@@ -99,21 +99,21 @@ info:
     OAuth 2.0 claims are not used by this API to allow for the use of JSON Web Encryption (JWE) access tokens.
 
     ## General Usage
-    This API is intended for creating, modifying, or deleting isolated networks using the `/isolated-networks` endpoints 
-    to build access detail configurations. The `/service-sites` endpoints are used for iterating over a service owner's 
+    This API is intended for creating, modifying, or deleting isolated networks using the `/isolated-networks` endpoints
+    to build access detail configurations. The `/service-sites` endpoints are used for iterating over a service owner's
     locations. The exact location may be requested with an additional scope to assist with reconciling information about
-    service sites when the API client operator has an existing relationship with the service owner. Similarly, the 
-    `/devices` endpoints are used for iterating over and configuring a service owner's devices.  The hardware address 
-    may be requested for the same purpose of reconciling information from another source (e.g., database, persons with 
+    service sites when the API client operator has an existing relationship with the service owner. Similarly, the
+    `/devices` endpoints are used for iterating over and configuring a service owner's devices.  The hardware address
+    may be requested for the same purpose of reconciling information from another source (e.g., database, persons with
     physical device access, etc.).
 
     ## Optional Modes
 
     ### Default Device
-    When an identity for OAuth 2.0 access token has a "default device", such as a typical residential customer with one 
-    service site and one network access device, service site and device scopes MAY be omitted.  Any fields referencing a 
-    network access device using the `/isolated-networks` or `/isolated-networks/*` APIs MUST be left blank by API 
-    clients.  Network operators SHOULD substitute the missing field with the default device.  API definitions include 
+    When an identity for OAuth 2.0 access token has a "default device", such as a typical residential customer with one
+    service site and one network access device, service site and device scopes MAY be omitted.  Any fields referencing a
+    network access device using the `/isolated-networks` or `/isolated-networks/*` APIs MUST be left blank by API
+    clients.  Network operators SHOULD substitute the missing field with the default device.  API definitions include
     additional details for error responses so API clients can detect if this mode is available.
 
     ## Comments for Network Operators
@@ -125,10 +125,10 @@ info:
 
     ### Mesh Systems
     Mesh systems SHOULD be represented as a single device when implementing this API due to the undefined behavior of
-    LAN connectivity across multiple devices with the same isolated network.  The recommendation is to use the gateway 
-    hardware address of the mesh system when exposing that field, though the hardware address of any node in the mesh 
-    may be used.  If an end-user replaces the equipment, all existing isolated networks SHOULD be synced to the new 
-    device representing this mesh.  Alternatively, a synthetic hardware address may also be used if the specification 
+    LAN connectivity across multiple devices with the same isolated network.  The recommendation is to use the gateway
+    hardware address of the mesh system when exposing that field, though the hardware address of any node in the mesh
+    may be used.  If an end-user replaces the equipment, all existing isolated networks SHOULD be synced to the new
+    device representing this mesh.  Alternatively, a synthetic hardware address may also be used if the specification
     for the address type allows.
   version: wip
   license:
@@ -177,7 +177,7 @@ paths:
             - cpe-management-devices-read
       operationId: getServiceSites
       description: |
-        Returns all service sites.  Scopes impact the output of this endpoint.  See the examples for various 
+        Returns all service sites.  Scopes impact the output of this endpoint.  See the examples for various
         permutations.
 
         **Required Scopes:**
@@ -281,7 +281,7 @@ paths:
             - cpe-management-service-sites-read
       operationId: getDevicesByServiceSite
       description: |
-        Returns all devices at a service site that matches the given ID.  Scopes impact the output of this endpoint. 
+        Returns all devices at a service site that matches the given ID.  Scopes impact the output of this endpoint.
         See the examples for various permutations.
 
         **Required Scopes:**
@@ -452,7 +452,7 @@ paths:
       summary: Get a device by ID
       operationId: getDevice
       description: |
-        Returns a device that matches the given ID.  Scopes impact the output of this endpoint.  See the examples for 
+        Returns a device that matches the given ID.  Scopes impact the output of this endpoint.  See the examples for
         various permutations.
 
         **Required Scopes:**
@@ -519,7 +519,7 @@ paths:
       summary: Get all networks configured on a device
       operationId: getNetworksByDevice
       description: |
-        Returns all networks configured on a device that matches the given ID.  Scopes impact the output of this 
+        Returns all networks configured on a device that matches the given ID.  Scopes impact the output of this
         endpoint.  See the examples for various permutations.
 
         **Required Scopes:**
@@ -673,8 +673,8 @@ paths:
         for various permutations.
 
         ## With Default Device
-        For eligible service owner's with a default device, create the network and configure it to the service owner's 
-        one and only one device at their one and only one service location.  The `devices` field MUST NOT be set or it 
+        For eligible service owner's with a default device, create the network and configure it to the service owner's
+        one and only one device at their one and only one service location.  The `devices` field MUST NOT be set or it
         MUST be set to `undefined`.
 
         **Required Scopes:**
@@ -735,7 +735,7 @@ paths:
       summary: Get a Network by ID
       operationId: getNetwork
       description: |
-        Returns the network that matches the given ID.  Scopes impact the output of this endpoint.  See the examples for 
+        Returns the network that matches the given ID.  Scopes impact the output of this endpoint.  See the examples for
         various permutations.
 
         ## With Default Device
@@ -901,7 +901,7 @@ paths:
       summary: Get all devices configured with a network
       operationId: getDevicesByNetwork
       description: |
-        Returns all devices configured with a network that matches the given ID.  Scopes impact the output of this 
+        Returns all devices configured with a network that matches the given ID.  Scopes impact the output of this
         endpoint.  See the examples for various permutations.
 
         **Required Scopes:**
@@ -1004,7 +1004,7 @@ paths:
       summary: Get all Reboot Requests
       operationId: getRebootRequests
       description: |
-        Returns all reboot requests.  Scopes impact the output of this endpoint.  See the examples for various 
+        Returns all reboot requests.  Scopes impact the output of this endpoint.  See the examples for various
         permutations.
 
         ## With Default Device
@@ -1051,11 +1051,11 @@ paths:
       summary: Create a new reboot request
       operationId: createRebootRequest
       description: |
-        Creates and returns the new reboot request.  Scopes impact the function and output of this endpoint. See the 
+        Creates and returns the new reboot request.  Scopes impact the function and output of this endpoint. See the
         examples for various permutations.
 
         ## With Default Device
-        Creates the reboot request and issues it to the service owner's one and only one device at their one and only 
+        Creates the reboot request and issues it to the service owner's one and only one device at their one and only
         one service location.  The `devices` field MUST NOT be set or it MUST be set to `undefined`.
 
         **Required Scopes:**
@@ -1063,7 +1063,7 @@ paths:
             - `cpe-management-reboot-requests-write`
 
         ## Without Default Device
-        Creates the reboot request and issues it to one or more devices.  The `devices` field MUST be set to a non-empty 
+        Creates the reboot request and issues it to one or more devices.  The `devices` field MUST be set to a non-empty
         `list of device IDs`.
 
         **Required Scopes:**
@@ -1113,7 +1113,7 @@ paths:
       summary: Get a Reboot Request by ID
       operationId: getRebootRequest
       description: |
-        Returns the reboot request that matches the given ID.  Scopes impact the output of this endpoint.  See the 
+        Returns the reboot request that matches the given ID.  Scopes impact the output of this endpoint.  See the
         examples for various permutations.
 
         ## With Default Device
@@ -1166,8 +1166,8 @@ paths:
       summary: Update an existing reboot request
       operationId: updateRebootRequest
       description: |
-        Updates the reboot request, reboot for any devices targeted with the reboot request, and returns the reboot 
-        request that matches the given ID.  Scopes impact the output of this endpoint.  See the examples for various 
+        Updates the reboot request, reboot for any devices targeted with the reboot request, and returns the reboot
+        request that matches the given ID.  Scopes impact the output of this endpoint.  See the examples for various
         permutations.
 
         ## With Default Device
@@ -1332,6 +1332,15 @@ components:
       description: ID of the reboot request to find
 
   schemas:
+    DateTime:
+      type: string
+      format: date-time
+      description: |
+        It must follow [RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339#section-5.6) and must have time zone.
+        Recommended format is yyyy-MM-dd'T'HH:mm:ss.SSSZ (i.e. which allows 2023-07-03T14:27:08.312+02:00 or
+        2023-07-03T12:27:08.312Z)
+      example: &date-time "2023-07-03T14:27:08.312+02:00"
+
     ServiceSiteId:
       type: string
       minLength: 1
@@ -1923,14 +1932,15 @@ components:
             - $ref: "#/components/schemas/AccessDetail"
           example: *wifi-access-detail
         expiration:
-          type: string
-          format: date-time
-          description: The expiration date and time of the network
-          example: &network-expiration "1970-01-03T00:00:00.000Z"
+          $ref: "#/components/schemas/DateTime"
+          description: |
+            The expiration date and time of the network.  It must follow [RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339#section-5.6)
+            and must have time zone. Recommended format is yyyy-MM-dd'T'HH:mm:ss.SSSZ (i.e. which allows
+            2023-07-03T14:27:08.312+02:00 or 2023-07-03T12:27:08.312Z).
       example: &network-update
         description: *network-description
         accessDetail: *wifi-access-detail
-        expiration: *network-expiration
+        expiration: *date-time
 
     NetworkCreate:
       allOf:
@@ -1949,7 +1959,7 @@ components:
       example: &network-create
         description: *network-description
         accessDetail: *wifi-access-detail
-        expiration: *network-expiration
+        expiration: *date-time
         devices: *network-device-intersection-create-list
 
     Network:
@@ -1967,20 +1977,22 @@ components:
           example:
             - *network-device-intersection-create-list
         createdAt:
-          type: string
-          format: date-time
-          description: The creation date and time of the network
-          example: &network-created "1970-01-01T00:00:00.000Z"
+          $ref: "#/components/schemas/DateTime"
+          description: |
+            The creation date and time of the network.  It must follow [RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339#section-5.6)
+            and must have time zone. Recommended format is yyyy-MM-dd'T'HH:mm:ss.SSSZ (i.e. which allows
+            2023-07-03T14:27:08.312+02:00 or 2023-07-03T12:27:08.312Z).
         createdBy:
           type: string
           maxLength: 100
           description: The user who created the network
           example: &network-created-by "user-1"
         modifiedAt:
-          type: string
-          format: date-time
-          description: The last update date and time of the network
-          example: &network-modified "1970-01-02T00:00:00.000Z"
+          $ref: "#/components/schemas/DateTime"
+          description: |
+            The last update date and time of the network.  It must follow [RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339#section-5.6)
+            and must have time zone. Recommended format is yyyy-MM-dd'T'HH:mm:ss.SSSZ (i.e. which allows
+            2023-07-03T14:27:08.312+02:00 or 2023-07-03T12:27:08.312Z).
         modifiedBy:
           type: string
           maxLength: 100
@@ -1995,11 +2007,11 @@ components:
         id: *network-id
         description: *network-description
         accessDetail: *wifi-access-detail
-        expiration: *network-expiration
+        expiration: *date-time
         devices: *network-device-intersection-list
-        createdAt: *network-created
+        createdAt: *date-time
         createdBy: *network-created-by
-        modifiedAt: *network-modified
+        modifiedAt: *date-time
         modifiedBy: *network-modified-by
         version: *network-version
 
@@ -2017,13 +2029,13 @@ components:
             securityMode:
               password: "my-other-password"
               securityModeType: "WPA2-Personal"
-          expiration: &network-expiration2 "2023-08-25T00:42:17.272Z"
+          expiration: *date-time
           devices: &network-device-intersection-list2
             - device: *device-id2
               role: &network-role2 "auxiliary"
-          createdAt: &network-created-at2 "2023-08-25T00:42:17.272Z"
+          createdAt: *date-time
           createdBy: &network-created-by2 "user-3"
-          modifiedAt: &network-modified-at2 "2023-08-25T00:42:17.272Z"
+          modifiedAt: date-time
           modifiedBy: &network-modified-by2 "user-4"
           version: &network-version2 "0000FFFF"
 
@@ -2137,13 +2149,15 @@ components:
           description: A message related to the reboot request
           example: &reboot-message "reboot to correct performance"
         atTime:
-          type: string
-          format: date-time
-          description: The date and time to reboot the device. Do not include 'atTime' to request immediate reboot.
-          example: &reboot-at-time "1970-01-03T00:00:00.000Z"
+          $ref: "#/components/schemas/DateTime"
+          description: |
+            The date and time to reboot the device. Do not include 'atTime' to request immediate reboot.  It must
+            follow [RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339#section-5.6) and must have time zone.
+            Recommended format is yyyy-MM-dd'T'HH:mm:ss.SSSZ (i.e. which allows 2023-07-03T14:27:08.312+02:00 or
+            2023-07-03T12:27:08.312Z).
       example: &reboot-request-update
         message: *reboot-message
-        atTime: *reboot-at-time
+        atTime: *date-time
 
     RebootRequestCreate:
       allOf:
@@ -2154,12 +2168,12 @@ components:
           items:
             $ref: "#/components/schemas/DeviceId"
           description: >-
-            List of devices to reboot. When undefined, the reboot targets the 'default' device (simple use case that 
+            List of devices to reboot. When undefined, the reboot targets the 'default' device (simple use case that
             wouldn't use locations or devices). Throws an error when creating if there is no 'default' device.
           example: *device-id-list
       example: &reboot-create
         message: *reboot-message
-        atTime: *reboot-at-time
+        atTime: *date-time
         devices: *device-id-list
 
     RebootRequest:
@@ -2169,20 +2183,22 @@ components:
         id:
           $ref: "#/components/schemas/RebootId"
         createdAt:
-          type: string
-          format: date-time
-          description: The creation date and time of the reboot request
-          example: &reboot-created "1970-01-01T00:00:00.000Z"
+          $ref: "#/components/schemas/DateTime"
+          description: |
+            The creation date and time of the reboot request.  It must follow [RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339#section-5.6)
+            and must have time zone.  Recommended format is yyyy-MM-dd'T'HH:mm:ss.SSSZ (i.e. which allows
+            2023-07-03T14:27:08.312+02:00 or 2023-07-03T12:27:08.312Z).
         createdBy:
           type: string
           maxLength: 100
           description: The user who created the reboot request
           example: &reboot-created-by "user-1"
         modifiedAt:
-          type: string
-          format: date-time
-          description: The last update date and time of the reboot request
-          example: &reboot-modified "1970-01-02T00:00:00.000Z"
+          $ref: "#/components/schemas/DateTime"
+          description: |
+            The last update date and time of the reboot request.  It must follow [RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339#section-5.6)
+            and must have time zone.  Recommended format is yyyy-MM-dd'T'HH:mm:ss.SSSZ (i.e. which allows
+            2023-07-03T14:27:08.312+02:00 or 2023-07-03T12:27:08.312Z).
         modifiedBy:
           type: string
           maxLength: 100
@@ -2193,11 +2209,11 @@ components:
       example: &reboot-request
         id: *reboot-id
         message: *reboot-message
-        atTime: *reboot-at-time
+        atTime: *date-time
         devices: *device-id-list
-        createdAt: *reboot-created
+        createdAt: *date-time
         createdBy: *reboot-created-by
-        modifiedAt: *reboot-modified
+        modifiedAt: *date-time
         modifiedBy: *reboot-modified-by
 
     RebootRequestList:
@@ -2208,13 +2224,13 @@ components:
         - *reboot-request
         - id: &reboot-id2 "reboot-2"
           message: &reboot-message2 "my second reboot request"
-          atTime: &reboot-at-time2 "2023-08-25T00:42:17.272Z"
+          atTime: *date-time
           devices: &reboot-devices2
             - "device-3"
             - "device-4"
-          createdAt: &reboot-created-at2 "2023-08-25T00:42:17.272Z"
+          createdAt: *date-time
           createdBy: &reboot-created-by2 "user-3"
-          modifiedAt: &reboot-modified-at2 "2023-08-25T00:42:17.272Z"
+          modifiedAt: *date-time
           modifiedBy: &reboot-modified-by2 "user-4"
 
     ErrorInfo:
@@ -2620,10 +2636,10 @@ components:
         id: *network-id
         description: *network-description
         accessDetail: *wifi-access-detail
-        expiration: *network-expiration
-        createdAt: *network-created
+        expiration: *date-time
+        createdAt: *date-time
         createdBy: *network-created-by
-        modifiedAt: *network-modified
+        modifiedAt: *date-time
         modifiedBy: *network-modified-by
         version: *network-version
 
@@ -2665,7 +2681,7 @@ components:
       value:
         description: *network-description
         accessDetail: *wifi-access-detail
-        expiration: *network-expiration
+        expiration: *date-time
 
     NetworkCreateWithDevices:
       summary: Create Network on Devices
@@ -2694,10 +2710,10 @@ components:
         - id: *network-id2
           description: *network-description2
           accessDetail: *network-access-detail2
-          expiration: *network-expiration2
-          createdAt: *network-created-at2
-          createdBy: *network-created-by2
-          modifiedAt: *network-modified-at2
+          expiration: *date-time
+          createdAt: *date-time
+          createdBy: *date-time
+          modifiedAt: *date-time
           modifiedBy: *network-modified-by2
           version: *network-version2
 
@@ -2728,10 +2744,10 @@ components:
       value: &base-reboot-request
         id: *reboot-id
         message: *reboot-message
-        atTime: *reboot-at-time
-        createdAt: *reboot-created
+        atTime: *date-time
+        createdAt: *date-time
         createdBy: *reboot-created-by
-        modifiedAt: *reboot-modified
+        modifiedAt: *date-time
         modifiedBy: *reboot-modified-by
 
     RebootRequestWithDevices:
@@ -2763,7 +2779,7 @@ components:
             - `cpe-management-reboot-requests-write`
       value: &reboot-request-update
         message: *reboot-message
-        atTime: *reboot-at-time
+        atTime: *date-time
 
     RebootRequestCreateWithDevices:
       summary: Create Reboot Request for Devices
@@ -2785,10 +2801,10 @@ components:
         - *base-reboot-request
         - id: *reboot-id2
           message: *reboot-message2
-          atTime: *reboot-at-time2
-          createdAt: *reboot-created-at2
+          atTime: *date-time
+          createdAt: *date-time
           createdBy: *reboot-created-by2
-          modifiedAt: *reboot-modified-at2
+          modifiedAt: *date-time
           modifiedBy: *reboot-modified-by2
 
     RebootRequestListWithDevices:
