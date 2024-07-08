@@ -178,14 +178,14 @@ paths:
         permutations.
 
         **Required Scopes:**
-          - **one of**
-            - `network-access-management:service-sites:read`
-            - `network-access-management:service-sites.location:read`
+        - **one of**
+          - `network-access-management:service-sites:read`
+          - `network-access-management:service-sites.location:read`
 
         **Optional Scopes:**
-          - `network-access-management:devices:read`
-          - `network-access-management:devices:write`
-          - `network-access-management:devices.hardware-address:read`
+        - `network-access-management:devices:read`
+        - `network-access-management:devices:write`
+        - `network-access-management:devices.hardware-address:read`
       responses:
         "200":
           description: Contains information about all service sites
@@ -227,14 +227,14 @@ paths:
         for various permutations.
 
         **Required Scopes:**
-          - **one of**
-            - `network-access-management:service-sites:read`
-            - `network-access-management:service-sites.location:read`
+        - **one of**
+          - `network-access-management:service-sites:read`
+          - `network-access-management:service-sites.location:read`
 
         **Optional Scopes:**
-          - `network-access-management:devices:read`
-          - `network-access-management:devices:write`
-          - `network-access-management:devices.hardware-address:read`
+        - `network-access-management:devices:read`
+        - `network-access-management:devices:write`
+        - `network-access-management:devices.hardware-address:read`
       parameters:
         - $ref: "#/components/parameters/siteId"
       responses:
@@ -283,23 +283,22 @@ paths:
         See the examples for various permutations.
 
         **Required Scopes:**
-          - **all of**
-            - **one of**
-              - `network-access-management:service-sites:read`
-              - `network-access-management:service-sites.location:read`
-            - **one of**
-              - `network-access-management:devices:read`
-              - `network-access-management:devices:write`
-              - `network-access-management:devices.hardware-address:read`
+        - **all of**
+          - **one of**
+            - `network-access-management:service-sites:read`
+            - `network-access-management:service-sites.location:read`
+          - **one of**
+            - `network-access-management:devices:read`
+            - `network-access-management:devices:write`
+            - `network-access-management:devices.hardware-address:read`
 
         **Optional Scopes:**
-          - `network-access-management:isolated-networks:read`
-          - `network-access-management:isolated-networks:write`
-          - `network-access-management:isolated-networks.primary:read`
-          - `network-access-management:isolated-networks.primary:write`
-          - `network-access-management:isolated-networks.auxiliary:read`
-          - `network-access-management:isolated-networks.auxiliary:write`
-
+        - `network-access-management:isolated-networks:read`
+        - `network-access-management:isolated-networks:write`
+        - `network-access-management:isolated-networks.primary:read`
+        - `network-access-management:isolated-networks.primary:write`
+        - `network-access-management:isolated-networks.auxiliary:read`
+        - `network-access-management:isolated-networks.auxiliary:write`
       parameters:
         - $ref: "#/components/parameters/siteId"
       responses:
@@ -348,21 +347,21 @@ paths:
         Returns all networks at a service site that matches the given ID.
 
         **Required Scopes:**
-          - **all of**
-            - **one of**
-              - `network-access-management:service-sites:read`
-              - `network-access-management:service-sites.location:read`
-            - **one of**
-              - `network-access-management:devices:read`
-              - `network-access-management:devices:write`
-              - `network-access-management:devices.hardware-address:read`
-            - **one of**
-              - `network-access-management:isolated-networks:read`
-              - `network-access-management:isolated-networks:write`
-              - `network-access-management:isolated-networks.primary:read`
-              - `network-access-management:isolated-networks.primary:write`
-              - `network-access-management:isolated-networks.auxiliary:read`
-              - `network-access-management:isolated-networks.auxiliary:write`
+        - **all of**
+          - **one of**
+            - `network-access-management:service-sites:read`
+            - `network-access-management:service-sites.location:read`
+          - **one of**
+            - `network-access-management:devices:read`
+            - `network-access-management:devices:write`
+            - `network-access-management:devices.hardware-address:read`
+          - **one of**
+            - `network-access-management:isolated-networks:read`
+            - `network-access-management:isolated-networks:write`
+            - `network-access-management:isolated-networks.primary:read`
+            - `network-access-management:isolated-networks.primary:write`
+            - `network-access-management:isolated-networks.auxiliary:read`
+            - `network-access-management:isolated-networks.auxiliary:write`
       parameters:
         - $ref: "#/components/parameters/siteId"
       responses:
@@ -403,21 +402,21 @@ paths:
         Returns all devices.  Scopes impact the output of this endpoint.  See the examples for various permutations.
 
         **Required Scopes:**
-          - **one of**
-            - `network-access-management:devices:read`
-            - `network-access-management:devices:write`
-            - `network-access-management:devices.hardware-address:read`
+        - **one of**
+          - `network-access-management:devices:read`
+          - `network-access-management:devices:write`
+          - `network-access-management:devices.hardware-address:read`
 
         **Optional Scopes:**
-           - **one of**
-              - `network-access-management:service-sites:read`
-              - `network-access-management:service-sites.location:read`
-              - `network-access-management:isolated-networks:read`
-              - `network-access-management:isolated-networks:write`
-              - `network-access-management:isolated-networks.primary:read`
-              - `network-access-management:isolated-networks.primary:write`
-              - `network-access-management:isolated-networks.auxiliary:read`
-              - `network-access-management:isolated-networks.auxiliary:write`
+        - **one of**
+          - `network-access-management:service-sites:read`
+          - `network-access-management:service-sites.location:read`
+          - `network-access-management:isolated-networks:read`
+          - `network-access-management:isolated-networks:write`
+          - `network-access-management:isolated-networks.primary:read`
+          - `network-access-management:isolated-networks.primary:write`
+          - `network-access-management:isolated-networks.auxiliary:read`
+          - `network-access-management:isolated-networks.auxiliary:write`
       responses:
         "200":
           description: Contains information about all devices
@@ -467,21 +466,21 @@ paths:
         various permutations.
 
         **Required Scopes:**
-          - **one of**
-            - `network-access-management:devices:read`
-            - `network-access-management:devices:write`
-            - `network-access-management:devices.hardware-address:read`
+        - **one of**
+          - `network-access-management:devices:read`
+          - `network-access-management:devices:write`
+          - `network-access-management:devices.hardware-address:read`
 
         **Optional Scopes:**
-           - **one of**
-              - `network-access-management:service-sites:read`
-              - `network-access-management:service-sites.location:read`
-              - `network-access-management:isolated-networks:read`
-              - `network-access-management:isolated-networks:write`
-              - `network-access-management:isolated-networks.primary:read`
-              - `network-access-management:isolated-networks.primary:write`
-              - `network-access-management:isolated-networks.auxiliary:read`
-              - `network-access-management:isolated-networks.auxiliary:write`
+        - **one of**
+          - `network-access-management:service-sites:read`
+          - `network-access-management:service-sites.location:read`
+          - `network-access-management:isolated-networks:read`
+          - `network-access-management:isolated-networks:write`
+          - `network-access-management:isolated-networks.primary:read`
+          - `network-access-management:isolated-networks.primary:write`
+          - `network-access-management:isolated-networks.auxiliary:read`
+          - `network-access-management:isolated-networks.auxiliary:write`
       parameters:
         - $ref: "#/components/parameters/deviceId"
       responses:
@@ -538,18 +537,18 @@ paths:
         endpoint.  See the examples for various permutations.
 
         **Required Scopes:**
-          - **all of**
-            - **one of**
-              - `network-access-management:devices:read`
-              - `network-access-management:devices:write`
-              - `network-access-management:devices.hardware-address:read`
-            - **one of**
-              - `network-access-management:isolated-networks:read`
-              - `network-access-management:isolated-networks:write`
-              - `network-access-management:isolated-networks.primary:read`
-              - `network-access-management:isolated-networks.primary:write`
-              - `network-access-management:isolated-networks.auxiliary:read`
-              - `network-access-management:isolated-networks.auxiliary:write`
+        - **all of**
+          - **one of**
+            - `network-access-management:devices:read`
+            - `network-access-management:devices:write`
+            - `network-access-management:devices.hardware-address:read`
+          - **one of**
+            - `network-access-management:isolated-networks:read`
+            - `network-access-management:isolated-networks:write`
+            - `network-access-management:isolated-networks.primary:read`
+            - `network-access-management:isolated-networks.primary:write`
+            - `network-access-management:isolated-networks.auxiliary:read`
+            - `network-access-management:isolated-networks.auxiliary:write`
       parameters:
         - $ref: "#/components/parameters/deviceId"
       responses:
@@ -593,15 +592,15 @@ paths:
         is replaced and is no longer assigned to any device, it is considered automatically deleted.
 
         **Required Scopes:**
-          - **all of**
-            - `network-access-management:devices:write`
-            - **one of**
-              - `network-access-management:isolated-networks:read`
-              - `network-access-management:isolated-networks:write`
-              - `network-access-management:isolated-networks.primary:read`
-              - `network-access-management:isolated-networks.primary:write`
-              - `network-access-management:isolated-networks.auxiliary:read`
-              - `network-access-management:isolated-networks.auxiliary:write`
+        - **all of**
+          - `network-access-management:devices:write`
+          - **one of**
+            - `network-access-management:isolated-networks:read`
+            - `network-access-management:isolated-networks:write`
+            - `network-access-management:isolated-networks.primary:read`
+            - `network-access-management:isolated-networks.primary:write`
+            - `network-access-management:isolated-networks.auxiliary:read`
+            - `network-access-management:isolated-networks.auxiliary:write`
       parameters:
         - $ref: "#/components/parameters/deviceId"
       requestBody:
@@ -642,13 +641,13 @@ paths:
 
         ## With Default Device
         **Required Scopes:**
-          - **one of**
-            - `network-access-management:isolated-networks:read`
-            - `network-access-management:isolated-networks:write`
-            - `network-access-management:isolated-networks.primary:read`
-            - `network-access-management:isolated-networks.primary:write`
-            - `network-access-management:isolated-networks.auxiliary:read`
-            - `network-access-management:isolated-networks.auxiliary:write`
+        - **one of**
+          - `network-access-management:isolated-networks:read`
+          - `network-access-management:isolated-networks:write`
+          - `network-access-management:isolated-networks.primary:read`
+          - `network-access-management:isolated-networks.primary:write`
+          - `network-access-management:isolated-networks.auxiliary:read`
+          - `network-access-management:isolated-networks.auxiliary:write`
 
         ## Without Default Device
         **Required Scopes:**
@@ -664,7 +663,6 @@ paths:
             - `network-access-management:devices:read`
             - `network-access-management:devices:write`
             - `network-access-management:devices.hardware-address:read`
-
       responses:
         "200":
           description: Contains information about all networks
@@ -706,21 +704,21 @@ paths:
         MUST be set to `undefined`.
 
         **Required Scopes:**
-          - **one of**
-            - `network-access-management:isolated-networks:write`
-            - `network-access-management:isolated-networks.primary:write`
-            - `network-access-management:isolated-networks.auxiliary:write`
+        - **one of**
+          - `network-access-management:isolated-networks:write`
+          - `network-access-management:isolated-networks.primary:write`
+          - `network-access-management:isolated-networks.auxiliary:write`
 
         ## Without Default Device
         Create the network and configure it to one or more devices.  The `devices` field MUST NOT be empty.
 
         **Required Scopes:**
-          -  **all of**
-            - `network-access-management:devices:write`
-            - **one of**
-              - `network-access-management:isolated-networks:write`
-              - `network-access-management:isolated-networks.primary:write`
-              - `network-access-management:isolated-networks.auxiliary:write`
+        -  **all of**
+          - `network-access-management:devices:write`
+          - **one of**
+            - `network-access-management:isolated-networks:write`
+            - `network-access-management:isolated-networks.primary:write`
+            - `network-access-management:isolated-networks.auxiliary:write`
       requestBody:
         required: true
         content:
@@ -772,6 +770,17 @@ paths:
 
         ## With Default Device
         **Required Scopes:**
+        - **one of**
+          - `network-access-management:isolated-networks:read`
+          - `network-access-management:isolated-networks:write`
+          - `network-access-management:isolated-networks.primary:read`
+          - `network-access-management:isolated-networks.primary:write`
+          - `network-access-management:isolated-networks.auxiliary:read`
+          - `network-access-management:isolated-networks.auxiliary:write`
+
+        ## Without Default Device
+        **Required Scopes:**
+        - **all of**
           - **one of**
             - `network-access-management:isolated-networks:read`
             - `network-access-management:isolated-networks:write`
@@ -779,21 +788,10 @@ paths:
             - `network-access-management:isolated-networks.primary:write`
             - `network-access-management:isolated-networks.auxiliary:read`
             - `network-access-management:isolated-networks.auxiliary:write`
-
-        ## Without Default Device
-          **Required Scopes:**
-          - **all of**
-            - **one of**
-              - `network-access-management:isolated-networks:read`
-              - `network-access-management:isolated-networks:write`
-              - `network-access-management:isolated-networks.primary:read`
-              - `network-access-management:isolated-networks.primary:write`
-              - `network-access-management:isolated-networks.auxiliary:read`
-              - `network-access-management:isolated-networks.auxiliary:write`
-            - **one of**
-              - `network-access-management:devices:read`
-              - `network-access-management:devices:write`
-              - `network-access-management:devices.hardware-address:read`
+          - **one of**
+            - `network-access-management:devices:read`
+            - `network-access-management:devices:write`
+            - `network-access-management:devices.hardware-address:read`
       parameters:
         - $ref: "#/components/parameters/netId"
       responses:
@@ -827,6 +825,9 @@ paths:
       tags:
         - Configure and Apply Isolated Network
       summary: Update an existing network
+      security:
+        - openId:
+            - network-access-management:isolated-networks:write
       operationId: updateNetwork
       description: |
         Updates the network, reconfigures any devices configured with the network, and returns the network that matches
@@ -834,13 +835,14 @@ paths:
 
         ## With Default Device
         **Required Scopes:**
-          - **one of**
-            - `network-access-management:isolated-networks:write`
-            - `network-access-management:isolated-networks.primary:write`
-            - `network-access-management:isolated-networks.auxiliary:write`
+        - **one of**
+          - `network-access-management:isolated-networks:write`
+          - `network-access-management:isolated-networks.primary:write`
+          - `network-access-management:isolated-networks.auxiliary:write`
 
         ## Without Default Device
         **Required Scopes:**
+        - **all of**
           - `network-access-management:devices:write`
           - **one of**
             - `network-access-management:isolated-networks:write`
@@ -888,6 +890,9 @@ paths:
       tags:
         - Configure and Apply Isolated Network
       summary: Delete a network
+      security:
+        - openId:
+            - network-access-management:isolated-networks:write
       operationId: deleteNetwork
       description: |
         Deletes the network and removes the configuration from any devices configured with the network that matches the
@@ -895,13 +900,14 @@ paths:
 
         ## With Default Device
         **Required Scopes:**
-          - **one of**
-            - `network-access-management:isolated-networks:write`
-            - `network-access-management:isolated-networks.primary:write`
-            - `network-access-management:isolated-networks.auxiliary:write`
+        - **one of**
+          - `network-access-management:isolated-networks:write`
+          - `network-access-management:isolated-networks.primary:write`
+          - `network-access-management:isolated-networks.auxiliary:write`
 
         ## Without Default Device
         **Required Scopes:**
+        - **all off**
           - `network-access-management:devices:write`
           - **one of**
             - `network-access-management:isolated-networks:write`
@@ -932,12 +938,17 @@ paths:
       tags:
         - Retrieve Device
       summary: Get all devices configured with a network
+      security:
+        - openId:
+            - network-access-management:devices:read
+            - network-access-management:isolated-networks:read
       operationId: getDevicesByNetwork
       description: |
         Returns all devices configured with a network that matches the given ID.  Scopes impact the output of this
         endpoint.  See the examples for various permutations.
 
         **Required Scopes:**
+        - **all of**
           - **one of**
             - `network-access-management:devices:read`
             - `network-access-management:devices:write`
@@ -951,9 +962,9 @@ paths:
             - `network-access-management:isolated-networks.auxiliary:write`
 
         **Optional Scopes:**
-           - **one of**
-              - `network-access-management:service-sites:read`
-              - `network-access-management:service-sites.location:read`
+        - **one of**
+          - `network-access-management:service-sites:read`
+          - `network-access-management:service-sites.location:read`
       parameters:
         - $ref: "#/components/parameters/netId"
       responses:
@@ -991,12 +1002,17 @@ paths:
       tags:
         - Device Configure
       summary: Bulk insert, remove, or replace a network from the configuration of many devices
+      security:
+        - openId:
+            - network-access-management:devices:write
+            - network-access-management:isolated-networks:read
       operationId: patchDevicesWithNetwork
       description: |
         Bulk inserts, removes, replaces a network from the configuration of many devices by the given IDs.
 
         **Required Scopes:**
-           - `network-access-management:devices:write`
+        - **all of **
+          - `network-access-management:devices:write`
           - **one of**
             - `network-access-management:isolated-networks:read`
             - `network-access-management:isolated-networks:write`
@@ -1035,6 +1051,9 @@ paths:
       tags:
         - Retrieve Reboot Request
       summary: Get all Reboot Requests
+      security:
+        - openId:
+            - network-access-management:reboot-requests:read
       operationId: getRebootRequests
       description: |
         Returns all reboot requests.  Scopes impact the output of this endpoint.  See the examples for various
@@ -1042,12 +1061,13 @@ paths:
 
         ## With Default Device
         **Required Scopes:**
-          - **one of**
-            - `network-access-management:reboot-requests:read`
-            - `network-access-management:reboot-requests:write`
+        - **one of**
+          - `network-access-management:reboot-requests:read`
+          - `network-access-management:reboot-requests:write`
 
         ## Without Default Device
-          **Required Scopes:**
+        **Required Scopes:**
+        - **all of**
           - **one of**
             - `network-access-management:reboot-requests:read`
             - `network-access-management:reboot-requests:write`
@@ -1082,6 +1102,9 @@ paths:
       tags:
         - Configure Reboot Request
       summary: Create a new reboot request
+      security:
+        - openId:
+            - network-access-management:reboot-requests:write
       operationId: createRebootRequest
       description: |
         Creates and returns the new reboot request.  Scopes impact the function and output of this endpoint. See the
@@ -1092,17 +1115,17 @@ paths:
         one service location.  The `devices` field MUST NOT be set or it MUST be set to `undefined`.
 
         **Required Scopes:**
-          - **one of**
-            - `network-access-management:reboot-requests:write`
+        - **all of**
+          - `network-access-management:reboot-requests:write`
 
         ## Without Default Device
         Creates the reboot request and issues it to one or more devices.  The `devices` field MUST be set to a non-empty
         `list of device IDs`.
 
         **Required Scopes:**
+        - **all of**
           - `network-access-management:devices:write`
-          - **one of**
-            - `network-access-management:reboot-requests:write`
+          - `network-access-management:reboot-requests:write`
       requestBody:
         required: true
         content:
@@ -1144,6 +1167,9 @@ paths:
       tags:
         - Retrieve Reboot Request
       summary: Get a Reboot Request by ID
+      security:
+        - openId:
+            - network-access-management:reboot-requests:read
       operationId: getRebootRequest
       description: |
         Returns the reboot request that matches the given ID.  Scopes impact the output of this endpoint.  See the
@@ -1151,12 +1177,13 @@ paths:
 
         ## With Default Device
         **Required Scopes:**
-          - **one of**
-            - `network-access-management:reboot-requests:read`
-            - `network-access-management:reboot-requests:write`
+        - **one of**
+          - `network-access-management:reboot-requests:read`
+          - `network-access-management:reboot-requests:write`
 
         ## Without Default Device
-          **Required Scopes:**
+        **Required Scopes:**
+        - **all off**
           - **one of**
             - `network-access-management:reboot-requests:read`
             - `network-access-management:reboot-requests:write`
@@ -1197,6 +1224,9 @@ paths:
       tags:
         - Configure Reboot Request
       summary: Update an existing reboot request
+      security:
+        - openId:
+            - network-access-management:reboot-requests:write
       operationId: updateRebootRequest
       description: |
         Updates the reboot request, reboot for any devices targeted with the reboot request, and returns the reboot
@@ -1205,14 +1235,14 @@ paths:
 
         ## With Default Device
         **Required Scopes:**
-          - **one of**
-            - `network-access-management:reboot-requests:write`
+        - **all of**
+          - `network-access-management:reboot-requests:write`
 
         ## Without Default Device
         **Required Scopes:**
+        - **all of**
           - `network-access-management:devices:write`
-          - **one of**
-            - `network-access-management:reboot-requests:write`
+          - `network-access-management:reboot-requests:write`
       parameters:
         - $ref: "#/components/parameters/rebootId"
       requestBody:
@@ -1255,20 +1285,23 @@ paths:
       tags:
         - Configure Reboot Request
       summary: Delete a reboot request
+      security:
+        - openId:
+            - network-access-management:reboot-requests:write
       operationId: deleteRebootRequest
       description: |
         Deletes the reboot request that matches the given ID.
 
         ## With Default Device
         **Required Scopes:**
-          - **one of**
-            - `network-access-management:reboot-requests:write`
+        - **all of**
+          - `network-access-management:reboot-requests:write`
 
         ## Without Default Device
         **Required Scopes:**
+        - **all of**
           - `network-access-management:devices:write`
-          - **one of**
-            - `network-access-management:reboot-requests:write`
+          - `network-access-management:reboot-requests:write`
       parameters:
         - $ref: "#/components/parameters/rebootId"
       responses:
@@ -1693,8 +1726,8 @@ components:
       discriminator:
         propertyName: intersectionType
         mappings:
-          - NetworkDeviceRoleConfiguration: '#/components/schemas/NetworkDeviceRoleConfiguration'
-          - NetworkDeviceReplacement: '#/components/schemas/NetworkDeviceReplacement'
+          - NetworkDeviceRoleConfiguration: "#/components/schemas/NetworkDeviceRoleConfiguration"
+          - NetworkDeviceReplacement: "#/components/schemas/NetworkDeviceReplacement"
       example: &network-device-intersection-create
         intersectionType: *network-device-intersection-type
         device: *device-id
@@ -2306,6 +2339,7 @@ components:
       summary: Service Site with Devices
       description: |
         Output with the following scope(s):
+        - **all of**
           - `network-access-management:service-sites:read`
           - **one of**
             - `network-access-management:devices:read`
@@ -2319,6 +2353,7 @@ components:
       summary: Service Site with Location and Devices
       description: |
         Output with the following scope(s):
+        - **all of**
           - `network-access-management:service-sites.location:read`
           - **one of**
             - `network-access-management:devices:read`
@@ -2330,6 +2365,7 @@ components:
       summary: Base Service Site List
       description: |
         Output with the following scope(s):
+        - **all of**
           - `network-access-management:service-sites:read`
       value:
         - *base-service-site
@@ -2339,6 +2375,7 @@ components:
       summary: Service Site List with Location
       description: |
         Output with the following scope(s):
+        - **all of**
           - `network-access-management:service-sites.location:read`
       value:
         - *service-site-with-location
@@ -2351,6 +2388,7 @@ components:
       summary: Service Site List with Devices
       description: |
         Output with the following scope(s):
+        - **all of**
           - `network-access-management:service-sites:read`
           - **one of**
             - `network-access-management:devices:read`
@@ -2365,6 +2403,7 @@ components:
       summary: Service Site List with Location and Devices
       description: |
         Output with the following scope(s):
+        - **all of**
           - `network-access-management:service-sites.location:read`
           - **one of**
             - `network-access-management:devices:read`
@@ -2376,9 +2415,9 @@ components:
       summary: Base Device
       description: |
         Output with the following scope(s):
-          - **one of**
-            - `network-access-management:devices:read`
-            - `network-access-management:devices:write`
+        - **one of**
+          - `network-access-management:devices:read`
+          - `network-access-management:devices:write`
       value: &base-device
         id: *device-id
         name: *device-name
@@ -2388,6 +2427,7 @@ components:
       summary: Device with Hardware Address
       description: |
         Output with the following scope(s):
+        - **all of**
           - `network-access-management:devices.hardware-address:read`
       value: &device-with-hardware-address
         id: *device-id
@@ -2399,6 +2439,7 @@ components:
       summary: Device with Service Site
       description: |
         Output with the following scope(s):
+        - **all of**
           - **one of**
             - `network-access-management:devices:read`
             - `network-access-management:devices:write`
@@ -2415,6 +2456,7 @@ components:
       summary: Device with Networks
       description: |
         Output with the following scope(s):
+        - **all of**
           - **one of**
             - `network-access-management:devices:read`
             - `network-access-management:devices:write`
@@ -2436,6 +2478,7 @@ components:
       summary: Device with Hardware Address and Service Site
       description: |
         Output with the following scope(s):
+        - **all of**
           - `network-access-management:devices.hardware-address:read`
           - **one of**
             - `network-access-management:service-sites:read`
@@ -2451,6 +2494,7 @@ components:
       summary: Device with Hardware Address and Networks
       description: |
         Output with the following scope(s):
+        - **all of**
           - `network-access-management:devices.hardware-address:read`
           - **one of**
             - `network-access-management:isolated-networks:read`
@@ -2471,6 +2515,7 @@ components:
       summary: Device with Service Site and Networks
       description: |
         Output with the following scope(s):
+        - **all of**
           - **one of**
             - `network-access-management:devices:read`
             - `network-access-management:devices:write`
@@ -2496,6 +2541,7 @@ components:
       summary: Device with Hardware Address, Service Site, and Networks
       description: |
         Output with the following scope(s):
+        - **all of**
           - `network-access-management:devices.hardware-address:read`
           - **one of**
             - `network-access-management:service-sites:read`
@@ -2513,9 +2559,9 @@ components:
       summary: Base Device List
       description: |
         Output with the following scope(s):
-          - **one of**
-            - `network-access-management:devices:read`
-            - `network-access-management:devices:write`
+        - **one of**
+          - `network-access-management:devices:read`
+          - `network-access-management:devices:write`
       value:
         - *base-device
         - id: *device-id2
@@ -2526,6 +2572,7 @@ components:
       summary: Device List with Hardware Address
       description: |
         Output with the following scope(s):
+        - **all of**
           - `network-access-management:devices.hardware-address:read`
       value:
         - *device-with-hardware-address
@@ -2538,6 +2585,7 @@ components:
       summary: Device List with Service Site
       description: |
         Output with the following scope(s):
+        - **all of**
           - **one of**
             - `network-access-management:devices:read`
             - `network-access-management:devices:write`
@@ -2555,6 +2603,7 @@ components:
       summary: Device List with Networks
       description: |
         Output with the following scope(s):
+        - **all of**
           - **one of**
             - `network-access-management:devices:read`
             - `network-access-management:devices:write`
@@ -2577,6 +2626,7 @@ components:
       summary: Device List with Hardware Address and Service Site
       description: |
         Output with the following scope(s):
+        - **all of**
           - `network-access-management:devices.hardware-address:read`
           - **one of**
             - `network-access-management:service-sites:read`
@@ -2593,6 +2643,7 @@ components:
       summary: Device List with Hardware Address and Networks
       description: |
         Output with the following scope(s):
+        - **all of**
           - `network-access-management:devices.hardware-address:read`
           - **one of**
             - `network-access-management:isolated-networks:read`
@@ -2614,6 +2665,7 @@ components:
       summary: Device List with Service Site and Networks
       description: |
         Output with the following scope(s):
+        - **all of**
           - **one of**
             - `network-access-management:devices:read`
             - `network-access-management:devices:write`
@@ -2640,6 +2692,7 @@ components:
       summary: Device List with Hardware Address, Service Site, and Networks
       description: |
         Output with the following scope(s):
+        - **all of**
           - `network-access-management:devices.hardware-address:read`
           - **one of**
             - `network-access-management:service-sites:read`
@@ -2657,13 +2710,13 @@ components:
       summary: Network Configuration with Default Device
       description: |
         Output with the following scope(s):
-          - **one of**
-            - `network-access-management:isolated-networks:read`
-            - `network-access-management:isolated-networks:write`
-            - `network-access-management:isolated-networks.primary:read`
-            - `network-access-management:isolated-networks.primary:write`
-            - `network-access-management:isolated-networks.auxiliary:read`
-            - `network-access-management:isolated-networks.auxiliary:write`
+        - **one of**
+          - `network-access-management:isolated-networks:read`
+          - `network-access-management:isolated-networks:write`
+          - `network-access-management:isolated-networks.primary:read`
+          - `network-access-management:isolated-networks.primary:write`
+          - `network-access-management:isolated-networks.auxiliary:read`
+          - `network-access-management:isolated-networks.auxiliary:write`
       value: &base-network
         id: *network-id
         description: *network-description
@@ -2679,6 +2732,7 @@ components:
       summary: Network Configuration
       description: |
         Output with the following scope(s):
+        - **all of**
           - **one of**
             - `network-access-management:isolated-networks:read`
             - `network-access-management:isolated-networks:write`
@@ -2696,20 +2750,20 @@ components:
       summary: Network Update
       description: |
         Post with the following scope(s):
-          - **one of**
-            - `network-access-management:isolated-networks:write`
-            - `network-access-management:isolated-networks.primary:write`
-            - `network-access-management:isolated-networks.auxiliary:write`
+        - **one of**
+          - `network-access-management:isolated-networks:write`
+          - `network-access-management:isolated-networks.primary:write`
+          - `network-access-management:isolated-networks.auxiliary:write`
       value: *network-update
 
     BaseNetworkCreate:
       summary: Create Network on Default Device
       description: |
         Post with the following scope(s):
-          - **one of**
-            - `network-access-management:isolated-networks:write`
-            - `network-access-management:isolated-networks.primary:write`
-            - `network-access-management:isolated-networks.auxiliary:write`
+        - **one of**
+          - `network-access-management:isolated-networks:write`
+          - `network-access-management:isolated-networks.primary:write`
+          - `network-access-management:isolated-networks.auxiliary:write`
       value:
         description: *network-description
         accessDetail: *wifi-access-detail
@@ -2719,24 +2773,25 @@ components:
       summary: Create Network on Devices
       description: |
         Post with the following scope(s):
+        - **all of**
+          - `network-access-management:devices:write`
           - **one of**
             - `network-access-management:isolated-networks:write`
             - `network-access-management:isolated-networks.primary:write`
             - `network-access-management:isolated-networks.auxiliary:write`
-          - `network-access-management:devices:write`
       value: *network-create
 
     BaseNetworkList:
       summary: Network List with Default Device
       description: |
         Output with the following scope(s):
-          - **one of**
-            - `network-access-management:isolated-networks:read`
-            - `network-access-management:isolated-networks:write`
-            - `network-access-management:isolated-networks.primary:read`
-            - `network-access-management:isolated-networks.primary:write`
-            - `network-access-management:isolated-networks.auxiliary:read`
-            - `network-access-management:isolated-networks.auxiliary:write`
+        - **one of**
+          - `network-access-management:isolated-networks:read`
+          - `network-access-management:isolated-networks:write`
+          - `network-access-management:isolated-networks.primary:read`
+          - `network-access-management:isolated-networks.primary:write`
+          - `network-access-management:isolated-networks.auxiliary:read`
+          - `network-access-management:isolated-networks.auxiliary:write`
       value:
         - *base-network
         - id: *network-id2
@@ -2753,6 +2808,7 @@ components:
       summary: Network List with Devices
       description: |
         Output with the following scope(s):
+        - **all of**
           - **one of**
             - `network-access-management:isolated-networks:read`
             - `network-access-management:isolated-networks:write`
@@ -2770,9 +2826,9 @@ components:
       summary: Reboot Request with Default Device
       description: |
         Output with the following scope(s):
-          - **one of**
-            - `network-access-management:reboot-requests:read`
-            - `network-access-management:reboot-requests:write`
+        - **one of**
+          - `network-access-management:reboot-requests:read`
+          - `network-access-management:reboot-requests:write`
       value: &base-reboot-request
         id: *reboot-id
         message: *reboot-message
@@ -2786,6 +2842,7 @@ components:
       summary: Reboot Request
       description: |
         Output with the following scope(s):
+        - **all of**
           - **one of**
             - `network-access-management:reboot-requests:read`
             - `network-access-management:reboot-requests:write`
@@ -2799,16 +2856,16 @@ components:
       summary: Reboot Request Update
       description: |
         Post with the following scope(s):
-          - **one of**
-            - `network-access-management:reboot-requests:write`
+        - **one of**
+          - `network-access-management:reboot-requests:write`
       value: *reboot-request-update
 
     BaseRebootRequestCreate:
       summary: Create Reboot Request for Default Device
       description: |
         Post with the following scope(s):
-          - **one of**
-            - `network-access-management:reboot-requests:write`
+        - **all of**
+          - `network-access-management:reboot-requests:write`
       value: &reboot-request-update
         message: *reboot-message
         atTime: *date-time
@@ -2817,18 +2874,18 @@ components:
       summary: Create Reboot Request for Devices
       description: |
         Post with the following scope(s):
-          - **one of**
-            - `network-access-management:reboot-requests:write`
+        - **all of**
           - `network-access-management:devices:write`
+          - `network-access-management:reboot-requests:write`
       value: *reboot-create
 
     BaseRebootRequestList:
       summary: Reboot Request List with Default Device
       description: |
         Output with the following scope(s):
-          - **one of**
-            - `network-access-management:reboot-requests:read`
-            - `network-access-management:reboot-requests:write`
+        - **one of**
+          - `network-access-management:reboot-requests:read`
+          - `network-access-management:reboot-requests:write`
       value:
         - *base-reboot-request
         - id: *reboot-id2
@@ -2843,6 +2900,7 @@ components:
       summary: Reboot Request List
       description: |
         Output with the following scope(s):
+        - **all of**
           - **one of**
             - `network-access-management:reboot-requests:read`
             - `network-access-management:reboot-requests:write`
