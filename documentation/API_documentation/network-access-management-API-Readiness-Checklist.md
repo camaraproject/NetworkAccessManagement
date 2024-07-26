@@ -1,6 +1,6 @@
 # API Readiness Checklist
 
-Checklist for network-access-management v0.1.0-alpha.1 in r1.1.
+Checklist for network-access-management v0.1.0 in r1.1.
 
 | Nr | API release assets  | alpha | release-candidate |  initial<br>public | stable<br> public | Status | Comments |
 |----|----------------------------------------------|:-----:|:-----------------:|:-------:|:------:|:----:|:----:|

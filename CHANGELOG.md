@@ -17,16 +17,16 @@ The below sections record the changes for each API version in each release as fo
 
 This release contains the definition and documentation of
 
-- Network Access Management v0.1.0-alpha.1
+- Network Access Management v0.1.0
 
 The API definition(s) are based on
 
 - Commonalities v0.4.0
 - Identity and Consent Management v0.1.0
 
-## Network Access Management v0.1.0-alpha.1
+## Network Access Management v0.1.0
 
-**Network Access Management v0.1.0-alpha.1 is an alpha release version.**
+**Network Access Management v0.1.0 is a release version.**
 
 - API definition **with inline documentation**:
   - [View it on ReDoc](https://redocly.github.io/redoc/?url=https://raw.githubusercontent.com/camaraproject/NetworkAccessManagement/r1.1/code/API_definitions/network_access_management.yaml&nocors)
