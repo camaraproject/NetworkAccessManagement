@@ -132,7 +132,7 @@ info:
     may be used.  If an end-user replaces the equipment, all existing isolated networks SHOULD be synced to the new
     device representing this mesh.  Alternatively, a synthetic hardware address may also be used if the specification
     for the address type allows.
-  version: 0.1.0
+  version: wip
   license:
     name: Apache 2.0
     url: https://www.apache.org/licenses/LICENSE-2.0.html
