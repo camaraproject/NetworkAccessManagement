@@ -5,8 +5,8 @@ Checklist for network-access-management v0.1.0 in r1.1.
 | Nr | API release assets  | alpha | release-candidate |  initial<br>public | stable<br> public | Status | Comments |
 |----|----------------------------------------------|:-----:|:-----------------:|:-------:|:------:|:----:|:----:|
 |  1 | API definition                               |   M   |         M         |    M    |    M   | Y    | [link](../../code/API_definitions/network_access_management.yaml) |
-|  2 | Design guidelines from Commonalities applied |   O   |         M         |    M    |    M   | tbd  |      |
-|  3 | Guidelines from ICM applied                  |   O   |         M         |    M    |    M   | Y    |      |
+|  2 | Design guidelines from Commonalities applied |   O   |         M         |    M    |    M   | tbd  | [#19](https://github.com/camaraproject/NetworkAccessManagement/issues/19) |
+|  3 | Guidelines from ICM applied                  |   O   |         M         |    M    |    M   | tbd    | [#20](https://github.com/camaraproject/NetworkAccessManagement/issues/20) |
 |  4 | API versioning convention applied            |   M   |         M         |    M    |    M   | Y    |      |
 |  5 | API documentation                            |   M   |         M         |    M    |    M   | Y    | inline in YAML |
 |  6 | User stories                                 |   O   |         O         |    O    |    M   | N    | link |
