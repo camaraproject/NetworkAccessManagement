@@ -26,7 +26,7 @@ The API definition(s) are based on
 
 ## Network Access Management v0.1.0-alpha.1
 
-**Network Access Management v0.1.0-alpha.1 is a pre-release version. ...**
+**Network Access Management v0.1.0-alpha.1 is an alpha release version.**
 
 - API definition **with inline documentation**:
   - [View it on ReDoc](https://redocly.github.io/redoc/?url=https://raw.githubusercontent.com/camaraproject/NetworkAccessManagement/r1.1/code/API_definitions/network_access_management.yaml&nocors)
@@ -35,15 +35,11 @@ The API definition(s) are based on
 
 ### Added
 
-- Added initial proposal from the Backlog Working Group.
+- Added Camara specific rules for yamllint and spectral.
+- Added initial proposal from the backlog working group.
 
 ### Changed
 
-- Updated the initial proposal to follow the Commonalities and Identity and Consent
-  Management guidelines.
-
 ### Fixed
-
-- Fixed linting errors in the initial proposal.
 
 ### Removed
