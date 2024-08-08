@@ -25,8 +25,8 @@ The sub project has no (pre)releases yet, work in progress is within the main br
 
 ## Contributing
 * Meetings
-    * [Registration/Join]() Update this link with your meeting join link
-    * Schedule: tbd
+    * [Registration/Join](https://zoom-lfx.platform.linuxfoundation.org/meeting/96846363178?password=9ebebe6c-c59c-42be-a709-7d5fd42fb626)
+    * Schedule: Bi-weekly on Fridays at 8AM MDT / 4PM CEST
     * Minutes: Access [meeting minutes](https://wiki.camaraproject.org/x/pwCeAQ).
 * Mailing List
     * Subscribe / Unsubscribe to the mailing list of this Sub Project <https://lists.camaraproject.org/g/sp-nam>.
