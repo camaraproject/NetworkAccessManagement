@@ -254,7 +254,7 @@ paths:
         "403":
           $ref: "#/components/responses/Generic403"
         "404":
-          $ref: "#/components/responses/ServiceSiteNotFound404"
+          $ref: "#/components/responses/Generic404"
         "500":
           $ref: "#/components/responses/Generic500"
         "501":
@@ -318,7 +318,7 @@ paths:
         "403":
           $ref: "#/components/responses/Generic403"
         "404":
-          $ref: "#/components/responses/ServiceSiteNotFound404"
+          $ref: "#/components/responses/Generic404"
         "500":
           $ref: "#/components/responses/Generic500"
         "501":
@@ -375,7 +375,7 @@ paths:
         "403":
           $ref: "#/components/responses/Generic403"
         "404":
-          $ref: "#/components/responses/ServiceSiteNotFound404"
+          $ref: "#/components/responses/Generic404"
         "500":
           $ref: "#/components/responses/Generic500"
         "501":
@@ -508,7 +508,7 @@ paths:
         "403":
           $ref: "#/components/responses/Generic403"
         "404":
-          $ref: "#/components/responses/DeviceNotFound404"
+          $ref: "#/components/responses/Generic404"
         "500":
           $ref: "#/components/responses/Generic500"
         "501":
@@ -562,7 +562,7 @@ paths:
         "403":
           $ref: "#/components/responses/Generic403"
         "404":
-          $ref: "#/components/responses/DeviceNotFound404"
+          $ref: "#/components/responses/Generic404"
         "500":
           $ref: "#/components/responses/Generic500"
         "501":
@@ -607,13 +607,13 @@ paths:
         "204":
           description: Successfully inserted, removed, or replaced the configuration for many networks on the device
         "400":
-          $ref: "#/components/responses/NetworkNotRemovable400"
+          $ref: "#/components/responses/Generic400"
         "401":
           $ref: "#/components/responses/Generic401"
         "403":
           $ref: "#/components/responses/Generic403"
         "404":
-          $ref: "#/components/responses/DeviceOrNetworkNotFound404"
+          $ref: "#/components/responses/Generic404"
         "500":
           $ref: "#/components/responses/Generic500"
         "501":
@@ -672,7 +672,7 @@ paths:
         "401":
           $ref: "#/components/responses/Generic401"
         "403":
-          $ref: "#/components/responses/DefaultDeviceNotSupported403"
+          $ref: "#/components/responses/Generic403"
         "500":
           $ref: "#/components/responses/Generic500"
         "501":
@@ -741,7 +741,7 @@ paths:
         "401":
           $ref: "#/components/responses/Generic401"
         "403":
-          $ref: "#/components/responses/DefaultDeviceNotSupported403"
+          $ref: "#/components/responses/Generic403"
         "500":
           $ref: "#/components/responses/Generic500"
         "501":
@@ -805,9 +805,9 @@ paths:
         "401":
           $ref: "#/components/responses/Generic401"
         "403":
-          $ref: "#/components/responses/DefaultDeviceNotSupported403"
+          $ref: "#/components/responses/Generic403"
         "404":
-          $ref: "#/components/responses/NetworkNotFound404"
+          $ref: "#/components/responses/Generic404"
         "500":
           $ref: "#/components/responses/Generic500"
         "501":
@@ -870,9 +870,9 @@ paths:
         "401":
           $ref: "#/components/responses/Generic401"
         "403":
-          $ref: "#/components/responses/DefaultDeviceNotSupported403"
+          $ref: "#/components/responses/Generic403"
         "404":
-          $ref: "#/components/responses/NetworkNotFound404"
+          $ref: "#/components/responses/Generic404"
         "500":
           $ref: "#/components/responses/Generic500"
         "501":
@@ -913,13 +913,13 @@ paths:
         "204":
           description: Successfully deleted the network
         "400":
-          $ref: "#/components/responses/NetworkNotRemovable400"
+          $ref: "#/components/responses/Generic400"
         "401":
           $ref: "#/components/responses/Generic401"
         "403":
-          $ref: "#/components/responses/DefaultDeviceNotSupported403"
+          $ref: "#/components/responses/Generic403"
         "404":
-          $ref: "#/components/responses/NetworkNotFound404"
+          $ref: "#/components/responses/Generic404"
         "500":
           $ref: "#/components/responses/Generic500"
         "501":
@@ -984,7 +984,7 @@ paths:
         "403":
           $ref: "#/components/responses/Generic403"
         "404":
-          $ref: "#/components/responses/NetworkNotFound404"
+          $ref: "#/components/responses/Generic404"
         "500":
           $ref: "#/components/responses/Generic500"
         "501":
@@ -1026,13 +1026,13 @@ paths:
         "204":
           description: Successfully inserted, removed, or replaced the network from the configuration of many devices
         "400":
-          $ref: "#/components/responses/NetworkNotRemovable400"
+          $ref: "#/components/responses/Generic400"
         "401":
           $ref: "#/components/responses/Generic401"
         "403":
           $ref: "#/components/responses/Generic403"
         "404":
-          $ref: "#/components/responses/DeviceOrNetworkNotFound404"
+          $ref: "#/components/responses/Generic404"
         "500":
           $ref: "#/components/responses/Generic500"
         "501":
@@ -1084,7 +1084,7 @@ paths:
         "401":
           $ref: "#/components/responses/Generic401"
         "403":
-          $ref: "#/components/responses/DefaultDeviceNotSupported403"
+          $ref: "#/components/responses/Generic403"
         "500":
           $ref: "#/components/responses/Generic500"
         "501":
@@ -1148,7 +1148,7 @@ paths:
         "401":
           $ref: "#/components/responses/Generic401"
         "403":
-          $ref: "#/components/responses/DefaultDeviceNotSupported403"
+          $ref: "#/components/responses/Generic403"
         "500":
           $ref: "#/components/responses/Generic500"
         "501":
@@ -1204,9 +1204,9 @@ paths:
         "401":
           $ref: "#/components/responses/Generic401"
         "403":
-          $ref: "#/components/responses/DefaultDeviceNotSupported403"
+          $ref: "#/components/responses/Generic403"
         "404":
-          $ref: "#/components/responses/NetworkNotFound404"
+          $ref: "#/components/responses/Generic404"
         "500":
           $ref: "#/components/responses/Generic500"
         "501":
@@ -1265,9 +1265,9 @@ paths:
         "401":
           $ref: "#/components/responses/Generic401"
         "403":
-          $ref: "#/components/responses/DefaultDeviceNotSupported403"
+          $ref: "#/components/responses/Generic403"
         "404":
-          $ref: "#/components/responses/NetworkNotFound404"
+          $ref: "#/components/responses/Generic404"
         "500":
           $ref: "#/components/responses/Generic500"
         "501":
@@ -1306,9 +1306,9 @@ paths:
         "401":
           $ref: "#/components/responses/Generic401"
         "403":
-          $ref: "#/components/responses/DefaultDeviceNotSupported403"
+          $ref: "#/components/responses/Generic403"
         "404":
-          $ref: "#/components/responses/NetworkNotFound404"
+          $ref: "#/components/responses/Generic404"
         "500":
           $ref: "#/components/responses/Generic500"
         "501":
