@@ -3007,24 +3007,6 @@ components:
       value: *reboot-request-list
 
   responses:
-    # NetworkNotRemovable400:
-    #   description: Network not removable
-    #   content:
-    #     application/json:
-    #       schema:
-    #         $ref: "#/components/schemas/ErrorInfo"
-    #       examples:
-    #         NetworkNotRemovable:
-    #           summary: Network Not Removable Error
-    #           description: |
-    #             Output when attempting to delete or remove a network that can only be replaced.
-    #           value:
-    #             status: 400
-    #             code: NETWORK_NOT_REMOVABLE
-    #             message: "Network not removable: ..."
-    #         Generic:
-    #           summary: Invalid Argument
-    #           value: *generic-400-example
     Generic400:
       description: Bad Request
       headers:
@@ -3047,12 +3029,6 @@ components:
                 status: 400
                 code: OUT_OF_RANGE
                 message: Client specified an invalid range.
-            GENERIC_400_{{SPECIFIC_CODE}}:
-              description: Specific Syntax Exception regarding a field that is relevant in the context of the API
-              value:
-                status: 400
-                code: { { SPECIFIC_CODE } }
-                message: { { SPECIFIC_CODE_MESSAGE } }
 
     Generic401:
       description: Unauthorized
@@ -3077,24 +3053,6 @@ components:
                 code: AUTHENTICATION_REQUIRED
                 message: New authentication is required.
 
-    # DefaultDeviceNotSupported403:
-    #   description: Default device not supported
-    #   content:
-    #     application/json:
-    #       schema:
-    #         $ref: "#/components/schemas/ErrorInfo"
-    #       examples:
-    #         DefaultDeviceNotSupported:
-    #           summary: Default Device Not Supported Error
-    #           description: |
-    #             Output with scopes for a default device but for an unsupported resource owner.
-    #           value:
-    #             status: 403
-    #             code: DEFAULT_DEVICE_NOT_SUPPORTED
-    #             message: "Default device not supported: ..."
-    #         Generic:
-    #           summary: Forbidden
-    #           value: *generic-403-example
     Generic403:
       description: Forbidden
       headers:
@@ -3117,12 +3075,6 @@ components:
                 status: 403
                 code: INVALID_TOKEN_CONTEXT
                 message: "{{field}} is not consistent with access token."
-            GENERIC_403_{{SPECIFIC_CODE}}:
-              description: Indicate a Business Logic condition that forbids a process not attached to a specific field in the context of the API
-              value:
-                status: 403
-                code: { { SPECIFIC_CODE } }
-                message: { { SPECIFIC_CODE_MESSAGE } }
 
     Generic404:
       description: Not found
@@ -3146,21 +3098,21 @@ components:
                 status: 404
                 code: SERVICE_SITE_NOT_FOUND
                 message: |
-                  Service site identifier(s) not found: { { ServiceSiteId } }.
+                  Service site identifier(s) not found: {{ServiceSiteId}}.
             GENERIC_404_DEVICE_NOT_FOUND:
               description: Device identifier(s) not found
               value:
                 status: 404
                 code: DEVICE_NOT_FOUND
                 message: |
-                  Device identifier(s) not found: { { DeviceId } }.
+                  Device identifier(s) not found: {{DeviceId}}.
             GENERIC_404_NETWORK_NOT_FOUND:
               description: Network identitier(s) not found
               value:
                 status: 404
                 code: NETWORK_NOT_FOUND
                 message: |
-                  Network identitifer(s) not found: { { NetworkId } }.
+                  Network identitifer(s) not found: {{NetworkId}}.
 
     Generic405:
       description: Method Not Allowed
@@ -3224,12 +3176,13 @@ components:
                 status: 409
                 code: CONFLICT
                 message: A specified resource duplicate entry found.
-            GENERIC_409_{{SPECIFIC_CODE}}:
-              description: Specific conflict situation that is relevant in the context of the API
+            GENERIC_409_NETWORK_NOT_REMOVABLE:
+              description: The specified network cannot be removed
               value:
                 status: 409
-                code: { { SPECIFIC_CODE } }
-                message: { { SPECIFIC_CODE_MESSAGE } }
+                code: NETWORK_NOT_REMOVABLE
+                message: |
+                  The specified network cannot be removed: {{NetworkId}}: {{reason}}
 
     Generic410:
       description: Gone
@@ -3310,12 +3263,6 @@ components:
                 status: 422
                 code: UNIDENTIFIABLE_DEVICE
                 message: The device cannot be identified.
-            GENERIC_422_{{SPECIFIC_CODE}}:
-              description: Any semantic condition associated to business logic, specifically related to a field or data structure
-              value:
-                status: 422
-                code: { { SPECIFIC_CODE } }
-                message: { { SPECIFIC_CODE_MESSAGE } }
 
     Generic429:
       description: Too Many Requests
@@ -3407,7 +3354,6 @@ components:
                 status: 503
                 code: UNAVAILABLE
                 message: Service Unavailable.
-
     Generic504:
       description: Gateway Timeout
       headers:
