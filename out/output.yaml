@@ -1,0 +1,32 @@
+openapi: 3.0.3
+servers:
+- url: /
+components:
+  schemas:
+    RebootRequestUpdate:
+      type: object
+      properties:
+        message:
+          maxLength: 255
+          type: string
+          description: A message related to the reboot request
+          example: reboot to correct performance
+        atTime:
+          allOf:
+          - $ref: '#/components/schemas/DateTime'
+          - description: |
+              The date and time to reboot the device. Do not include 'atTime' to request immediate reboot.  It must
+              follow [RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339#section-5.6) and must have time zone.
+              Recommended format is yyyy-MM-dd'T'HH:mm:ss.SSSZ (i.e. which allows 2023-07-03T14:27:08.312+02:00 or
+              2023-07-03T12:27:08.312Z).
+      example:
+        message: reboot-message
+        atTime: date-time
+    DateTime:
+      type: string
+      description: |
+        It must follow [RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339#section-5.6) and must have time zone.
+        Recommended format is yyyy-MM-dd'T'HH:mm:ss.SSSZ (i.e. which allows 2023-07-03T14:27:08.312+02:00 or
+        2023-07-03T12:27:08.312Z)
+      format: date-time
+      example: 2023-07-03T14:27:08.312+02:00
