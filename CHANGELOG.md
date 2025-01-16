@@ -2,7 +2,7 @@
 
 ## Table of Contents
 
-- **[r1.0](#r1-0)**
+- **[r1.0](#r10)**
 
 **Please be aware that the project will have frequent updates to the main branch. There are no compatibility guarantees associated with code in any branch, including main, until it has been released. For example, changes may be reverted before a release is published. For the best results, use the latest published release.**
 
