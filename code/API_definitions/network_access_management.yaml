@@ -130,7 +130,7 @@ info:
   license:
     name: Apache 2.0
     url: https://www.apache.org/licenses/LICENSE-2.0.html
-  version: 0.0.0-alpha.1
+  version: 0.1.0-rc.1
   x-camara-commonalities: 0.5.0
   contact:
     email: sp-nam@lists.camaraproject.org
@@ -1450,7 +1450,7 @@ components:
           $ref: "#/components/schemas/Latitude"
         longitude:
           $ref: "#/components/schemas/Longitude"
-      example &point:
+      example: &point
         latitude: 50.735851
         longitude: 7.10066
 
@@ -3027,7 +3027,9 @@ components:
                     enum:
                       - NOT_FOUND
                       - IDENTIFIER_NOT_FOUND
-                      - "{{SPECIFIC_CODE}}"
+                      - SERVICE_SITE_NOT_FOUND
+                      - DEVICE_NOT_FOUND
+                      - NETWORK_NOT_FOUND
           examples:
             GENERIC_404_NOT_FOUND:
               description: Resource is not found
