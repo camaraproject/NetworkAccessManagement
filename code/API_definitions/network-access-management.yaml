@@ -8,7 +8,7 @@ info:
 
     # Introduction
     An isolated network is a network access configuration where each configuration is for a logically separated Local
-    Area Network (LAN). Application developers can create, modify, or remove these networks which could be useful in
+    Area Network (LAN). API consumers can create, modify, or remove these networks which could be useful in
     scenarios such as:
 
     - A property owner wants to create a temporary network for the duration of a short-term booking or long-term rental.
@@ -17,8 +17,8 @@ info:
     - A security/privacy-minded user wants to create one or more networks for their guests or Internet-of-Thing (IoT)
       network clients.
 
-    A reboot request is simply a request to reboot a network operator supplied network access device. Application
-    developers can create these requests which could be useful in scenarios such as:
+    A reboot request is simply a request to reboot a network operator supplied network access device. API consumers 
+    can create these requests which could be useful in scenarios such as:
 
     - A property owner wants to recover from a faulty network state by rebooting a gateway device.
     - A property manager wants to reboot multiple devices at one or more locations such as common areas, offices, etc.
