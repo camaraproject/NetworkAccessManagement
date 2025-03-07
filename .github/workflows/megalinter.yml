@@ -3,7 +3,6 @@
 # More info at https://megalinter.io
 # CAMARA Project - Github Action for Pull Reqests
 # 31.01.2024 - initial version
-# 08.03.2024 - added javalint config (for QoD tests)
 
 name: MegaLinter
 
@@ -43,6 +42,10 @@ jobs:
         run: npm install -g @stoplight/spectral
       - name: Install Spectral functions
         run: npm install -g @stoplight/spectral-functions
+      - name: Install Gherkin Linter
+        run: npm install -g gherkin-lint
+      - name: Run Gherkin Linting
+        run: gherkin-lint code/Test_definitions/*.feature  
     # - name: Run spectral:oas Spectral Linting
     #   run: spectral lint code/API_definitions/*.yaml --verbose --ruleset .spectral.yml
         # Replace openapi.yaml file with your API specification file
@@ -62,9 +65,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           # ADD YOUR CUSTOM ENV VARIABLES HERE OR DEFINE THEM IN A FILE .mega-linter.yml AT THE ROOT OF YOUR REPOSITORY
           DISABLE: COPYPASTE,MARKDOWN
-          DISABLE_LINTERS: SPELL_CSPELL,SPELL_LYCHEE,YAML_PRETTIER,REPOSITORY_GRYPE, REPOSITORY_SEMGREP,REPOSITORY_DEVSKIM,REPOSITORY_KICS,REPOSITORY_TRIVY,REPOSITORY_TRIVY_SBOM,REPOSITORY_TRUFFLEHOG,REPOSITORY_CHECKOV,REPOSITORY_GITLEAKS,YAML_V8R,JAVA_PMD
+          DISABLE_LINTERS: SPELL_CSPELL,SPELL_LYCHEE,YAML_PRETTIER,REPOSITORY_GRYPE, REPOSITORY_SEMGREP,REPOSITORY_DEVSKIM,REPOSITORY_KICS,REPOSITORY_TRIVY,REPOSITORY_TRIVY_SBOM,REPOSITORY_TRUFFLEHOG,REPOSITORY_CHECKOV,REPOSITORY_GITLEAKS,YAML_V8R,JAVA_PMD,JAVA_CHECKSTYLE
           YAML_YAMLLINT_CONFIG_FILE: ".yamllint.yaml"
-          JAVA_CHECKSTYLE_CONFIG_FILE: "javalint.xml"
           OPENAPI_SPECTRAL_CONFIG_FILE: ".spectral.yml"
           YAML_YAMLLINT_FILTER_REGEX_INCLUDE: "(code/)"
           OPENAPI_SPECTRAL_FILTER_REGEX_INCLUDE: "(code/)"
