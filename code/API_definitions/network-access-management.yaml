@@ -17,7 +17,7 @@ info:
     - A security/privacy-minded user wants to create one or more networks for their guests or Internet-of-Thing (IoT)
       network clients.
 
-    A reboot request is simply a request to reboot a network operator supplied network access device. API consumers 
+    A reboot request is simply a request to reboot a network operator supplied network access device. API consumers
     can create these requests which could be useful in scenarios such as:
 
     - A property owner wants to recover from a faulty network state by rebooting a gateway device.
@@ -53,14 +53,11 @@ info:
 
     ### Authorization and authentication
 
-# Authorization and authentication
+    The "Camara Security and Interoperability Profile" provides details of how an API consumer requests an access token. Please refer to Identity and Consent Management (https://github.com/camaraproject/IdentityAndConsentManagement/) for the released version of the profile.
 
-The "Camara Security and Interoperability Profile" provides details of how an API consumer requests an access token. Please refer to Identity and Consent Management (https://github.com/camaraproject/IdentityAndConsentManagement/) for the released version of the profile.
+    The specific authorization flows to be used will be agreed upon during the onboarding process, happening between the API consumer and the API provider, taking into account the declared purpose for accessing the API, whilst also being subject to the prevailing legal framework dictated by local legislation.
 
-The specific authorization flows to be used will be agreed upon during the onboarding process, happening between the API consumer and the API provider, taking into account the declared purpose for accessing the API, whilst also being subject to the prevailing legal framework dictated by local legislation.
-
-In cases where personal data is processed by the API and users can exercise their rights through mechanisms such as opt-in and/or opt-out, the use of three-legged access tokens is mandatory. This ensures that the API remains in compliance with privacy regulations, upholding the principles of transparency and user-centric privacy-by-design.
-
+    In cases where personal data is processed by the API and users can exercise their rights through mechanisms such as opt-in and/or opt-out, the use of three-legged access tokens is mandatory. This ensures that the API remains in compliance with privacy regulations, upholding the principles of transparency and user-centric privacy-by-design.
 
     ### Scopes
     Scopes are used to protect the service owner's information and privacy.  The general format is
@@ -107,9 +104,7 @@ In cases where personal data is processed by the API and users can exercise thei
     may be requested for the same purpose of reconciling information from another source (e.g., database, persons with
     physical device access, etc.).
 
-    ## Optional Modes
-
-    ### Default Device
+    ## Default Device Mode
     When an identity for access token has a "default device", such as a typical residential customer with one service
     site and one network access device, service site and device scopes MAY be omitted.  Any fields referencing a
     network access device using the `/isolated-networks` or `/isolated-networks/*` APIs MUST be left blank by API
