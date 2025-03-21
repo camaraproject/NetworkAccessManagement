@@ -27,7 +27,7 @@ The sub project has no (pre)releases yet, work in progress is within the main br
 * Meetings
     * [Registration/Join](https://zoom-lfx.platform.linuxfoundation.org/meeting/96846363178?password=9ebebe6c-c59c-42be-a709-7d5fd42fb626)
     * Schedule: Bi-weekly on Fridays at 8AM MDT / 4PM CEST
-    * Minutes: Access [meeting minutes](https://wiki.camaraproject.org/x/pwCeAQ).
+    * Minutes: Access [meeting minutes](https://lf-camaraproject.atlassian.net/wiki/x/ez3e).
 * Mailing List
     * Subscribe / Unsubscribe to the mailing list of this Sub Project <https://lists.camaraproject.org/g/sp-nam>.
     * A message to the community of this Sub Project can be sent using <sp-nam@lists.camaraproject.org>.
