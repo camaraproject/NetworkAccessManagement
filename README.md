@@ -5,9 +5,13 @@
 <a href="https://github.com/camaraproject/NetworkAccessManagement" title="Repo Size"><img src="https://img.shields.io/github/repo-size/camaraproject/NetworkAccessManagement?style=plastic"></a>
 <a href="https://github.com/camaraproject/NetworkAccessManagement/blob/main/LICENSE" title="License"><img src="https://img.shields.io/badge/License-Apache%202.0-green.svg?style=plastic"></a>
 <a href="https://github.com/camaraproject/NetworkAccessManagement/releases/latest" title="Latest Release"><img src="https://img.shields.io/github/release/camaraproject/NetworkAccessManagement?style=plastic"></a>
+<a href="https://github.com/camaraproject/Governance/blob/main/ProjectStructureAndRoles.md" title="Sandbox API Repository"><img src="https://img.shields.io/badge/Sandbox%20API%20Repository-yellow?style=plastic"></a>
 
 # Network Access Management
-Repository to describe, develop, document, and test the Network Access Management within the Home Devices API family
+
+Sandbox API Repository to describe, develop, document, and test the NetworkAccessManagement Service API(s). The repository does not yet belong to a CAMARA Sub Project.
+
+* API Repository [wiki page](https://lf-camaraproject.atlassian.net/wiki/x/jzPe)
 
 ## Scope
 * Service APIs for “Network Access Management” of Home Devices (see APIBacklog.md)  
