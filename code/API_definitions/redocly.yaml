@@ -1,0 +1,10 @@
+extends:
+  - recommended
+
+rules:
+  no-unused-components: off
+  no-empty-servers: off
+
+resolve:
+  file:
+    allowedFileExtensions: [".yaml", ".yml"]
