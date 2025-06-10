@@ -25,7 +25,7 @@ Version 0.1.0-alpha.1 is in the initial release.
 
 - API definition **with inline documentation**:
   - [View it on ReDoc](https://redocly.github.io/redoc/?url=https://raw.githubusercontent.com/camaraproject/DeviceIdentifier/r1.1/code/API_definitions/device-identifier.yaml&nocors)
-  - [View it on Swagger Editor](https://editor.swagger.io/?url=https://raw.githubusercontent.com/camaraproject/DeviceIdentifier/r1.1/code/API_definitions/device-identifier.yaml)
+  - [View it on Swagger Editor](https://camaraproject.github.io/swagger-ui/?url=https://raw.githubusercontent.com/camaraproject/DeviceIdentifier/r1.1/code/API_definitions/device-identifier.yaml)
   - OpenAPI [YAML spec file](https://github.com/camaraproject/DeviceIdentifier/blob/r1.1/code/API_definitions/device-identifier.yaml)
 
 ### Added
