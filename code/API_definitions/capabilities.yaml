@@ -1,0 +1,155 @@
+openapi: 3.0.3
+info:
+  title: Device Capabilities
+  version: 0.1.0
+  description: |
+    API to retrieve capability information about operator-supplied or client devices.
+    Currently only operator device (CPE) capabilities are implemented.
+    Support for client devices is reserved for future use.
+
+tags:
+  - name: Retrieve Device Capabilities
+    description: Operations to retrieve information about device capabilities
+
+paths:
+  /capabilities/devices/{deviceId}:
+    get:
+      tags:
+        - Retrieve Device Capabilities
+      summary: Get capabilities for a device
+      operationId: getDeviceCapabilities
+      parameters:
+        - name: deviceId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/DeviceId'
+          description: ID of the device to retrieve capabilities for
+      responses:
+        '200':
+          description: Capabilities supported by the device
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeviceCapabilities'
+        '404':
+          description: Device not found
+
+components:
+  schemas:
+
+    DeviceId:
+      type: string
+      minLength: 1
+      maxLength: 64
+      description: The unique identifier for a device
+      example: device-1
+
+    DeviceCapabilities:
+      oneOf:
+        - $ref: '#/components/schemas/OperatorDeviceCapabilities'
+        - $ref: '#/components/schemas/ClientDeviceCapabilities'
+      discriminator:
+        propertyName: deviceType
+        mapping:
+          CPE: '#/components/schemas/OperatorDeviceCapabilities'
+          Client: '#/components/schemas/ClientDeviceCapabilities'
+
+    OperatorDeviceCapabilities:
+      type: object
+      description: Capabilities supported by a network operator-managed device (CPE)
+      required:
+        - deviceType
+      properties:
+        deviceType:
+          type: string
+          enum: [CPE]
+          default: CPE
+
+        supportedSecurityModes:
+          type: array
+          description: Supported security configurations for WiFi
+          items:
+            type: string
+            enum:
+              # Wi-Fi
+              - WPA2-Personal
+              - WPA3-Personal
+              - WPA2-Enterprise
+              - WPA3-Enterprise
+
+              # Thread
+              - Thread-NetworkKey
+              - DTLS
+              - PASE
+              - CASE
+          example: [WPA2-Personal, Thread-NetworkKey, CASE]
+        supportedNetworkTypes:
+          type: array
+          description: Physical or logical network types this device can support
+          items:
+            type: string
+          example: [Wi-Fi, Thread, Ethernet]
+
+        maxAuxiliaryNetworks:
+          type: integer
+          description: >-
+            Maximum amount of auxiliary networks the device supports for a given client.
+          minimum: 1
+          example: 2
+
+        onboardingProtocols:
+          type: array
+          description: |
+            Provisioning protocols supported for client device onboarding.
+            This implies support for zero-touch workflows.
+            Common values include DPP, Matter, or vendor-specific methods.
+          items:
+            type: string
+          example: [DPP, Matter, OnRamp]
+
+        networkFeatures:
+          type: object
+          description: Network-level functional capabilities
+          properties:
+            supportsRouting:
+              type: boolean
+            supportsTunneling:
+              type: boolean
+            supportedTunnelingTech:
+              type: array
+              items:
+                type: string
+              example: [IPSec, GRE, WireGuard]
+            wanConnected:
+              type: boolean
+            supportsTrustDomains:
+              type: boolean
+
+        telemetry:
+          type: object
+          description: Diagnostics and telemetry support
+          properties:
+            supportsDiagnostics:
+              type: boolean
+            supportsTelemetry:
+              type: boolean
+            metricsAvailable:
+              type: array
+              items:
+                type: string
+              example: [connected_clients, cpu_usage]
+
+    ClientDeviceCapabilities:
+      type: object
+      description: Capabilities supported by a client-side device (e.g., user laptop, IoT sensor)
+      required:
+        - deviceType
+      properties:
+        deviceType:
+          type: string
+          enum: [Client]
+          default: Client
+        note:
+          type: string
+          example: "Client capabilities not yet implemented."
