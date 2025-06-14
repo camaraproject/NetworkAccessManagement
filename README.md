@@ -7,7 +7,7 @@
 <a href="https://github.com/camaraproject/NetworkAccessManagement/releases/latest" title="Latest Release"><img src="https://img.shields.io/github/release/camaraproject/NetworkAccessManagement?style=plastic"></a>
 <a href="https://github.com/camaraproject/Governance/blob/main/ProjectStructureAndRoles.md" title="Sandbox API Repository"><img src="https://img.shields.io/badge/Sandbox%20API%20Repository-yellow?style=plastic"></a>
 
-# Network Access Management
+# NetworkAccessManagement
 
 Sandbox API Repository to describe, develop, document, and test the NetworkAccessManagement Service API(s). The repository does not yet belong to a CAMARA Sub Project.
 
