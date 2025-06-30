@@ -574,7 +574,7 @@ paths:
 
     patch:
       tags:
-        - Device Configure
+        - Configure and Apply Isolated Network
       summary: Bulk insert, remove or replace many networks from the configuration of a device
       security:
         - openId:
@@ -986,7 +986,7 @@ paths:
 
     patch:
       tags:
-        - Device Configure
+        - Configure and Apply Isolated Network
       summary: Bulk insert, remove, or replace a network from the configuration of many devices
       security:
         - openId:
@@ -1086,7 +1086,7 @@ paths:
 
     post:
       tags:
-        - Configure Reboot Request
+        - Configure Reboot Requests
       summary: Create a new reboot request
       security:
         - openId:
@@ -1208,7 +1208,7 @@ paths:
 
     patch:
       tags:
-        - Configure Reboot Request
+        - Configure Reboot Requests
       summary: Update an existing reboot request
       security:
         - openId:
@@ -1269,7 +1269,7 @@ paths:
 
     delete:
       tags:
-        - Configure Reboot Request
+        - Configure Reboot Requests
       summary: Delete a reboot request
       security:
         - openId:
@@ -1312,14 +1312,14 @@ components:
   securitySchemes:
     openId:
       type: openIdConnect
+      description: OpenID Connect
       openIdConnectUrl: https://example.com/.well-known/openid-configuration
 
   headers:
     x-correlator:
       description: Correlation id for the different services
       schema:
-        type: string
-        pattern: ^[a-zA-Z0-9-]{0,55}$
+        $ref: "#/components/schemas/XCorrelator"
 
   parameters:
     x-correlator:
@@ -1327,9 +1327,7 @@ components:
       in: header
       description: Correlation id for the different services
       schema:
-        type: string
-        pattern: ^[a-zA-Z0-9-]{0,55}$
-        example: "b4333c46-49c0-4f62-80d7-f0ef930f1c46"
+        $ref: "#/components/schemas/XCorrelator"
 
     siteId:
       name: siteId
@@ -1364,6 +1362,11 @@ components:
       description: ID of the reboot request to find
 
   schemas:
+    XCorrelator:
+      type: string
+      pattern: ^[a-zA-Z0-9-_:;.\/<>{}]{0,256}$
+      example: "b4333c46-49c0-4f62-80d7-f0ef930f1c46"
+
     DateTime:
       type: string
       format: date-time
@@ -2011,7 +2014,7 @@ components:
       properties:
         mode:
           type: string
-          description:
+          description: Structured Thread access details
           enum:
             - structured
           example: "structured"
@@ -2062,7 +2065,7 @@ components:
       properties:
         mode:
           type: string
-          description:
+          description: TLV encoded Thread operational dataset
           enum:
             - tlv
           example: "tlv"
@@ -2073,10 +2076,10 @@ components:
           example: "0e08000000000000010010000102030405060708090a0b0c0d0e0f"
       required:
         - mode
-        - tlv
+        - operationalDataset
       example: &thread-tlv-access-detail
         mode: tlv
-        tlv: "0e08000000000000010010000102030405060708090a0b0c0d0e0f"
+        operationalDataset: "0e08000000000000010010000102030405060708090a0b0c0d0e0f"
 
     ThreadAccessDetail:
       type: object
@@ -2098,7 +2101,14 @@ components:
       required:
         - accessType
         - mode
-      example: *thread-structured-access-detail
+      example: &thread-access-detail
+        accessType: "Thread"
+        mode: "structured"
+        channel: 13
+        extendedPanId: "d63e8e3e495ebbc3"
+        networkKey: "dfd34f0f05cad978ec4e32b0413038ff"
+        networkName: "Spec-Thread-B3AF"
+        panId: "d63e"
 
     AccessDetail:
       oneOf:
