@@ -2,7 +2,7 @@
 |------------------------------|-------------|
 | **Summary**               | As a service owner or property manager, I want to issue reboot requests for my operator-managed network access devices (such as gateways or mesh controllers) to recover from faulty network states or to perform administrative resets, ensuring reliable connectivity for tenants or guests. |
 | **Roles, Actors and Scope** | **Roles:** customer:user <br> **Actors:** Service owners, property managers, network operators.  <br> **Scope:** Trouble to Resolution (T2R) - Issue immediate or scheduled reboot requests for specific devices. Retrieve status of previously created reboot requests. |
-| **Pre-conditions**        | 1. The API consumer is onboarded and holds credentials with proper scopes (e.g., `reboot-requests:write`, optionally `devices:write`).  <br>2. The devices are installed and managed by the network operator supporting reboot management. |
+| **Pre-conditions**        | 1. The API consumer is onboarded and holds credentials with proper scopes (e.g., `reboot-requests:write`, optionally `devices:write`).  <br>2. The devices are installed and managed by the API provider supporting reboot management. |
 | **Begins when**           | The API client makes a `POST` request to `/reboot-requests` with a list of device IDs and an optional `atTime` to schedule the reboot. |
 | **Ends when**            | The reboot is executed by the operator-managed device or the request is withdrawn. |
 | **Post-conditions**       | - The specified device(s) reboot, recovering connectivity or clearing transient faults.  <br>- System logs are updated to reflect administrative action. |
