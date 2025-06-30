@@ -1886,10 +1886,20 @@ components:
             number the device supports.
           minimum: 1
           example: &device-max-networks 2
+        deviceStatus:
+          type: string
+          enum:
+            - connected
+            - disconnected
+            - unavailable
+          default: unavailable
+          description: The current status of the device
+          example: &device-status "connected"
       required:
         - id
       example: &device
         id: *device-id
+        deviceStatus: *device-status
         name: *device-name
         description: *device-description
         hardwareAddress: *device-hardware-address
@@ -2439,6 +2449,7 @@ components:
           - `network-access-management:devices.hardware-address:read`
       value: &device-with-hardware-address
         id: *device-id
+        deviceStatus: *device-status
         name: *device-name
         description: *device-description
         hardwareAddress: *device-hardware-address
@@ -2456,6 +2467,7 @@ components:
             - `network-access-management:service-sites.location:read`
       value: &device-with-service-site
         id: *device-id
+        deviceStatus: *device-status
         name: *device-name
         description: *device-description
         serviceSite: *service-site-id
@@ -2477,6 +2489,7 @@ components:
             - `network-access-management:isolated-networks.auxiliary:write`
       value: &device-with-networks
         id: *device-id
+        deviceStatus: *device-status
         name: *device-name
         description: *device-description
         networks: *device-network-intersection-list
@@ -2493,6 +2506,7 @@ components:
             - `network-access-management:service-sites.location:read`
       value: &device-with-hardware-address-and-service-site
         id: *device-id
+        deviceStatus: *device-status
         name: *device-name
         description: *device-description
         hardwareAddress: *device-hardware-address
@@ -2513,6 +2527,7 @@ components:
             - `network-access-management:isolated-networks.auxiliary:write`
       value: &device-with-hardware-address-and-networks
         id: *device-id
+        deviceStatus: *device-status
         name: *device-name
         description: *device-description
         hardwareAddress: *device-hardware-address
@@ -2539,6 +2554,7 @@ components:
             - `network-access-management:isolated-networks.auxiliary:write`
       value: &device-with-service-site-and-networks
         id: *device-id
+        deviceStatus: *device-status
         name: *device-name
         description: *device-description
         serviceSite: *service-site-id
@@ -2573,6 +2589,7 @@ components:
       value:
         - *base-device
         - id: *device-id2
+          deviceStatus: *device-status
           name: *device-name2
           description: *device-description2
 
@@ -2585,6 +2602,7 @@ components:
       value:
         - *device-with-hardware-address
         - id: *device-id2
+          deviceStatus: *device-status
           name: *device-name2
           description: *device-description2
           hardwareAddress: *device-hardware-address2
@@ -2603,6 +2621,7 @@ components:
       value:
         - *device-with-service-site
         - id: *device-id2
+          deviceStatus: *device-status
           name: *device-name2
           description: *device-description2
           serviceSite: *service-site-id2
@@ -2625,6 +2644,7 @@ components:
       value:
         - *device-with-networks
         - id: *device-id2
+          deviceStatus: *device-status
           name: *device-name2
           description: *device-description2
           networks: *device-network-intersection-list
@@ -2642,6 +2662,7 @@ components:
       value:
         - *device-with-hardware-address-and-service-site
         - id: *device-id2
+          deviceStatus: *device-status
           name: *device-name2
           description: *device-description2
           hardwareAddress: *device-hardware-address2
@@ -2663,6 +2684,7 @@ components:
       value:
         - *device-with-hardware-address-and-networks
         - id: *device-id2
+          deviceStatus: *device-status
           name: *device-name2
           description: *device-description2
           hardwareAddress: *device-hardware-address2
@@ -2690,6 +2712,7 @@ components:
       value:
         - *device-with-service-site-and-networks
         - id: *device-id2
+          deviceStatus: *device-status
           name: *device-name2
           description: *device-description2
           serviceSite: *service-site-id2

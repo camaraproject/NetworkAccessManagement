@@ -2,17 +2,17 @@ components:
   schemas:
     title: Operator Device Capabilities
     DeviceId:
-      $ref: './Common.yaml#/components/schemas/DeviceId'
+      $ref: "./Common.yaml#/components/schemas/DeviceId"
 
     DeviceCapabilities:
       oneOf:
-        - $ref: '#/components/schemas/OperatorDeviceCapabilities'
-        - $ref: '#/components/schemas/ClientDeviceCapabilities'
+        - $ref: "#/components/schemas/OperatorDeviceCapabilities"
+        - $ref: "#/components/schemas/ClientDeviceCapabilities"
       discriminator:
         propertyName: deviceType
         mapping:
-          CPE: '#/components/schemas/OperatorDeviceCapabilities'
-          Client: '#/components/schemas/ClientDeviceCapabilities'
+          CPE: "#/components/schemas/OperatorDeviceCapabilities"
+          Client: "#/components/schemas/ClientDeviceCapabilities"
 
     OperatorDeviceCapabilities:
       type: object

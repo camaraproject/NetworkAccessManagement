@@ -1,13 +1,12 @@
 # OpenAPI Specification for Common Definitions
 components:
-
   parameters:
     deviceIdParam:
       name: deviceId
       in: path
       required: true
       schema:
-        $ref: '#/components/schemas/DeviceId'
+        $ref: "#/components/schemas/DeviceId"
       description: ID of the device to retrieve capabilities for
 
   schemas:
