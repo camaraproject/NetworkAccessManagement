@@ -1,0 +1,118 @@
+components:
+  schemas:
+    title: Operator Device Capabilities
+    DeviceId:
+      $ref: './Common.yaml#/components/schemas/DeviceId'
+
+    DeviceCapabilities:
+      oneOf:
+        - $ref: '#/components/schemas/OperatorDeviceCapabilities'
+        - $ref: '#/components/schemas/ClientDeviceCapabilities'
+      discriminator:
+        propertyName: deviceType
+        mapping:
+          CPE: '#/components/schemas/OperatorDeviceCapabilities'
+          Client: '#/components/schemas/ClientDeviceCapabilities'
+
+    OperatorDeviceCapabilities:
+      type: object
+      description: Capabilities supported by a network operator-managed device (CPE)
+      required:
+        - deviceType
+      properties:
+        deviceType:
+          description: Consumers should inspect capabilities (e.g., wanConnected, supportsRouting, supportedNetworkTypes) to determine functional roles like gateway, router, or access point.
+          type: string
+          enum: [CPE]
+          default: CPE
+          example: CPE
+
+        supportedSecurityModes:
+          type: array
+          description: |
+            Supported security configurations for networks.
+            This includes Wi-Fi security modes (WPA2/WPA3 variants) and Thread-specific mechanisms (e.g., CASE, PASE).
+          items:
+            type: string
+            enum:
+              # Wi-Fi
+              - WPA2-Personal
+              - WPA3-Personal
+              - WPA2-Enterprise
+              - WPA3-Enterprise
+
+              # Thread
+              - Thread-NetworkKey
+              - DTLS
+              - PASE
+              - CASE
+          example: [WPA2-Personal, Thread-NetworkKey, CASE]
+        supportedNetworkTypes:
+          type: array
+          description: Physical or logical network types this device can support
+          items:
+            type: string
+          example: [Wi-Fi, Thread, Ethernet]
+
+        maxAuxiliaryNetworks:
+          type: integer
+          description: >-
+            Maximum amount of auxiliary networks the device supports for a given client.
+          minimum: 1
+          example: 2
+
+        onboardingProtocols:
+          type: array
+          description: |
+            Provisioning protocols supported for client device onboarding.
+            This implies support for zero-touch workflows.
+            Common values include DPP, Matter, or vendor-specific methods.
+          items:
+            type: string
+          example: [DPP, Matter, OnRamp]
+
+        networkFeatures:
+          type: object
+          description: Network-level functional capabilities
+          properties:
+            supportsRouting:
+              type: boolean
+            supportsTunneling:
+              type: boolean
+            supportedTunnelingTech:
+              type: array
+              items:
+                type: string
+              example: [IPSec, GRE, WireGuard]
+            wanConnected:
+              type: boolean
+            supportsTrustDomains:
+              type: boolean
+
+        telemetry:
+          type: object
+          description: Diagnostics and telemetry support
+          properties:
+            supportsDiagnostics:
+              type: boolean
+            supportsTelemetry:
+              type: boolean
+            metricsAvailable:
+              type: array
+              items:
+                type: string
+              example: [connected_clients, cpu_usage]
+
+    ClientDeviceCapabilities:
+      type: object
+      description: Capabilities supported by a client-side device (e.g., user laptop, IoT sensor)
+      required:
+        - deviceType
+      properties:
+        deviceType:
+          type: string
+          enum: [Client]
+          default: Client
+        note:
+          type: string
+          example: "Client capabilities not yet implemented."

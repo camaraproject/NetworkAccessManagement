@@ -1,0 +1,51 @@
+openapi: 3.0.3
+info:
+  title: Device Capabilities
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+  version: 0.1.0
+  description: |
+    API to retrieve capability information about operator-supplied or client devices.
+    Currently only operator device (CPE) capabilities are implemented.
+    Support for client devices is reserved for future use.
+
+servers:
+  - url: "{apiRoot}/network-access-management/v0"
+    variables:
+      apiRoot:
+        default: http://localhost:9091
+        description: API root, defined by the service provider, e.g. `api.example.com` or `api.example.com/somepath`
+
+tags:
+  - name: Retrieve Device Capabilities
+    description: Operations to retrieve information about device capabilities
+
+paths:
+  /capabilities/devices/{deviceId}:
+    get:
+      tags:
+        - Retrieve Device Capabilities
+      summary: Get capabilities for a device
+      security:
+        - openId:
+            - network-access-management:device:read
+      operationId: getDeviceCapabilities
+      parameters:
+        - $ref: './Domain/Common.yaml#/components/parameters/deviceIdParam'
+      responses:
+        '200':
+          description: Capabilities supported by the device
+          content:
+            application/json:
+              schema:
+                $ref: './Domain/Capabilities.yaml#/components/schemas/DeviceCapabilities/'
+        '404':
+          description: Device not found
+
+components:
+
+  securitySchemes:
+    openId:
+      type: openIdConnect
+      openIdConnectUrl: https://example.com/.well-known/openid-configuration
