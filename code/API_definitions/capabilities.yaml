@@ -24,6 +24,7 @@ tags:
 paths:
   /capabilities/devices/{deviceId}:
     get:
+      description: Get capabilities for a device
       tags:
         - Retrieve Device Capabilities
       summary: Get capabilities for a device
@@ -32,20 +33,20 @@ paths:
             - network-access-management:device:read
       operationId: getDeviceCapabilities
       parameters:
-        - $ref: './Domain/Common.yaml#/components/parameters/deviceIdParam'
+        - $ref: "./Domain/Common.yaml#/components/parameters/deviceIdParam"
       responses:
-        '200':
+        "200":
           description: Capabilities supported by the device
           content:
             application/json:
               schema:
-                $ref: './Domain/Capabilities.yaml#/components/schemas/DeviceCapabilities/'
-        '404':
+                $ref: "./Domain/Capabilities.yaml#/components/schemas/DeviceCapabilities"
+        "404":
           description: Device not found
 
 components:
-
   securitySchemes:
     openId:
       type: openIdConnect
+      description: OpenID Connect
       openIdConnectUrl: https://example.com/.well-known/openid-configuration

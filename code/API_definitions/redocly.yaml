@@ -2,8 +2,8 @@ extends:
   - recommended
 
 rules:
-  no-unused-components: off
-  no-empty-servers: off
+  no-unused-components: "off"
+  no-empty-servers: "off"
 
 resolve:
   file:
