@@ -86,12 +86,15 @@ info:
     | **network-access-management:devices:read** | List a service owner's devices
     | **network-access-management:devices.hardware-address:read** | Read a service owner's device's hardware address | network-access-management:devices:read
     | **network-access-management:devices:write** | Modify which networks are configured on a service owner's devices | network-access-management:devices:read
-    | **network-access-management:isolated-networks:read** | List a service owner's isolated networks created by the calling API client
-    | **network-access-management:isolated-networks:write** | Create or modify a service owner's isolated networks created by the calling API client | network-access-management:isolated-networks:read
-    | **network-access-management:isolated-networks.primary:read** | Access information about a service owner's primary isolated network
-    | **network-access-management:isolated-networks.primary:write** | Modify a service owner's primary isolated network | network-access-management:isolated-networks.primary:read
-    | **network-access-management:isolated-networks.auxiliary:read** | List a service owner's auxiliary isolated networks | network-access-management:isolated-networks:read
-    | **network-access-management:isolated-networks.auxiliary:write** | Create or modify a service owner's auxiliary isolated networks | network-access-management:isolated-networks.auxiliary:read<br />network-access-management:isolated-networks:write
+    | **network-access-management:isolated-networks:wifi:read** | List a service owner's Wi-Fi isolated networks created by the calling API client
+    | **network-access-management:isolated-networks:wifi:write** | Create or modify a service owner's Wi-Fi isolated networks created by the calling API client | network-access-management:isolated-networks:wifi:read
+    | **network-access-management:isolated-networks:wifi.primary:read** | Access information about a service owner's Wi-Fi primary isolated network
+    | **network-access-management:isolated-networks:wifi.primary:write** | Modify a service owner's primary Wi-Fi isolated network | network-access-management:isolated-networks:wifi.primary:read
+    | **network-access-management:isolated-networks:wifi.auxiliary:read** | List a service owner's auxiliary Wi-Fi isolated networks | network-access-management:isolated-networks:wifi:read
+    | **network-access-management:isolated-networks:wifi.auxiliary:write** | Create or modify a service owner's Wi-Fi auxiliary isolated networks | network-access-management:isolated-networks:wifi.auxiliary:read<br />network-access-management:isolated-networks:wifi:write
+    | **network-access-management:isolated-networks:thread:read** | Read the Thread credentials if they are the API provider's default or the requesting client formed the network
+    | **network-access-management:isolated-networks:thread:form** | Form a new Thread network, replacing the API provider's default Thread network if applicable, and modify or delete the existing network if created by the requesting client | network-access-management:isolated-networks:thread:read
+    | **network-access-management:isolated-networks:thread.admin** | Read or write to any of the service owner's Thread networks | network-access-management:isolated-networks:thread:form
     | **network-access-management:reboot-requests:read** | List a service owner's reboot requests created by the calling API client
     | **network-access-management:reboot-requests:write** | Create or modify a service owner's reboot request created by the calling API client | network-access-management:reboot-request:read
 
@@ -286,12 +289,12 @@ paths:
             - `network-access-management:devices.hardware-address:read`
 
         **Optional Scopes:**
-        - `network-access-management:isolated-networks:read`
-        - `network-access-management:isolated-networks:write`
-        - `network-access-management:isolated-networks.primary:read`
-        - `network-access-management:isolated-networks.primary:write`
-        - `network-access-management:isolated-networks.auxiliary:read`
-        - `network-access-management:isolated-networks.auxiliary:write`
+        - `network-access-management:isolated-networks:wifi:read`
+        - `network-access-management:isolated-networks:wifi:write`
+        - `network-access-management:isolated-networks:wifi.primary:read`
+        - `network-access-management:isolated-networks:wifi.primary:write`
+        - `network-access-management:isolated-networks:wifi.auxiliary:read`
+        - `network-access-management:isolated-networks:wifi.auxiliary:write`
       parameters:
         - $ref: "#/components/parameters/siteId"
       responses:
@@ -334,7 +337,7 @@ paths:
         - openId:
             - network-access-management:service-sites:read
             - network-access-management:devices:read
-            - network-access-management:isolated-networks:read
+            - network-access-management:isolated-networks:wifi:read
       operationId: getNetworksByServiceSite
       description: |
         Returns all networks at a service site that matches the given ID.
@@ -349,12 +352,12 @@ paths:
             - `network-access-management:devices:write`
             - `network-access-management:devices.hardware-address:read`
           - **one of**
-            - `network-access-management:isolated-networks:read`
-            - `network-access-management:isolated-networks:write`
-            - `network-access-management:isolated-networks.primary:read`
-            - `network-access-management:isolated-networks.primary:write`
-            - `network-access-management:isolated-networks.auxiliary:read`
-            - `network-access-management:isolated-networks.auxiliary:write`
+            - `network-access-management:isolated-networks:wifi:read`
+            - `network-access-management:isolated-networks:wifi:write`
+            - `network-access-management:isolated-networks:wifi.primary:read`
+            - `network-access-management:isolated-networks:wifi.primary:write`
+            - `network-access-management:isolated-networks:wifi.auxiliary:read`
+            - `network-access-management:isolated-networks:wifi.auxiliary:write`
       parameters:
         - $ref: "#/components/parameters/siteId"
       responses:
@@ -404,12 +407,12 @@ paths:
         - **one of**
           - `network-access-management:service-sites:read`
           - `network-access-management:service-sites.location:read`
-          - `network-access-management:isolated-networks:read`
-          - `network-access-management:isolated-networks:write`
-          - `network-access-management:isolated-networks.primary:read`
-          - `network-access-management:isolated-networks.primary:write`
-          - `network-access-management:isolated-networks.auxiliary:read`
-          - `network-access-management:isolated-networks.auxiliary:write`
+          - `network-access-management:isolated-networks:wifi:read`
+          - `network-access-management:isolated-networks:wifi:write`
+          - `network-access-management:isolated-networks:wifi.primary:read`
+          - `network-access-management:isolated-networks:wifi.primary:write`
+          - `network-access-management:isolated-networks:wifi.auxiliary:read`
+          - `network-access-management:isolated-networks:wifi.auxiliary:write`
       responses:
         "200":
           description: Contains information about all devices
@@ -468,12 +471,12 @@ paths:
         - **one of**
           - `network-access-management:service-sites:read`
           - `network-access-management:service-sites.location:read`
-          - `network-access-management:isolated-networks:read`
-          - `network-access-management:isolated-networks:write`
-          - `network-access-management:isolated-networks.primary:read`
-          - `network-access-management:isolated-networks.primary:write`
-          - `network-access-management:isolated-networks.auxiliary:read`
-          - `network-access-management:isolated-networks.auxiliary:write`
+          - `network-access-management:isolated-networks:wifi:read`
+          - `network-access-management:isolated-networks:wifi:write`
+          - `network-access-management:isolated-networks:wifi.primary:read`
+          - `network-access-management:isolated-networks:wifi.primary:write`
+          - `network-access-management:isolated-networks:wifi.auxiliary:read`
+          - `network-access-management:isolated-networks:wifi.auxiliary:write`
       parameters:
         - $ref: "#/components/parameters/deviceId"
       responses:
@@ -523,7 +526,7 @@ paths:
       security:
         - openId:
             - network-access-management:devices:read
-            - network-access-management:isolated-networks:read
+            - network-access-management:isolated-networks:wifi:read
       operationId: getNetworksByDevice
       description: |
         Returns all networks configured on a device that matches the given ID.  Scopes impact the output of this
@@ -536,12 +539,12 @@ paths:
             - `network-access-management:devices:write`
             - `network-access-management:devices.hardware-address:read`
           - **one of**
-            - `network-access-management:isolated-networks:read`
-            - `network-access-management:isolated-networks:write`
-            - `network-access-management:isolated-networks.primary:read`
-            - `network-access-management:isolated-networks.primary:write`
-            - `network-access-management:isolated-networks.auxiliary:read`
-            - `network-access-management:isolated-networks.auxiliary:write`
+            - `network-access-management:isolated-networks:wifi:read`
+            - `network-access-management:isolated-networks:wifi:write`
+            - `network-access-management:isolated-networks:wifi.primary:read`
+            - `network-access-management:isolated-networks:wifi.primary:write`
+            - `network-access-management:isolated-networks:wifi.auxiliary:read`
+            - `network-access-management:isolated-networks:wifi.auxiliary:write`
       parameters:
         - $ref: "#/components/parameters/deviceId"
       responses:
@@ -571,12 +574,12 @@ paths:
 
     patch:
       tags:
-        - Device Configure
+        - Configure and Apply Isolated Network
       summary: Bulk insert, remove or replace many networks from the configuration of a device
       security:
         - openId:
             - network-access-management:devices:write
-            - network-access-management:isolated-networks:read
+            - network-access-management:isolated-networks:wifi:read
       operationId: patchDeviceWithNetworks
       description: |
         Bulk inserts, removes, or replaces many networks from the configuration of the device by the given IDs.
@@ -588,12 +591,12 @@ paths:
         - **all of**
           - `network-access-management:devices:write`
           - **one of**
-            - `network-access-management:isolated-networks:read`
-            - `network-access-management:isolated-networks:write`
-            - `network-access-management:isolated-networks.primary:read`
-            - `network-access-management:isolated-networks.primary:write`
-            - `network-access-management:isolated-networks.auxiliary:read`
-            - `network-access-management:isolated-networks.auxiliary:write`
+            - `network-access-management:isolated-networks:wifi:read`
+            - `network-access-management:isolated-networks:wifi:write`
+            - `network-access-management:isolated-networks:wifi.primary:read`
+            - `network-access-management:isolated-networks:wifi.primary:write`
+            - `network-access-management:isolated-networks:wifi.auxiliary:read`
+            - `network-access-management:isolated-networks:wifi.auxiliary:write`
       parameters:
         - $ref: "#/components/parameters/deviceId"
       requestBody:
@@ -627,7 +630,7 @@ paths:
       summary: Get all Networks
       security:
         - openId:
-            - network-access-management:isolated-networks:read
+            - network-access-management:isolated-networks:wifi:read
       operationId: getNetworks
       description: |
         Returns all networks.  Scopes impact the output of this endpoint.  See the examples for various permutations.
@@ -635,23 +638,23 @@ paths:
         ## With Default Device
         **Required Scopes:**
         - **one of**
-          - `network-access-management:isolated-networks:read`
-          - `network-access-management:isolated-networks:write`
-          - `network-access-management:isolated-networks.primary:read`
-          - `network-access-management:isolated-networks.primary:write`
-          - `network-access-management:isolated-networks.auxiliary:read`
-          - `network-access-management:isolated-networks.auxiliary:write`
+          - `network-access-management:isolated-networks:wifi:read`
+          - `network-access-management:isolated-networks:wifi:write`
+          - `network-access-management:isolated-networks:wifi.primary:read`
+          - `network-access-management:isolated-networks:wifi.primary:write`
+          - `network-access-management:isolated-networks:wifi.auxiliary:read`
+          - `network-access-management:isolated-networks:wifi.auxiliary:write`
 
         ## Without Default Device
         **Required Scopes:**
         - **all of**
           - **one of**
-            - `network-access-management:isolated-networks:read`
-            - `network-access-management:isolated-networks:write`
-            - `network-access-management:isolated-networks.primary:read`
-            - `network-access-management:isolated-networks.primary:write`
-            - `network-access-management:isolated-networks.auxiliary:read`
-            - `network-access-management:isolated-networks.auxiliary:write`
+            - `network-access-management:isolated-networks:wifi:read`
+            - `network-access-management:isolated-networks:wifi:write`
+            - `network-access-management:isolated-networks:wifi.primary:read`
+            - `network-access-management:isolated-networks:wifi.primary:write`
+            - `network-access-management:isolated-networks:wifi.auxiliary:read`
+            - `network-access-management:isolated-networks:wifi.auxiliary:write`
           - **one of**
             - `network-access-management:devices:read`
             - `network-access-management:devices:write`
@@ -684,7 +687,7 @@ paths:
       operationId: createNetwork
       security:
         - openId:
-            - network-access-management:isolated-networks:write
+            - network-access-management:isolated-networks:wifi:write
       description: |
         Creates and returns the new network.  Scopes impact the function and output of this endpoint. See the examples
         for various permutations.
@@ -696,9 +699,9 @@ paths:
 
         **Required Scopes:**
         - **one of**
-          - `network-access-management:isolated-networks:write`
-          - `network-access-management:isolated-networks.primary:write`
-          - `network-access-management:isolated-networks.auxiliary:write`
+          - `network-access-management:isolated-networks:wifi:write`
+          - `network-access-management:isolated-networks:wifi.primary:write`
+          - `network-access-management:isolated-networks:wifi.auxiliary:write`
 
         ## Without Default Device
         Create the network and configure it to one or more devices.  The `devices` field MUST NOT be empty.
@@ -707,9 +710,9 @@ paths:
         -  **all of**
           - `network-access-management:devices:write`
           - **one of**
-            - `network-access-management:isolated-networks:write`
-            - `network-access-management:isolated-networks.primary:write`
-            - `network-access-management:isolated-networks.auxiliary:write`
+            - `network-access-management:isolated-networks:wifi:write`
+            - `network-access-management:isolated-networks:wifi.primary:write`
+            - `network-access-management:isolated-networks:wifi.auxiliary:write`
       requestBody:
         required: true
         content:
@@ -751,7 +754,7 @@ paths:
       summary: Get a Network by ID
       security:
         - openId:
-            - network-access-management:isolated-networks:read
+            - network-access-management:isolated-networks:wifi:read
       operationId: getNetwork
       description: |
         Returns the network that matches the given ID.  Scopes impact the output of this endpoint.  See the examples for
@@ -760,23 +763,23 @@ paths:
         ## With Default Device
         **Required Scopes:**
         - **one of**
-          - `network-access-management:isolated-networks:read`
-          - `network-access-management:isolated-networks:write`
-          - `network-access-management:isolated-networks.primary:read`
-          - `network-access-management:isolated-networks.primary:write`
-          - `network-access-management:isolated-networks.auxiliary:read`
-          - `network-access-management:isolated-networks.auxiliary:write`
+          - `network-access-management:isolated-networks:wifi:read`
+          - `network-access-management:isolated-networks:wifi:write`
+          - `network-access-management:isolated-networks:wifi.primary:read`
+          - `network-access-management:isolated-networks:wifi.primary:write`
+          - `network-access-management:isolated-networks:wifi.auxiliary:read`
+          - `network-access-management:isolated-networks:wifi.auxiliary:write`
 
         ## Without Default Device
         **Required Scopes:**
         - **all of**
           - **one of**
-            - `network-access-management:isolated-networks:read`
-            - `network-access-management:isolated-networks:write`
-            - `network-access-management:isolated-networks.primary:read`
-            - `network-access-management:isolated-networks.primary:write`
-            - `network-access-management:isolated-networks.auxiliary:read`
-            - `network-access-management:isolated-networks.auxiliary:write`
+            - `network-access-management:isolated-networks:wifi:read`
+            - `network-access-management:isolated-networks:wifi:write`
+            - `network-access-management:isolated-networks:wifi.primary:read`
+            - `network-access-management:isolated-networks:wifi.primary:write`
+            - `network-access-management:isolated-networks:wifi.auxiliary:read`
+            - `network-access-management:isolated-networks:wifi.auxiliary:write`
           - **one of**
             - `network-access-management:devices:read`
             - `network-access-management:devices:write`
@@ -814,7 +817,7 @@ paths:
       summary: Update an existing network
       security:
         - openId:
-            - network-access-management:isolated-networks:write
+            - network-access-management:isolated-networks:wifi:write
       operationId: updateNetwork
       description: |
         Updates the network, reconfigures any devices configured with the network, and returns the network that matches
@@ -823,18 +826,18 @@ paths:
         ## With Default Device
         **Required Scopes:**
         - **one of**
-          - `network-access-management:isolated-networks:write`
-          - `network-access-management:isolated-networks.primary:write`
-          - `network-access-management:isolated-networks.auxiliary:write`
+          - `network-access-management:isolated-networks:wifi:write`
+          - `network-access-management:isolated-networks:wifi.primary:write`
+          - `network-access-management:isolated-networks:wifi.auxiliary:write`
 
         ## Without Default Device
         **Required Scopes:**
         - **all of**
           - `network-access-management:devices:write`
           - **one of**
-            - `network-access-management:isolated-networks:write`
-            - `network-access-management:isolated-networks.primary:write`
-            - `network-access-management:isolated-networks.auxiliary:write`
+            - `network-access-management:isolated-networks:wifi:write`
+            - `network-access-management:isolated-networks:wifi.primary:write`
+            - `network-access-management:isolated-networks:wifi.auxiliary:write`
       parameters:
         - $ref: "#/components/parameters/netId"
       requestBody:
@@ -877,7 +880,7 @@ paths:
       summary: Delete a network
       security:
         - openId:
-            - network-access-management:isolated-networks:write
+            - network-access-management:isolated-networks:wifi:write
       operationId: deleteNetwork
       description: |
         Deletes the network and removes the configuration from any devices configured with the network that matches the
@@ -886,18 +889,18 @@ paths:
         ## With Default Device
         **Required Scopes:**
         - **one of**
-          - `network-access-management:isolated-networks:write`
-          - `network-access-management:isolated-networks.primary:write`
-          - `network-access-management:isolated-networks.auxiliary:write`
+          - `network-access-management:isolated-networks:wifi:write`
+          - `network-access-management:isolated-networks:wifi.primary:write`
+          - `network-access-management:isolated-networks:wifi.auxiliary:write`
 
         ## Without Default Device
         **Required Scopes:**
         - **all off**
           - `network-access-management:devices:write`
           - **one of**
-            - `network-access-management:isolated-networks:write`
-            - `network-access-management:isolated-networks.primary:write`
-            - `network-access-management:isolated-networks.auxiliary:write`
+            - `network-access-management:isolated-networks:wifi:write`
+            - `network-access-management:isolated-networks:wifi.primary:write`
+            - `network-access-management:isolated-networks:wifi.auxiliary:write`
       parameters:
         - $ref: "#/components/parameters/netId"
       responses:
@@ -924,7 +927,7 @@ paths:
       security:
         - openId:
             - network-access-management:devices:read
-            - network-access-management:isolated-networks:read
+            - network-access-management:isolated-networks:wifi:read
       operationId: getDevicesByNetwork
       description: |
         Returns all devices configured with a network that matches the given ID.  Scopes impact the output of this
@@ -937,12 +940,12 @@ paths:
             - `network-access-management:devices:write`
             - `network-access-management:devices.hardware-address:read`
           - **one of**
-            - `network-access-management:isolated-networks:read`
-            - `network-access-management:isolated-networks:write`
-            - `network-access-management:isolated-networks.primary:read`
-            - `network-access-management:isolated-networks.primary:write`
-            - `network-access-management:isolated-networks.auxiliary:read`
-            - `network-access-management:isolated-networks.auxiliary:write`
+            - `network-access-management:isolated-networks:wifi:read`
+            - `network-access-management:isolated-networks:wifi:write`
+            - `network-access-management:isolated-networks:wifi.primary:read`
+            - `network-access-management:isolated-networks:wifi.primary:write`
+            - `network-access-management:isolated-networks:wifi.auxiliary:read`
+            - `network-access-management:isolated-networks:wifi.auxiliary:write`
 
         **Optional Scopes:**
         - **one of**
@@ -983,12 +986,12 @@ paths:
 
     patch:
       tags:
-        - Device Configure
+        - Configure and Apply Isolated Network
       summary: Bulk insert, remove, or replace a network from the configuration of many devices
       security:
         - openId:
             - network-access-management:devices:write
-            - network-access-management:isolated-networks:read
+            - network-access-management:isolated-networks:wifi:read
       operationId: patchDevicesWithNetwork
       description: |
         Bulk inserts, removes, replaces a network from the configuration of many devices by the given IDs.
@@ -997,12 +1000,12 @@ paths:
         - **all of **
           - `network-access-management:devices:write`
           - **one of**
-            - `network-access-management:isolated-networks:read`
-            - `network-access-management:isolated-networks:write`
-            - `network-access-management:isolated-networks.primary:read`
-            - `network-access-management:isolated-networks.primary:write`
-            - `network-access-management:isolated-networks.auxiliary:read`
-            - `network-access-management:isolated-networks.auxiliary:write`
+            - `network-access-management:isolated-networks:wifi:read`
+            - `network-access-management:isolated-networks:wifi:write`
+            - `network-access-management:isolated-networks:wifi.primary:read`
+            - `network-access-management:isolated-networks:wifi.primary:write`
+            - `network-access-management:isolated-networks:wifi.auxiliary:read`
+            - `network-access-management:isolated-networks:wifi.auxiliary:write`
       parameters:
         - $ref: "#/components/parameters/netId"
       requestBody:
@@ -1083,7 +1086,7 @@ paths:
 
     post:
       tags:
-        - Configure Reboot Request
+        - Configure Reboot Requests
       summary: Create a new reboot request
       security:
         - openId:
@@ -1205,7 +1208,7 @@ paths:
 
     patch:
       tags:
-        - Configure Reboot Request
+        - Configure Reboot Requests
       summary: Update an existing reboot request
       security:
         - openId:
@@ -1266,7 +1269,7 @@ paths:
 
     delete:
       tags:
-        - Configure Reboot Request
+        - Configure Reboot Requests
       summary: Delete a reboot request
       security:
         - openId:
@@ -1309,14 +1312,14 @@ components:
   securitySchemes:
     openId:
       type: openIdConnect
+      description: OpenID Connect
       openIdConnectUrl: https://example.com/.well-known/openid-configuration
 
   headers:
     x-correlator:
       description: Correlation id for the different services
       schema:
-        type: string
-        pattern: ^[a-zA-Z0-9-]{0,55}$
+        $ref: "#/components/schemas/XCorrelator"
 
   parameters:
     x-correlator:
@@ -1324,9 +1327,7 @@ components:
       in: header
       description: Correlation id for the different services
       schema:
-        type: string
-        pattern: ^[a-zA-Z0-9-]{0,55}$
-        example: "b4333c46-49c0-4f62-80d7-f0ef930f1c46"
+        $ref: "#/components/schemas/XCorrelator"
 
     siteId:
       name: siteId
@@ -1361,6 +1362,11 @@ components:
       description: ID of the reboot request to find
 
   schemas:
+    XCorrelator:
+      type: string
+      pattern: ^[a-zA-Z0-9-_:;.\/<>{}]{0,256}$
+      example: "b4333c46-49c0-4f62-80d7-f0ef930f1c46"
+
     DateTime:
       type: string
       format: date-time
@@ -2003,13 +2009,116 @@ components:
         ssid: *wifi-access-detail-ssid
         securityMode: *wpa-personal
 
+    ThreadStructuredAccessDetail:
+      type: object
+      properties:
+        mode:
+          type: string
+          description: Structured Thread access details
+          enum:
+            - structured
+          example: "structured"
+        channel:
+          type: integer
+          minimum: 11
+          maximum: 26
+          description: The Thread channel (IEEE 802.15.4 channel number)
+          example: 13
+        extendedPanId:
+          type: string
+          pattern: "^[0-9a-fA-F]{16}$"
+          description: The Extended PAN ID (16 hex digits)
+          example: "d63e8e3e495ebbc3"
+        networkKey:
+          type: string
+          pattern: "^[0-9a-fA-F]{32}$"
+          description: The Thread Network Key (32 hex digits)
+          example: "dfd34f0f05cad978ec4e32b0413038ff"
+        networkName:
+          type: string
+          minLength: 1
+          maxLength: 16
+          description: The Thread Network Name (1-16 ASCII characters)
+          example: "Spec-Thread-B3AF"
+        panId:
+          type: string
+          pattern: "^[0-9a-fA-F]{4}$"
+          description: The PAN ID (4 hex digits)
+          example: "d63e"
+      required:
+        - mode
+        - channel
+        - extendedPanId
+        - networkKey
+        - networkName
+        - panId
+      example: &thread-structured-access-detail
+        mode: "structured"
+        channel: 13
+        extendedPanId: "d63e8e3e495ebbc3"
+        networkKey: "dfd34f0f05cad978ec4e32b0413038ff"
+        networkName: "Spec-Thread-B3AF"
+        panId: "d63e"
+
+    ThreadTlvAccessDetail:
+      type: object
+      properties:
+        mode:
+          type: string
+          description: TLV encoded Thread operational dataset
+          enum:
+            - tlv
+          example: "tlv"
+        operationalDataset:
+          type: string
+          maxLength: 255
+          description: The Thread network credentials (operational dataset) encoded as a TLV hex string
+          example: "0e08000000000000010010000102030405060708090a0b0c0d0e0f"
+      required:
+        - mode
+        - operationalDataset
+      example: &thread-tlv-access-detail
+        mode: tlv
+        operationalDataset: "0e08000000000000010010000102030405060708090a0b0c0d0e0f"
+
+    ThreadAccessDetail:
+      type: object
+      properties:
+        accessType:
+          type: string
+          enum:
+            - Thread
+          example: "Thread"
+      oneOf:
+        - $ref: "#/components/schemas/ThreadStructuredAccessDetail"
+        - $ref: "#/components/schemas/ThreadTlvAccessDetail"
+      discriminator:
+        propertyName: threadDetailType
+        mapping:
+          structured: "#/components/schemas/ThreadStructuredAccessDetail"
+          tlv: "#/components/schemas/ThreadTlvAccessDetail"
+      description: The Thread network details, either structured or TLV encoded
+      required:
+        - accessType
+        - mode
+      example: &thread-access-detail
+        accessType: "Thread"
+        mode: "structured"
+        channel: 13
+        extendedPanId: "d63e8e3e495ebbc3"
+        networkKey: "dfd34f0f05cad978ec4e32b0413038ff"
+        networkName: "Spec-Thread-B3AF"
+        panId: "d63e"
+
     AccessDetail:
       oneOf:
         - $ref: "#/components/schemas/WiFiAccessDetail"
+        - $ref: "#/components/schemas/ThreadAccessDetail"
       discriminator:
         propertyName: accessType
         mapping:
           Wi-Fi: "#/components/schemas/WiFiAccessDetail"
+          Thread: "#/components/schemas/ThreadAccessDetail"
       example: *wifi-access-detail
 
     NetworkUpdate:
@@ -2481,12 +2590,12 @@ components:
             - `network-access-management:devices:read`
             - `network-access-management:devices:write`
           - **one of**
-            - `network-access-management:isolated-networks:read`
-            - `network-access-management:isolated-networks:write`
-            - `network-access-management:isolated-networks.primary:read`
-            - `network-access-management:isolated-networks.primary:write`
-            - `network-access-management:isolated-networks.auxiliary:read`
-            - `network-access-management:isolated-networks.auxiliary:write`
+            - `network-access-management:isolated-networks:wifi:read`
+            - `network-access-management:isolated-networks:wifi:write`
+            - `network-access-management:isolated-networks:wifi.primary:read`
+            - `network-access-management:isolated-networks:wifi.primary:write`
+            - `network-access-management:isolated-networks:wifi.auxiliary:read`
+            - `network-access-management:isolated-networks:wifi.auxiliary:write`
       value: &device-with-networks
         id: *device-id
         deviceStatus: *device-status
@@ -2519,12 +2628,12 @@ components:
         - **all of**
           - `network-access-management:devices.hardware-address:read`
           - **one of**
-            - `network-access-management:isolated-networks:read`
-            - `network-access-management:isolated-networks:write`
-            - `network-access-management:isolated-networks.primary:read`
-            - `network-access-management:isolated-networks.primary:write`
-            - `network-access-management:isolated-networks.auxiliary:read`
-            - `network-access-management:isolated-networks.auxiliary:write`
+            - `network-access-management:isolated-networks:wifi:read`
+            - `network-access-management:isolated-networks:wifi:write`
+            - `network-access-management:isolated-networks:wifi.primary:read`
+            - `network-access-management:isolated-networks:wifi.primary:write`
+            - `network-access-management:isolated-networks:wifi.auxiliary:read`
+            - `network-access-management:isolated-networks:wifi.auxiliary:write`
       value: &device-with-hardware-address-and-networks
         id: *device-id
         deviceStatus: *device-status
@@ -2546,12 +2655,12 @@ components:
             - `network-access-management:service-sites:read`
             - `network-access-management:service-sites.location:read`
           - **one of**
-            - `network-access-management:isolated-networks:read`
-            - `network-access-management:isolated-networks:write`
-            - `network-access-management:isolated-networks.primary:read`
-            - `network-access-management:isolated-networks.primary:write`
-            - `network-access-management:isolated-networks.auxiliary:read`
-            - `network-access-management:isolated-networks.auxiliary:write`
+            - `network-access-management:isolated-networks:wifi:read`
+            - `network-access-management:isolated-networks:wifi:write`
+            - `network-access-management:isolated-networks:wifi.primary:read`
+            - `network-access-management:isolated-networks:wifi.primary:write`
+            - `network-access-management:isolated-networks:wifi.auxiliary:read`
+            - `network-access-management:isolated-networks:wifi.auxiliary:write`
       value: &device-with-service-site-and-networks
         id: *device-id
         deviceStatus: *device-status
@@ -2571,12 +2680,12 @@ components:
             - `network-access-management:service-sites:read`
             - `network-access-management:service-sites.location:read`
           - **one of**
-            - `network-access-management:isolated-networks:read`
-            - `network-access-management:isolated-networks:write`
-            - `network-access-management:isolated-networks.primary:read`
-            - `network-access-management:isolated-networks.primary:write`
-            - `network-access-management:isolated-networks.auxiliary:read`
-            - `network-access-management:isolated-networks.auxiliary:write`
+            - `network-access-management:isolated-networks:wifi:read`
+            - `network-access-management:isolated-networks:wifi:write`
+            - `network-access-management:isolated-networks:wifi.primary:read`
+            - `network-access-management:isolated-networks:wifi.primary:write`
+            - `network-access-management:isolated-networks:wifi.auxiliary:read`
+            - `network-access-management:isolated-networks:wifi.auxiliary:write`
       value: *device
 
     BaseDeviceList:
@@ -2635,12 +2744,12 @@ components:
             - `network-access-management:devices:read`
             - `network-access-management:devices:write`
           - **one of**
-            - `network-access-management:isolated-networks:read`
-            - `network-access-management:isolated-networks:write`
-            - `network-access-management:isolated-networks.primary:read`
-            - `network-access-management:isolated-networks.primary:write`
-            - `network-access-management:isolated-networks.auxiliary:read`
-            - `network-access-management:isolated-networks.auxiliary:write`
+            - `network-access-management:isolated-networks:wifi:read`
+            - `network-access-management:isolated-networks:wifi:write`
+            - `network-access-management:isolated-networks:wifi.primary:read`
+            - `network-access-management:isolated-networks:wifi.primary:write`
+            - `network-access-management:isolated-networks:wifi.auxiliary:read`
+            - `network-access-management:isolated-networks:wifi.auxiliary:write`
       value:
         - *device-with-networks
         - id: *device-id2
@@ -2675,12 +2784,12 @@ components:
         - **all of**
           - `network-access-management:devices.hardware-address:read`
           - **one of**
-            - `network-access-management:isolated-networks:read`
-            - `network-access-management:isolated-networks:write`
-            - `network-access-management:isolated-networks.primary:read`
-            - `network-access-management:isolated-networks.primary:write`
-            - `network-access-management:isolated-networks.auxiliary:read`
-            - `network-access-management:isolated-networks.auxiliary:write`
+            - `network-access-management:isolated-networks:wifi:read`
+            - `network-access-management:isolated-networks:wifi:write`
+            - `network-access-management:isolated-networks:wifi.primary:read`
+            - `network-access-management:isolated-networks:wifi.primary:write`
+            - `network-access-management:isolated-networks:wifi.auxiliary:read`
+            - `network-access-management:isolated-networks:wifi.auxiliary:write`
       value:
         - *device-with-hardware-address-and-networks
         - id: *device-id2
@@ -2703,12 +2812,12 @@ components:
             - `network-access-management:service-sites:read`
             - `network-access-management:service-sites.location:read`
           - **one of**
-            - `network-access-management:isolated-networks:read`
-            - `network-access-management:isolated-networks:write`
-            - `network-access-management:isolated-networks.primary:read`
-            - `network-access-management:isolated-networks.primary:write`
-            - `network-access-management:isolated-networks.auxiliary:read`
-            - `network-access-management:isolated-networks.auxiliary:write`
+            - `network-access-management:isolated-networks:wifi:read`
+            - `network-access-management:isolated-networks:wifi:write`
+            - `network-access-management:isolated-networks:wifi.primary:read`
+            - `network-access-management:isolated-networks:wifi.primary:write`
+            - `network-access-management:isolated-networks:wifi.auxiliary:read`
+            - `network-access-management:isolated-networks:wifi.auxiliary:write`
       value:
         - *device-with-service-site-and-networks
         - id: *device-id2
@@ -2729,12 +2838,12 @@ components:
             - `network-access-management:service-sites:read`
             - `network-access-management:service-sites.location:read`
           - **one of**
-            - `network-access-management:isolated-networks:read`
-            - `network-access-management:isolated-networks:write`
-            - `network-access-management:isolated-networks.primary:read`
-            - `network-access-management:isolated-networks.primary:write`
-            - `network-access-management:isolated-networks.auxiliary:read`
-            - `network-access-management:isolated-networks.auxiliary:write`
+            - `network-access-management:isolated-networks:wifi:read`
+            - `network-access-management:isolated-networks:wifi:write`
+            - `network-access-management:isolated-networks:wifi.primary:read`
+            - `network-access-management:isolated-networks:wifi.primary:write`
+            - `network-access-management:isolated-networks:wifi.auxiliary:read`
+            - `network-access-management:isolated-networks:wifi.auxiliary:write`
       value: *device-list
 
     BaseNetwork:
@@ -2742,12 +2851,12 @@ components:
       description: |
         Output with the following scope(s):
         - **one of**
-          - `network-access-management:isolated-networks:read`
-          - `network-access-management:isolated-networks:write`
-          - `network-access-management:isolated-networks.primary:read`
-          - `network-access-management:isolated-networks.primary:write`
-          - `network-access-management:isolated-networks.auxiliary:read`
-          - `network-access-management:isolated-networks.auxiliary:write`
+          - `network-access-management:isolated-networks:wifi:read`
+          - `network-access-management:isolated-networks:wifi:write`
+          - `network-access-management:isolated-networks:wifi.primary:read`
+          - `network-access-management:isolated-networks:wifi.primary:write`
+          - `network-access-management:isolated-networks:wifi.auxiliary:read`
+          - `network-access-management:isolated-networks:wifi.auxiliary:write`
       value: &base-network
         id: *network-id
         description: *network-description
@@ -2765,12 +2874,12 @@ components:
         Output with the following scope(s):
         - **all of**
           - **one of**
-            - `network-access-management:isolated-networks:read`
-            - `network-access-management:isolated-networks:write`
-            - `network-access-management:isolated-networks.primary:read`
-            - `network-access-management:isolated-networks.primary:write`
-            - `network-access-management:isolated-networks.auxiliary:read`
-            - `network-access-management:isolated-networks.auxiliary:write`
+            - `network-access-management:isolated-networks:wifi:read`
+            - `network-access-management:isolated-networks:wifi:write`
+            - `network-access-management:isolated-networks:wifi.primary:read`
+            - `network-access-management:isolated-networks:wifi.primary:write`
+            - `network-access-management:isolated-networks:wifi.auxiliary:read`
+            - `network-access-management:isolated-networks:wifi.auxiliary:write`
           - **one of**
             - `network-access-management:devices:read`
             - `network-access-management:devices:write`
@@ -2782,9 +2891,9 @@ components:
       description: |
         Post with the following scope(s):
         - **one of**
-          - `network-access-management:isolated-networks:write`
-          - `network-access-management:isolated-networks.primary:write`
-          - `network-access-management:isolated-networks.auxiliary:write`
+          - `network-access-management:isolated-networks:wifi:write`
+          - `network-access-management:isolated-networks:wifi.primary:write`
+          - `network-access-management:isolated-networks:wifi.auxiliary:write`
       value: *network-update
 
     BaseNetworkCreate:
@@ -2792,9 +2901,9 @@ components:
       description: |
         Post with the following scope(s):
         - **one of**
-          - `network-access-management:isolated-networks:write`
-          - `network-access-management:isolated-networks.primary:write`
-          - `network-access-management:isolated-networks.auxiliary:write`
+          - `network-access-management:isolated-networks:wifi:write`
+          - `network-access-management:isolated-networks:wifi.primary:write`
+          - `network-access-management:isolated-networks:wifi.auxiliary:write`
       value:
         description: *network-description
         accessDetail: *wifi-access-detail
@@ -2807,9 +2916,9 @@ components:
         - **all of**
           - `network-access-management:devices:write`
           - **one of**
-            - `network-access-management:isolated-networks:write`
-            - `network-access-management:isolated-networks.primary:write`
-            - `network-access-management:isolated-networks.auxiliary:write`
+            - `network-access-management:isolated-networks:wifi:write`
+            - `network-access-management:isolated-networks:wifi.primary:write`
+            - `network-access-management:isolated-networks:wifi.auxiliary:write`
       value: *network-create
 
     BaseNetworkList:
@@ -2817,12 +2926,12 @@ components:
       description: |
         Output with the following scope(s):
         - **one of**
-          - `network-access-management:isolated-networks:read`
-          - `network-access-management:isolated-networks:write`
-          - `network-access-management:isolated-networks.primary:read`
-          - `network-access-management:isolated-networks.primary:write`
-          - `network-access-management:isolated-networks.auxiliary:read`
-          - `network-access-management:isolated-networks.auxiliary:write`
+          - `network-access-management:isolated-networks:wifi:read`
+          - `network-access-management:isolated-networks:wifi:write`
+          - `network-access-management:isolated-networks:wifi.primary:read`
+          - `network-access-management:isolated-networks:wifi.primary:write`
+          - `network-access-management:isolated-networks:wifi.auxiliary:read`
+          - `network-access-management:isolated-networks:wifi.auxiliary:write`
       value:
         - *base-network
         - id: *network-id2
@@ -2841,12 +2950,12 @@ components:
         Output with the following scope(s):
         - **all of**
           - **one of**
-            - `network-access-management:isolated-networks:read`
-            - `network-access-management:isolated-networks:write`
-            - `network-access-management:isolated-networks.primary:read`
-            - `network-access-management:isolated-networks.primary:write`
-            - `network-access-management:isolated-networks.auxiliary:read`
-            - `network-access-management:isolated-networks.auxiliary:write`
+            - `network-access-management:isolated-networks:wifi:read`
+            - `network-access-management:isolated-networks:wifi:write`
+            - `network-access-management:isolated-networks:wifi.primary:read`
+            - `network-access-management:isolated-networks:wifi.primary:write`
+            - `network-access-management:isolated-networks:wifi.auxiliary:read`
+            - `network-access-management:isolated-networks:wifi.auxiliary:write`
           - **one of**
             - `network-access-management:devices:read`
             - `network-access-management:devices:write`
