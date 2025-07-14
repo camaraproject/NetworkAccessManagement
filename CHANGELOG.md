@@ -2,26 +2,26 @@
 
 ## Table of Contents
 
-- **[r1.0-rc.1](#r10-rc1)**
+- **[r1.0](#r10)**
 
 **Please be aware that the project will have frequent updates to the main branch. There are no compatibility guarantees associated with code in any branch, including main, until it has been released. For example, changes may be reverted before a release is published. For the best results, use the latest published release.**
 
-# r1.0-rc.1
+# r1.0
 
 ## Release Notes
 
 This public release contains the definition and documentation of
 
-- network-access-management v0.1.0-alpha.1
+- network-access-management v0.1.0-rc.1
 
 The API definition(s) are based on
 
 - Commonalities v0.5.0
 - Identity and Consent Management v0.3.0
 
-## network-access-management v0.1.0-alpha.1
+## network-access-management v0.1.0-rc.1
 
-Version 0.1.0-alpha.1 is in the initial release.
+Version 0.1.0-rc.1 is in the initial release.
 
 - API definition **with inline documentation**:
   - [View it on ReDoc](https://redocly.github.io/redoc/?url=https://raw.githubusercontent.com/camaraproject/DeviceIdentifier/r1.1/code/API_definitions/device-identifier.yaml&nocors)
@@ -51,4 +51,4 @@ Version 0.1.0-alpha.1 is in the initial release.
 
 ### Removed
 
-**Full Changelog**: <https://github.com/camaraproject/DeviceIdentifier/compare/e9235736ee9eb3a6c69f91120d5c6ed41f889d61...r1.0>
+**Full Changelog**: <https://github.com/camaraproject/NetworkAccessManagement/commits/r1.1>
