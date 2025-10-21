@@ -15,7 +15,7 @@ components:
       minLength: 1
       maxLength: 64
       description: The unique identifier for the trust domain.
-      example: &trust-domain-id "wifi-1"
+      example: "wifi-1"
 
     TrustDomainUpdate:
       type: object
@@ -43,6 +43,11 @@ components:
                 The expiration date and time of the network.  It must follow [RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339#section-5.6)
                 and must have time zone. Recommended format is yyyy-MM-dd'T'HH:mm:ss.SSSZ (i.e. which allows
                 2023-07-03T14:27:08.312+02:00 or 2023-07-03T12:27:08.312Z).
+        policies:
+          type: array
+          description: An optional list of policies associated with the trust domain.
+          items:
+            $ref: "#/components/schemas/Policy"
 
     TrustDomainCreate:
       allOf:
@@ -66,7 +71,7 @@ components:
               type: string
               maxLength: 100
               description: The user who created the network
-              example: &trust-domain-created-by "user-1"
+              example: "user-1"
             modifiedAt:
               allOf:
                 - $ref: "./Common.yaml#/components/schemas/DateTime"
@@ -78,6 +83,52 @@ components:
               type: string
               maxLength: 100
               description: The user who last updated the trust domain
-              example: &trust-domain-modified-by "user-2"
+              example: "user-2"
           required:
             - id
+
+    Policy:
+      type: object
+      required: [type, value]
+      properties:
+        type:
+          type: string
+          description: >
+            The policy key indicating what aspect of the Trust Domain this policy controls.
+            Examples: `maxDevices`, `maxDomainDownstreamKbps`, `maxDomainUpstreamKbps`, `egressAllowedList`.
+        value:
+          description: Type-specific policy value.
+          oneOf:
+            - type: integer
+            - type: string
+            - type: array
+              items:
+                type: string
+            - type: object
+          example: 100
+        description:
+          type: string
+          description: Optional human-readable explanation of the policy.
+        activePeriod:
+          type: object
+          description: Defines when the policy is active.
+          properties:
+            start:
+              $ref: "./Common.yaml#/components/schemas/DateTime"
+            end:
+              $ref: "./Common.yaml#/components/schemas/DateTime"
+            duration:
+              type: string
+              pattern: "^P(?!$)(\\d+D)?(T(\\d+H)?(\\d+M)?(\\d+S)?)?$"
+              description: |
+                ISO 8601 duration string. Used when the policy should expire relative to creation time.
+                Example: P1D (1 day), PT12H (12 hours)
+          example:
+            start: "2025-10-21T12:00:00Z"
+            end: "2025-10-22T12:00:00Z"
+        metadata:
+          type: object
+          additionalProperties: true
+          description: >
+            Optional implementation- or operator-specific extensions for the policy.
+            May include provenance, enforcement context, or versioning data.
