@@ -4,10 +4,10 @@ info:
   title: Home Devices - Network Access Management
   description: |
     Service enabling API for managing network operator supplied network access devices. This APIs initial focus is on
-    managing **Isolated Networks** and device reboot requests.
+    managing **Trust Domains** and device reboot requests.
 
     # Introduction
-    An isolated network is a network access configuration where each configuration is for a logically separated Local
+    A Trust Domain is a network access configuration where each configuration is for a logically separated Local
     Area Network (LAN). API consumers can create, modify, or remove these networks which could be useful in
     scenarios such as:
 
@@ -26,8 +26,8 @@ info:
     # Relevant Terms and Definitions
     - **Trust Domain**: a declarative, intent-level grouping that defines which devices are permitted to communicate with each other as if they were on the same LAN and what high-level access policies apply to that group.
     - **Reboot Request**: A request to reboot a network operator supplied network access device.
-    - **Device**: A network operator supplied network access device that supports isolated networks.  Multiple devices
-    that support LAN connectivity across the same isolated network (e.g., mesh Wi-Fi, Thread personal area network,
+    - **Device**: A network operator supplied network access device that supports network segmentation technologies.  Multiple devices
+    that support LAN connectivity across the same Trust Domain (e.g., mesh Wi-Fi, Thread personal area network,
     etc.) SHOULD be presented as a single device for implementations of this API.
     - **API Provider**: Provider that implements this API.
     - **Network Operator**: Service provider that has operational control of supporting devices.
@@ -39,12 +39,12 @@ info:
     mailing address (e.g., a residential and business account, an office and common area account, etc.) MUST provide
     some distinction in the property address (e.g., attn: Home Office, attn: Common Area, etc.).  Multiple service
     sites, for the same mailing address, but for unrelated service owner identities, do not have this requirement.
-    - **End-User**: The user connecting to an isolated network with a network client.
-    - **Network Client**: End-user equipment connecting to an isolated network (e.g., laptop, phone, IoT device, etc.).
+    - **End-User**: The user connecting to a Trust Domain with a network client.
+    - **Network Client**: End-user equipment connecting to a Trust Domain (e.g., laptop, phone, IoT device, etc.).
     - **API Client**: A first- or third-party software system using this API.
 
     # API Functionality
-    This API allows API clients to manage isolated networks and reboot network access devices.
+    This API allows API clients to manage Trust Domains and reboot network access devices.
 
     ### Authorization and authentication
 
@@ -66,12 +66,12 @@ info:
     - Scopes have inheritance when one scope would otherwise require the inherited scope.
     - Read scopes for one resource impacts the output of another resource when the requested resource has a relationship
     with the first (e.g., listing networks on a device requires both device and network read scopes).
-    - Isolated networks are broken down into 3 roles allowing service owners to grant granular permissions to API
+    - Trust Domains are broken down into 3 roles allowing service owners to grant granular permissions to API
     clients: only-own, primary, and auxiliary. The primary role allows API clients to manage the main network access
     configuration. The auxiliary role allows API clients to manage all auxiliary (i.e., secondary) networks. The
     only-own role allows API clients to manage networks it has created. Only-own networks SHOULD be an auxiliary, or
     secondary, network. Note that there is an edge case when a service owner revokes the primary role authorization. An
-    API client SHOULD be able to continue managing primary isolated networks created by the client. Complete
+    API client SHOULD be able to continue managing primary Trust Domains created by the client. Complete
     administrative control requires both the primary and auxiliary roles.
 
     | Scope | Description | Inherits
@@ -81,12 +81,12 @@ info:
     | **network-access-management:devices:read** | List a service owner's devices
     | **network-access-management:devices.hardware-address:read** | Read a service owner's device's hardware address | network-access-management:devices:read
     | **network-access-management:devices:write** | Modify which networks are configured on a service owner's devices | network-access-management:devices:read
-    | **network-access-management:trust-domains:wifi:read** | List a service owner's Wi-Fi isolated networks created by the calling API client
-    | **network-access-management:trust-domains:wifi:write** | Create or modify a service owner's Wi-Fi isolated networks created by the calling API client | network-access-management:trust-domains:wifi:read
+    | **network-access-management:trust-domains:wifi:read** | List a service owner's Wi-Fi Trust Domains created by the calling API client
+    | **network-access-management:trust-domains:wifi:write** | Create or modify a service owner's Wi-Fi Trust Domains created by the calling API client | network-access-management:trust-domains:wifi:read
     | **network-access-management:trust-domains:wifi.primary:read** | Access information about a service owner's Wi-Fi primary isolated network
     | **network-access-management:trust-domains:wifi.primary:write** | Modify a service owner's primary Wi-Fi isolated network | network-access-management:trust-domains:wifi.primary:read
-    | **network-access-management:trust-domains:wifi.auxiliary:read** | List a service owner's auxiliary Wi-Fi isolated networks | network-access-management:trust-domains:wifi:read
-    | **network-access-management:trust-domains:wifi.auxiliary:write** | Create or modify a service owner's Wi-Fi auxiliary isolated networks | network-access-management:trust-domains:wifi.auxiliary:read<br />network-access-management:trust-domains:wifi:write
+    | **network-access-management:trust-domains:wifi.auxiliary:read** | List a service owner's auxiliary Wi-Fi Trust Domains | network-access-management:trust-domains:wifi:read
+    | **network-access-management:trust-domains:wifi.auxiliary:write** | Create or modify a service owner's Wi-Fi auxiliary Trust Domains | network-access-management:trust-domains:wifi.auxiliary:read<br />network-access-management:trust-domains:wifi:write
     | **network-access-management:trust-domains:thread:read** | Read the Thread credentials if they are the API provider's default or the requesting client formed the network
     | **network-access-management:trust-domains:thread:form** | Form a new Thread network, replacing the API provider's default Thread network if applicable, and modify or delete the existing network if created by the requesting client | network-access-management:trust-domains:thread:read
     | **network-access-management:trust-domains:thread.admin** | Read or write to any of the service owner's Thread networks | network-access-management:trust-domains:thread:form
@@ -94,7 +94,7 @@ info:
     | **network-access-management:reboot-requests:write** | Create or modify a service owner's reboot request created by the calling API client | network-access-management:reboot-request:read
 
     ## General Usage
-    This API is intended for creating, modifying, or deleting isolated networks using the `/trust-domains` endpoints
+    This API is intended for creating, modifying, or deleting Trust Domains using the `/trust-domains` endpoints
     to build access detail configurations. The `/service-sites` endpoints are used for iterating over a service owner's
     locations. The exact location may be requested with an additional scope to assist with reconciling information about
     service sites when the API client operator has an existing relationship with the service owner. Similarly, the
@@ -106,14 +106,14 @@ info:
     The following comments are for Network Operators implementing this API.
 
     ### Auto-Deleting Trust Domains
-    When an isolated network is not configured on any device the network configuration and its identifier SHOULD be
-    auto-deleted.  API clients MUST not be expected to delete networks not configured on any device.
+    When a Trust Domain is not configured on any device the network configuration and its identifier SHOULD be
+    auto-deleted.  API clients MUST not be expected to delete Trust Domains not configured on any device.
 
     ### Mesh Systems
     Mesh systems SHOULD be represented as a single device when implementing this API due to the undefined behavior of
-    LAN connectivity across multiple devices with the same isolated network.  The recommendation is to use the gateway
+    LAN connectivity across multiple devices with the same Trust Domain.  The recommendation is to use the gateway
     hardware address of the mesh system when exposing that field, though the hardware address of any node in the mesh
-    may be used.  If an end-user replaces the equipment, all existing isolated networks SHOULD be synced to the new
+    may be used.  If an end-user replaces the equipment, all existing Trust Domains SHOULD be synced to the new
     device representing this mesh.  Alternatively, a synthetic hardware address may also be used if the specification
     for the address type allows.
 
@@ -143,18 +143,6 @@ servers:
 tags:
   - name: Trust Domains
     description: Operations to Create and Manage Trust Domains
-  # - name: Retrieve Device
-  #   description: Operations to retrieve information about devices
-  # - name: Apply Device Network Configuration
-  #   description: Operations to apply isolated network configurations to devices
-  # - name: Retrieve Isolated Network
-  #   description: Operations to retrieve information about isolated networks
-  # - name: Configure and Apply Isolated Network
-  #   description: Operations to modify isolated networks and apply to devices
-  # - name: Retrieve Reboot Request
-  #   description: Operations to retrieve information about reboot requests
-  # - name: Configure Reboot Requests
-  #   description: Operations to modify reboot requests
 
 paths:
   /trust-domains:
@@ -165,8 +153,15 @@ paths:
       security:
         - openId:
             - network-access-management:trust-domains:write
-      description: >
-        Create a new Trust Domain with the specified configuration. A Trust Domain represents a logical grouping of devices and networks that can communicate with each other as if they were on the same LAN.
+      description: |
+        Creates and returns the new Trust Domain.  Scopes impact the function and output of this endpoint. See the examples
+        for various permutations.
+
+        **Required Scopes:**
+        - **one of**
+          - `network-access-management:trust-domains:wifi:write`
+          - `network-access-management:trust-domains:wifi.primary:write`
+          - `network-access-management:trust-domains:wifi.auxiliary:write`
       operationId: createTrustDomain
       requestBody:
         description: Details of the Trust Domain to be created
@@ -210,12 +205,12 @@ paths:
     get:
       tags:
         - Trust Domains
-      summary: Get all Trust Domains
+      summary: Get all Trust Domains associated with the service owner
       security:
         - openId:
             - network-access-management:trust-domains:read
       operationId: getTrustDomains
-      description: "TODO"
+      description: "This endpoint returns a list of Trust Domains associated with the service owner, each containing details about the network configurations and policies defined within them."
       responses:
 
         "200":
@@ -247,7 +242,19 @@ paths:
         - openId:
             - network-access-management:trust-domains:read
       operationId: getTrustDomain
-      description: "TODO"
+      description: |
+        Returns the Trust Domain that matches the given ID, including its network configurations and policies. Scopes impact the output of this endpoint. See the examples for
+        various permutations.
+
+        **Required Scopes:**
+        - **one of**
+          - `network-access-management:trust-domains:wifi:read`
+          - `network-access-management:trust-domains:wifi:write`
+          - `network-access-management:trust-domains:wifi.primary:read`
+          - `network-access-management:trust-domains:wifi.primary:write`
+          - `network-access-management:trust-domains:wifi.auxiliary:read`
+          - `network-access-management:trust-domains:wifi.auxiliary:write`
+
       responses:
 
         "200":
@@ -278,7 +285,16 @@ paths:
         -  openId:
             - network-access-management:trust-domains:write
       operationId: updateTrustDomain
-      description: "TODO"
+      description: |
+        Updates the Trust Domain, reconfigures any network access devices configured with the Trust Domain, and returns the Trust Domain that matches
+        the given ID.  Scopes impact the output of this endpoint.  See the examples for various permutations.
+
+        **Required Scopes:**
+        - **one of**
+          - `network-access-management:trust-domains:wifi:write`
+          - `network-access-management:trust-domains:wifi.primary:write`
+          - `network-access-management:trust-domains:wifi.auxiliary:write`
+
       requestBody:
         content:
           application/json:
@@ -314,7 +330,15 @@ paths:
         -  openId:
             - network-access-management:trust-domains:write
       operationId: deleteTrustDomain
-      description: "Deletes the Trust Domain and removes the configuration from any access network devices configured with the Trust Domain that matches the given ID."
+      description: |
+        Deletes the Trust Domain and removes the configuration from any network access devices configured with the Trust Domain that matches the
+        given ID.
+
+        **Required Scopes:**
+        - **one of**
+          - `network-access-management:trust-domains:wifi:write`
+          - `network-access-management:trust-domains:wifi.primary:write`
+          - `network-access-management:trust-domains:wifi.auxiliary:write`
       responses:
         "204":
           description: Trust Domain deleted successfully
