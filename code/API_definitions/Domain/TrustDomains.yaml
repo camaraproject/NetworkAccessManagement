@@ -37,12 +37,13 @@ components:
           description: Indicates whether the trust domain is currently enabled.
           example: true
         expiration:
-          allOf:
-            - $ref: "./Common.yaml#/components/schemas/DateTime"
-            - description: |
-                The expiration date and time of the network.  It must follow [RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339#section-5.6)
-                and must have time zone. Recommended format is yyyy-MM-dd'T'HH:mm:ss.SSSZ (i.e. which allows
-                2023-07-03T14:27:08.312+02:00 or 2023-07-03T12:27:08.312Z).
+          $ref: "./Common.yaml#/components/schemas/DateTime"
+          description: |
+            The expiration date and time of the network.  It must follow [RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339#section-5.6)
+            and must have time zone. Recommended format is yyyy-MM-dd'T'HH:mm:ss.SSSZ (i.e. which allows
+            2023-07-03T14:27:08.312+02:00 or 2023-07-03T12:27:08.312Z).
+
+            If omitted, the trust domain will not automatically expire.
         policies:
           type: array
           description: An optional list of policies associated with the trust domain.
@@ -93,51 +94,112 @@ components:
           required:
             - id
 
+    ActivePeriod:
+      type: object
+      description: Defines when a policy is active.
+      properties:
+        start:
+          $ref: "./Common.yaml#/components/schemas/DateTime"
+        end:
+          $ref: "./Common.yaml#/components/schemas/DateTime"
+        duration:
+          type: string
+          pattern: "^P(?!$)(\\d+D)?(T(\\d+H)?(\\d+M)?(\\d+S)?)?$"
+          description: ISO 8601 duration (e.g., P1D = 1 day, PT12H = 12 hours)
+      example:
+        start: "2025-10-21T12:00:00Z"
+        end: "2025-10-22T12:00:00Z"
+
     Policy:
       type: object
-      required: [type, value]
+      required: [type]
       properties:
         type:
           type: string
-          description: >
-            The policy key indicating what aspect of the Trust Domain this policy controls.
-            Examples: `maxDevices`, `maxDomainDownstreamKbps`, `maxDomainUpstreamKbps`, `egressAllowedList`.
-        value:
-          description: Type-specific policy value.
-          oneOf:
-            - type: integer
-            - type: string
-            - type: array
-              items:
-                type: string
-            - type: object
-          example: 100
-        description:
-          type: string
-          description: Optional human-readable explanation of the policy.
+          enum:
+            - maxDevices
+            - maxDomainDownstreamKbps
+            - maxDomainUpstreamKbps
+            - egressAllowedList
+          description: The policy type discriminator.
         activePeriod:
-          type: object
-          description: Defines when the policy is active.
-          properties:
-            start:
-              $ref: "./Common.yaml#/components/schemas/DateTime"
-            end:
-              $ref: "./Common.yaml#/components/schemas/DateTime"
-            duration:
-              type: string
-              pattern: "^P(?!$)(\\d+D)?(T(\\d+H)?(\\d+M)?(\\d+S)?)?$"
-              description: |
-                ISO 8601 duration string. Used when the policy should expire relative to creation time.
-                Example: P1D (1 day), PT12H (12 hours)
-          example:
-            start: "2025-10-21T12:00:00Z"
-            end: "2025-10-22T12:00:00Z"
+          $ref: "#/components/schemas/ActivePeriod"
         metadata:
           type: object
           additionalProperties: true
-          description: >
-            Optional implementation- or operator-specific extensions for the policy.
-            May include provenance, enforcement context, or versioning data.
+          description: Optional operator- or implementation-specific extensions.
+        # value:
+        #   description: The type-specific policy value.
+      discriminator:
+        propertyName: type
+        mapping:
+          maxDevices: "#/components/schemas/MaxDevicesPolicy"
+          maxDomainDownstreamKbps: "#/components/schemas/MaxDomainDownstreamKbpsPolicy"
+          maxDomainUpstreamKbps: "#/components/schemas/MaxDomainUpstreamKbpsPolicy"
+          egressAllowedList: "#/components/schemas/EgressAllowedListPolicy"
+
+    MaxDevicesPolicy:
+      allOf:
+        - $ref: '#/components/schemas/Policy'
+        - type: object
+          properties:
+            value:
+              type: integer
+              minimum: 1
+              example: 10
+          required: [value]
+          description: Limits the number of devices that may join the Trust Domain.
+          example: &max-devices-policy
+            type: maxDevices
+            value: 10
+
+    MaxDomainDownstreamKbpsPolicy:
+      allOf:
+        - $ref: '#/components/schemas/Policy'
+        - type: object
+          properties:
+            value:
+              type: integer
+              example: 50000
+          required: [value]
+          description: Defines the aggregate maximum downstream throughput (Kbps) across all devices in the domain.
+          example: &max-domain-downstream-kbps-policy
+            type: maxDomainDownstreamKbps
+            value: 50000
+
+    MaxDomainUpstreamKbpsPolicy:
+      allOf:
+        - $ref: '#/components/schemas/Policy'
+        - type: object
+          properties:
+            value:
+              type: integer
+              example: 10000
+          required: [value]
+          description: Defines the aggregate maximum upstream throughput (Kbps) across all devices in the domain.
+          example: &max-domain-upstream-kbps-policy
+            type: maxDomainUpstreamKbps
+            value: 10000
+
+    EgressAllowedListPolicy:
+      allOf:
+        - $ref: '#/components/schemas/Policy'
+        - type: object
+          properties:
+            value:
+              type: array
+              items:
+                type: string
+                description: FQDN or CIDR pattern.
+                example: "api.vendor.com"
+              minItems: 1
+          required: [value]
+          description: Restricts egress traffic to the specified destinations.
+          example: &egress-allowed-list-policy
+            type: egressAllowedList
+            value:
+              - "api.vendor.com"
+              - "updates.vendor.com"
 
     WpaPersonalDetail:
       type: object
@@ -330,3 +392,115 @@ components:
           Wi-Fi: "#/components/schemas/WiFiAccessDetail"
           Thread: "#/components/schemas/ThreadAccessDetail"
       example: *wifi-access-detail
+
+  examples:
+
+    WifiAccessDetailWPA2PersonalBasic: &wifi-wpa2-personal-basic
+      summary: Basic Wi-Fi Access Detail with WPA2-Personal security.
+      value:
+        accessType: "Wi-Fi"
+        securityMode:
+          password: "my-password"
+          securityModeType: "WPA2-Personal"
+
+    WifiAccessDetailWPA2Personal: &wifi-wpa2-personal
+      summary: Wi-Fi Access Detail with WPA2-Personal security.
+      value:
+        accessType: "Wi-Fi"
+        ssid: "my-ssid"
+        securityMode:
+          password: "my-password"
+          securityModeType: "WPA2-Personal"
+
+    WifiAccessDetailWPA3Personal: &wifi-wpa3-personal
+      summary: Wi-Fi Access Detail with WPA3-Personal security.
+      value: *wifi-access-detail
+
+    TrustDomainCreateWpa2Personal:
+      summary: Create a Trust Domain with WPA2-Personal Wi-Fi access.
+      value:
+        name: "Primary WiFi Network"
+        description: "Request defines a Trust Domain with WPA2-Personal Wi-Fi access. The request specifies an SSID, implying the SSID is created on the network infrastructure."
+        enabled: true
+        accessDetails:
+          - <<: *wifi-wpa2-personal
+
+    TrustDomainCreateInferredSsid:
+      summary: Create a Trust Domain with inferred SSID Wi-Fi access.
+      value:
+        name: "Inferred SSID Network"
+        description: "Request defines a Trust Domain with inferred SSID Wi-Fi access. The request omits the SSID, implying the Trust Domain is applied to an existing SSID on the network infrastructure."
+        enabled: true
+        accessDetails:
+          - accessType: "Wi-Fi"
+            securityMode:
+              password: "my-password"
+              securityModeType: "WPA2-Personal"
+
+    TrustDomainCreateEphemeral:
+      summary: Create a Trust Domain with ephemeral access details.
+      value:
+        name: "Ephemeral Network"
+        description: "Request defines a Trust Domain with ephemeral access details."
+        enabled: true
+        accessDetails:
+          - <<: *wifi-wpa3-personal
+        expiration: "2024-12-31T23:59:59Z"
+        policies:
+          - *max-devices-policy
+
+    TrustDomainCreateThreadStructured:
+      summary: Create a Trust Domain with Thread structured access details.
+      value:
+        name: "Thread Structured Network"
+        description: "Request defines a Trust Domain with Thread structured access details."
+        enabled: true
+        accessDetails:
+          - <<: *thread-structured-access-detail
+
+    TrustDomainCreateQoSPolicies:
+      summary: Create a Trust Domain with QoS policies.
+      value:
+        name: "QoS Policy Network"
+        description: "Request defines a Trust Domain with QoS policies."
+        enabled: true
+        accessDetails:
+          - <<: *wifi-wpa3-personal
+        policies:
+          - *max-domain-downstream-kbps-policy
+          - *max-domain-upstream-kbps-policy
+
+    TrustDomainResponseBasic:
+      summary: Basic Trust Domain Response
+      description: Example of a created Trust Domain with minimal details.
+      value:
+        id: "trustdomain-123"
+        name: "Basic Trust Domain"
+        description: "A basic trust domain example"
+        enabled: true
+        accessDetails:
+          - <<: *wifi-wpa2-personal-basic
+        createdAt: "2025-10-21T14:27:08.312Z"
+        createdBy: "user-1"
+        modifiedAt: "2025-10-21T14:27:08.312Z"
+        modifiedBy: "user-1"
+
+    TrustDomainResponseWiFiThread:
+      summary: Created Trust Domain (Wi-Fi + Thread)
+      description: Example of a created Trust Domain including Wi-Fi and Thread access details and populated policies.
+      value:
+        id: "wifi-1"
+        name: "Primary WiFi Network"
+        description: "Primary home Wi-Fi Network for all devices"
+        enabled: true
+        expiration: "2025-10-21T14:27:08.312Z"
+        policies:
+          - <<: *max-devices-policy
+          - <<: *egress-allowed-list-policy
+        accessDetails:
+          - <<: *wifi-wpa3-personal
+          - <<: *thread-structured-access-detail
+        createdAt: "2025-10-21T14:27:08.312Z"
+        createdBy: "user-1"
+        modifiedAt: "2025-10-21T14:27:08.312Z"
+        modifiedBy: "user-2"

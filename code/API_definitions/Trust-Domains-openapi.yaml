@@ -175,6 +175,17 @@ paths:
           application/json:
             schema:
               $ref: './Domain/TrustDomains.yaml#/components/schemas/TrustDomainCreate'
+            examples:
+              TrustDomainCreateWpa2Personal:
+                $ref: './Domain/TrustDomains.yaml#/components/examples/TrustDomainCreateWpa2Personal'
+              TrustDomainCreateInferredSsid:
+                $ref: './Domain/TrustDomains.yaml#/components/examples/TrustDomainCreateInferredSsid'
+              TrustDomainCreateThreadStructured:
+                $ref: './Domain/TrustDomains.yaml#/components/examples/TrustDomainCreateThreadStructured'
+              TrustDomainCreateEphemeral:
+                $ref: './Domain/TrustDomains.yaml#/components/examples/TrustDomainCreateEphemeral'
+              TrustDomainCreateQoSPolicies:
+                $ref: './Domain/TrustDomains.yaml#/components/examples/TrustDomainCreateQoSPolicies'
       responses:
         '201':
           description: Trust Domain created successfully
@@ -182,6 +193,9 @@ paths:
             application/json:
               schema:
                 $ref: './Domain/TrustDomains.yaml#/components/schemas/TrustDomain'
+              examples:
+                TrustDomainResponseWiFiThread:
+                  $ref: './Domain/TrustDomains.yaml#/components/examples/TrustDomainResponseWiFiThread'
         '400':
           $ref: './Domain/Common.yaml#/components/responses/Generic400'
         '401':
@@ -242,6 +256,9 @@ paths:
             application/json:
               schema:
                 $ref: "./Domain/TrustDomains.yaml#/components/schemas/TrustDomain"
+              examples:
+                TrustDomainResponseBasic:
+                  $ref: './Domain/TrustDomains.yaml#/components/examples/TrustDomainResponseBasic'
         "401":
           $ref: "./Domain/Common.yaml#/components/responses/Generic401"
         "403":
