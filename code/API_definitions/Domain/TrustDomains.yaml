@@ -19,10 +19,7 @@ components:
 
     TrustDomainUpdate:
       type: object
-      description: Represents a trust domain within the network access management system.
-      required:
-        - name
-        - enabled
+      description: Represents the updatable fields of a trust domain within the network access management system.
       properties:
         name:
           type: string
@@ -60,6 +57,10 @@ components:
       allOf:
         - $ref: "#/components/schemas/TrustDomainUpdate"
       description: Represents the creation of a new trust domain within the network access management system.
+      required:
+        - name
+        - enabled
+        - accessDetails
 
     TrustDomain:
       allOf:
@@ -93,6 +94,8 @@ components:
               example: "user-2"
           required:
             - id
+      additionalProperties: false
+      description: Represents a trust domain within the network access management system.
 
     ActivePeriod:
       type: object
@@ -147,11 +150,11 @@ components:
               type: integer
               minimum: 1
               example: 10
-          required: [value]
           description: Limits the number of devices that may join the Trust Domain.
           example: &max-devices-policy
             type: maxDevices
             value: 10
+      additionalProperties: false
 
     MaxDomainDownstreamKbpsPolicy:
       allOf:
@@ -161,11 +164,11 @@ components:
             value:
               type: integer
               example: 50000
-          required: [value]
           description: Defines the aggregate maximum downstream throughput (Kbps) across all devices in the domain.
           example: &max-domain-downstream-kbps-policy
             type: maxDomainDownstreamKbps
             value: 50000
+      additionalProperties: false
 
     MaxDomainUpstreamKbpsPolicy:
       allOf:
@@ -175,11 +178,11 @@ components:
             value:
               type: integer
               example: 10000
-          required: [value]
           description: Defines the aggregate maximum upstream throughput (Kbps) across all devices in the domain.
           example: &max-domain-upstream-kbps-policy
             type: maxDomainUpstreamKbps
             value: 10000
+      additionalProperties: false
 
     EgressAllowedListPolicy:
       allOf:
@@ -193,13 +196,13 @@ components:
                 description: FQDN or CIDR pattern.
                 example: "api.vendor.com"
               minItems: 1
-          required: [value]
           description: Restricts egress traffic to the specified destinations.
           example: &egress-allowed-list-policy
             type: egressAllowedList
             value:
               - "api.vendor.com"
               - "updates.vendor.com"
+      additionalProperties: false
 
     WpaPersonalDetail:
       type: object
@@ -365,7 +368,7 @@ components:
         - $ref: "#/components/schemas/ThreadStructuredAccessDetail"
         - $ref: "#/components/schemas/ThreadTlvAccessDetail"
       discriminator:
-        propertyName: threadDetailType
+        propertyName: mode
         mapping:
           structured: "#/components/schemas/ThreadStructuredAccessDetail"
           tlv: "#/components/schemas/ThreadTlvAccessDetail"
@@ -396,25 +399,26 @@ components:
   examples:
 
     WifiAccessDetailWPA2PersonalBasic: &wifi-wpa2-personal-basic
-      summary: Basic Wi-Fi Access Detail with WPA2-Personal security.
-      value:
-        accessType: "Wi-Fi"
-        securityMode:
-          password: "my-password"
-          securityModeType: "WPA2-Personal"
+      accessType: "Wi-Fi"
+      securityMode:
+        password: "my-password"
+        securityModeType: "WPA2-Personal"
 
     WifiAccessDetailWPA2Personal: &wifi-wpa2-personal
-      summary: Wi-Fi Access Detail with WPA2-Personal security.
-      value:
-        accessType: "Wi-Fi"
-        ssid: "my-ssid"
-        securityMode:
-          password: "my-password"
-          securityModeType: "WPA2-Personal"
+      accessType: "Wi-Fi"
+      ssid: "my-ssid"
+      securityMode:
+        password: "my-password"
+        securityModeType: "WPA2-Personal"
 
     WifiAccessDetailWPA3Personal: &wifi-wpa3-personal
-      summary: Wi-Fi Access Detail with WPA3-Personal security.
-      value: *wifi-access-detail
+      <<: *wifi-access-detail
+
+    ThreadAccessDetailStructured: &thread-structured
+      accessType: "Thread"
+      <<: *thread-structured-access-detail
+
+    # All examples below are example objects (summary + value) for use in API definitions. Pure JSON object aliases should go above.
 
     TrustDomainCreateWpa2Personal:
       summary: Create a Trust Domain with WPA2-Personal Wi-Fi access.
@@ -456,7 +460,7 @@ components:
         description: "Request defines a Trust Domain with Thread structured access details."
         enabled: true
         accessDetails:
-          - <<: *thread-structured-access-detail
+          - <<: *thread-structured
 
     TrustDomainCreateQoSPolicies:
       summary: Create a Trust Domain with QoS policies.
@@ -499,7 +503,7 @@ components:
           - <<: *egress-allowed-list-policy
         accessDetails:
           - <<: *wifi-wpa3-personal
-          - <<: *thread-structured-access-detail
+          - <<: *thread-structured
         createdAt: "2025-10-21T14:27:08.312Z"
         createdBy: "user-1"
         modifiedAt: "2025-10-21T14:27:08.312Z"

@@ -83,8 +83,8 @@ info:
     | **network-access-management:devices:write** | Modify which networks are configured on a service owner's devices | network-access-management:devices:read
     | **network-access-management:trust-domains:wifi:read** | List a service owner's Wi-Fi Trust Domains created by the calling API client
     | **network-access-management:trust-domains:wifi:write** | Create or modify a service owner's Wi-Fi Trust Domains created by the calling API client | network-access-management:trust-domains:wifi:read
-    | **network-access-management:trust-domains:wifi.primary:read** | Access information about a service owner's Wi-Fi primary isolated network
-    | **network-access-management:trust-domains:wifi.primary:write** | Modify a service owner's primary Wi-Fi isolated network | network-access-management:trust-domains:wifi.primary:read
+    | **network-access-management:trust-domains:wifi.primary:read** | Access information about a service owner's Wi-Fi primary trust domain
+    | **network-access-management:trust-domains:wifi.primary:write** | Modify a service owner's primary Wi-Fi trust domain | network-access-management:trust-domains:wifi.primary:read
     | **network-access-management:trust-domains:wifi.auxiliary:read** | List a service owner's auxiliary Wi-Fi Trust Domains | network-access-management:trust-domains:wifi:read
     | **network-access-management:trust-domains:wifi.auxiliary:write** | Create or modify a service owner's Wi-Fi auxiliary Trust Domains | network-access-management:trust-domains:wifi.auxiliary:read<br />network-access-management:trust-domains:wifi:write
     | **network-access-management:trust-domains:thread:read** | Read the Thread credentials if they are the API provider's default or the requesting client formed the network
