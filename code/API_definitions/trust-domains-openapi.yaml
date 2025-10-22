@@ -91,7 +91,7 @@ info:
     | **network-access-management:trust-domains:thread:form** | Form a new Thread network, replacing the API provider's default Thread network if applicable, and modify or delete the existing network if created by the requesting client | network-access-management:trust-domains:thread:read
     | **network-access-management:trust-domains:thread.admin** | Read or write to any of the service owner's Thread networks | network-access-management:trust-domains:thread:form
     | **network-access-management:reboot-requests:read** | List a service owner's reboot requests created by the calling API client
-    | **network-access-management:reboot-requests:write** | Create or modify a service owner's reboot request created by the calling API client | network-access-management:reboot-request:read
+    | **network-access-management:reboot-requests:write** | Create or modify a service owner's reboot request created by the calling API client | network-access-management:reboot-requests:read
 
     ## General Usage
     This API is intended for creating, modifying, or deleting Trust Domains using the `/trust-domains` endpoints
