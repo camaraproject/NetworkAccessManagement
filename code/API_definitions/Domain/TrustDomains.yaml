@@ -42,10 +42,7 @@ components:
 
             If omitted, the trust domain will not automatically expire.
         policies:
-          type: array
-          description: An optional list of policies associated with the trust domain.
-          items:
-            $ref: "#/components/schemas/Policy"
+          $ref: "#/components/schemas/Policies"
         accessDetails:
           type: array
           description: An optional list of access details for the trust domain.
@@ -113,96 +110,71 @@ components:
         start: "2025-10-21T12:00:00Z"
         end: "2025-10-22T12:00:00Z"
 
-    Policy:
+    Policies:
+      type: object
+      description: A set of policies governing Trust Domain behavior.
+      propertyNames:
+        type: string
+        enum:
+          - maxDevices
+          - maxDomainDownstreamKbps
+          - maxDomainUpstreamKbps
+          - egressAllowedList
+      properties:
+        maxDevices:
+          $ref: '#/components/schemas/MaxDevicesPolicy'
+        maxDomainDownstreamKbps:
+          $ref: '#/components/schemas/MaxDomainDownstreamKbpsPolicy'
+        maxDomainUpstreamKbps:
+          $ref: '#/components/schemas/MaxDomainUpstreamKbpsPolicy'
+        egressAllowedList:
+          $ref: '#/components/schemas/EgressAllowedListPolicy'
+      additionalProperties: false
+      example: &all-policies-example
+        maxDevices: 10
+        maxDomainDownstreamKbps: 50000
+        maxDomainUpstreamKbps: 10000
+        egressAllowedList:
+          - "api.vendor.com"
+          - "updates.vendor.com"
+
+    PolicyBase:
       type: object
       required: [type]
       properties:
-        type:
-          type: string
-          enum:
-            - maxDevices
-            - maxDomainDownstreamKbps
-            - maxDomainUpstreamKbps
-            - egressAllowedList
-          description: The policy type discriminator.
         activePeriod:
           $ref: "#/components/schemas/ActivePeriod"
         metadata:
           type: object
           additionalProperties: true
           description: Optional operator- or implementation-specific extensions.
-        # value:
-        #   description: The type-specific policy value.
-      discriminator:
-        propertyName: type
-        mapping:
-          maxDevices: "#/components/schemas/MaxDevicesPolicy"
-          maxDomainDownstreamKbps: "#/components/schemas/MaxDomainDownstreamKbpsPolicy"
-          maxDomainUpstreamKbps: "#/components/schemas/MaxDomainUpstreamKbpsPolicy"
-          egressAllowedList: "#/components/schemas/EgressAllowedListPolicy"
 
     MaxDevicesPolicy:
-      allOf:
-        - $ref: '#/components/schemas/Policy'
-        - type: object
-          properties:
-            value:
-              type: integer
-              minimum: 1
-              example: 10
-          description: Limits the number of devices that may join the Trust Domain.
-          example: &max-devices-policy
-            type: maxDevices
-            value: 10
-      additionalProperties: false
+      type: integer
+      minimum: 1
+      description: Limits the number of devices that may join the Trust Domain.
+      example: &max-devices-policy 10
 
     MaxDomainDownstreamKbpsPolicy:
-      allOf:
-        - $ref: '#/components/schemas/Policy'
-        - type: object
-          properties:
-            value:
-              type: integer
-              example: 50000
-          description: Defines the aggregate maximum downstream throughput (Kbps) across all devices in the domain.
-          example: &max-domain-downstream-kbps-policy
-            type: maxDomainDownstreamKbps
-            value: 50000
-      additionalProperties: false
+      type: integer
+      description: Maximum downstream throughput (Kbps) across the domain.
+      example: &max-domain-downstream-kbps-policy 50000
 
     MaxDomainUpstreamKbpsPolicy:
-      allOf:
-        - $ref: '#/components/schemas/Policy'
-        - type: object
-          properties:
-            value:
-              type: integer
-              example: 10000
-          description: Defines the aggregate maximum upstream throughput (Kbps) across all devices in the domain.
-          example: &max-domain-upstream-kbps-policy
-            type: maxDomainUpstreamKbps
-            value: 10000
-      additionalProperties: false
+      type: integer
+      description: Maximum upstream throughput (Kbps) across the domain.
+      example: &max-domain-upstream-kbps-policy 10000
 
     EgressAllowedListPolicy:
-      allOf:
-        - $ref: '#/components/schemas/Policy'
-        - type: object
-          properties:
-            value:
-              type: array
-              items:
-                type: string
-                description: FQDN or CIDR pattern.
-                example: "api.vendor.com"
-              minItems: 1
-          description: Restricts egress traffic to the specified destinations.
-          example: &egress-allowed-list-policy
-            type: egressAllowedList
-            value:
-              - "api.vendor.com"
-              - "updates.vendor.com"
-      additionalProperties: false
+      type: array
+      items:
+        type: string
+        description: FQDN or CIDR pattern
+      minItems: 1
+      description: Restricts egress traffic to the specified destinations.
+      example: &egress-allowed-list-policy
+        - "api.vendor.com"
+        - "updates.vendor.com"
 
     WpaPersonalDetail:
       type: object
@@ -451,7 +423,7 @@ components:
           - <<: *wifi-wpa3-personal
         expiration: "2024-12-31T23:59:59Z"
         policies:
-          - *max-devices-policy
+          maxDevices: *max-devices-policy
 
     TrustDomainCreateThreadStructured:
       summary: Create a Trust Domain with Thread structured access details.
@@ -471,8 +443,8 @@ components:
         accessDetails:
           - <<: *wifi-wpa3-personal
         policies:
-          - *max-domain-downstream-kbps-policy
-          - *max-domain-upstream-kbps-policy
+          maxDomainDownstreamKbps: *max-domain-downstream-kbps-policy
+          maxDomainUpstreamKbps: *max-domain-upstream-kbps-policy
 
     TrustDomainResponseBasic:
       summary: Basic Trust Domain Response
@@ -499,8 +471,8 @@ components:
         enabled: true
         expiration: "2025-10-21T14:27:08.312Z"
         policies:
-          - <<: *max-devices-policy
-          - <<: *egress-allowed-list-policy
+          maxDevices: *max-devices-policy
+          egressAllowedList: *egress-allowed-list-policy
         accessDetails:
           - <<: *wifi-wpa3-personal
           - <<: *thread-structured
