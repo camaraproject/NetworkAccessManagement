@@ -34,7 +34,7 @@ components:
           description: Indicates whether the trust domain is currently enabled.
           example: true
         expiration:
-          $ref: "./Common.yaml#/components/schemas/DateTime"
+          $ref: "../Common.yaml#/components/schemas/DateTime"
           description: |
             The expiration date and time of the network.  It must follow [RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339#section-5.6)
             and must have time zone. Recommended format is yyyy-MM-dd'T'HH:mm:ss.SSSZ (i.e. which allows
@@ -42,7 +42,7 @@ components:
 
             If omitted, the trust domain will not automatically expire.
         policies:
-          $ref: "#/components/schemas/Policies"
+          $ref: "../Policy.yaml#/components/schemas/Policies"
         accessDetails:
           type: array
           description: An optional list of access details for the trust domain.
@@ -67,7 +67,7 @@ components:
               $ref: "#/components/schemas/TrustDomainId"
             createdAt:
               allOf:
-                - $ref: "./Common.yaml#/components/schemas/DateTime"
+                - $ref: "../Common.yaml#/components/schemas/DateTime"
                 - description: |
                     The creation date and time of the trust domain.  It must follow [RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339#section-5.6)
                     and must have time zone. Recommended format is yyyy-MM-dd'T'HH:mm:ss.SSSZ (i.e. which allows
@@ -79,7 +79,7 @@ components:
               example: "user-1"
             modifiedAt:
               allOf:
-                - $ref: "./Common.yaml#/components/schemas/DateTime"
+                - $ref: "../Common.yaml#/components/schemas/DateTime"
                 - description: |
                     The last update date and time of the trust domain.  It must follow [RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339#section-5.6)
                     and must have time zone. Recommended format is yyyy-MM-dd'T'HH:mm:ss.SSSZ (i.e. which allows
@@ -93,88 +93,6 @@ components:
             - id
       additionalProperties: false
       description: Represents a trust domain within the network access management system.
-
-    ActivePeriod:
-      type: object
-      description: Defines when a policy is active.
-      properties:
-        start:
-          $ref: "./Common.yaml#/components/schemas/DateTime"
-        end:
-          $ref: "./Common.yaml#/components/schemas/DateTime"
-        duration:
-          type: string
-          pattern: "^P(?!$)(\\d+D)?(T(\\d+H)?(\\d+M)?(\\d+S)?)?$"
-          description: ISO 8601 duration (e.g., P1D = 1 day, PT12H = 12 hours)
-      example:
-        start: "2025-10-21T12:00:00Z"
-        end: "2025-10-22T12:00:00Z"
-
-    Policies:
-      type: object
-      description: A set of policies governing Trust Domain behavior.
-      propertyNames:
-        type: string
-        enum:
-          - maxDevices
-          - maxDomainDownstreamKbps
-          - maxDomainUpstreamKbps
-          - egressAllowedList
-      properties:
-        maxDevices:
-          $ref: '#/components/schemas/MaxDevicesPolicy'
-        maxDomainDownstreamKbps:
-          $ref: '#/components/schemas/MaxDomainDownstreamKbpsPolicy'
-        maxDomainUpstreamKbps:
-          $ref: '#/components/schemas/MaxDomainUpstreamKbpsPolicy'
-        egressAllowedList:
-          $ref: '#/components/schemas/EgressAllowedListPolicy'
-      additionalProperties: false
-      example: &all-policies-example
-        maxDevices: 10
-        maxDomainDownstreamKbps: 50000
-        maxDomainUpstreamKbps: 10000
-        egressAllowedList:
-          - "api.vendor.com"
-          - "updates.vendor.com"
-
-    PolicyBase:
-      type: object
-      required: [type]
-      properties:
-        activePeriod:
-          $ref: "#/components/schemas/ActivePeriod"
-        metadata:
-          type: object
-          additionalProperties: true
-          description: Optional operator- or implementation-specific extensions.
-
-    MaxDevicesPolicy:
-      type: integer
-      minimum: 1
-      description: Limits the number of devices that may join the Trust Domain.
-      example: &max-devices-policy 10
-
-    MaxDomainDownstreamKbpsPolicy:
-      type: integer
-      description: Maximum downstream throughput (Kbps) across the domain.
-      example: &max-domain-downstream-kbps-policy 50000
-
-    MaxDomainUpstreamKbpsPolicy:
-      type: integer
-      description: Maximum upstream throughput (Kbps) across the domain.
-      example: &max-domain-upstream-kbps-policy 10000
-
-    EgressAllowedListPolicy:
-      type: array
-      items:
-        type: string
-        description: FQDN or CIDR pattern
-      minItems: 1
-      description: Restricts egress traffic to the specified destinations.
-      example: &egress-allowed-list-policy
-        - "api.vendor.com"
-        - "updates.vendor.com"
 
     WpaPersonalDetail:
       type: object
@@ -390,6 +308,20 @@ components:
       accessType: "Thread"
       <<: *thread-structured-access-detail
 
+    MaxDevicesPolicyExample: &max-devices-policy-example
+      maxDevices: 10
+
+    MaxBandwidthPolicyExample: &max-bandwidth-policy-example
+      maxDomainDownstreamKbps: 1000000
+      maxDomainUpstreamKbps: 500000
+
+    EgressAllowedListPolicyExample: &egress-allowed-list-policy-example
+      allowedEgressList:
+        - "api.vendor.com"
+        - "updates.vendor.com"
+
+
+
     # All examples below are example objects (summary + value) for use in API definitions. Pure JSON object aliases should go above.
 
     TrustDomainCreateWpa2Personal:
@@ -423,7 +355,7 @@ components:
           - <<: *wifi-wpa3-personal
         expiration: "2024-12-31T23:59:59Z"
         policies:
-          maxDevices: *max-devices-policy
+          <<: *max-devices-policy-example
 
     TrustDomainCreateThreadStructured:
       summary: Create a Trust Domain with Thread structured access details.
@@ -443,8 +375,7 @@ components:
         accessDetails:
           - <<: *wifi-wpa3-personal
         policies:
-          maxDomainDownstreamKbps: *max-domain-downstream-kbps-policy
-          maxDomainUpstreamKbps: *max-domain-upstream-kbps-policy
+          <<: *max-bandwidth-policy-example
 
     TrustDomainResponseBasic:
       summary: Basic Trust Domain Response
@@ -471,8 +402,7 @@ components:
         enabled: true
         expiration: "2025-10-21T14:27:08.312Z"
         policies:
-          maxDevices: *max-devices-policy
-          egressAllowedList: *egress-allowed-list-policy
+          <<: *egress-allowed-list-policy-example
         accessDetails:
           - <<: *wifi-wpa3-personal
           - <<: *thread-structured

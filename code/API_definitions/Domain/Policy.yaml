@@ -1,0 +1,50 @@
+components:
+  schemas:
+
+    Policies:
+      type: object
+      description: A set of policies governing Trust Domain behavior.
+      properties:
+        maxDevices:
+          $ref: '#/components/schemas/MaxDevicesPolicy'
+        maxDomainDownstreamKbps:
+          $ref: '#/components/schemas/MaxDomainDownstreamKbpsPolicy'
+        maxDomainUpstreamKbps:
+          $ref: '#/components/schemas/MaxDomainUpstreamKbpsPolicy'
+        egressAllowedList:
+          $ref: '#/components/schemas/EgressAllowedListPolicy'
+      additionalProperties: false
+      example: &all-policies-example
+        maxDevices: 10
+        maxDomainDownstreamKbps: 50000
+        maxDomainUpstreamKbps: 10000
+        egressAllowedList:
+          - "api.vendor.com"
+          - "updates.vendor.com"
+
+    MaxDevicesPolicy:
+      type: integer
+      minimum: 1
+      description: Limits the number of devices that may join the Trust Domain.
+      example: &max-devices-policy 10
+
+    MaxDomainDownstreamKbpsPolicy:
+      type: integer
+      description: Maximum downstream throughput (Kbps) across the domain.
+      example: &max-domain-downstream-kbps-policy 50000
+
+    MaxDomainUpstreamKbpsPolicy:
+      type: integer
+      description: Maximum upstream throughput (Kbps) across the domain.
+      example: &max-domain-upstream-kbps-policy 10000
+
+    EgressAllowedListPolicy:
+      type: array
+      items:
+        type: string
+        description: FQDN or CIDR pattern
+      minItems: 1
+      description: Restricts egress traffic to the specified destinations.
+      example: &egress-allowed-list-policy
+        - "api.vendor.com"
+        - "updates.vendor.com"
