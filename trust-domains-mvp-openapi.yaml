@@ -1,0 +1,1058 @@
+openapi: 3.0.3
+info:
+  title: Home Devices - Network Access Management
+  description: |
+    Service enabling API for managing network operator supplied network access devices. This APIs initial focus is on
+    managing **Trust Domains** and device reboot requests.
+
+    # Introduction
+    A Trust Domain is a network access configuration where each configuration is for a logically separated Local
+    Area Network (LAN). API consumers can create, modify, or remove these networks which could be useful in
+    scenarios such as:
+
+    - A property owner wants to create a temporary network for the duration of a short-term booking or long-term rental.
+    - A property manager wants to replicate the network access details across multiple network access devices at one or
+      more locations such as common areas, offices, etc.
+    - A security/privacy-minded user wants to create one or more networks for their guests or Internet-of-Thing (IoT)
+      network clients.
+
+    A reboot request is simply a request to reboot a network operator supplied network access device. API consumers
+    can create these requests which could be useful in scenarios such as:
+
+    - A property owner wants to recover from a faulty network state by rebooting a gateway device.
+    - A property manager wants to reboot multiple devices at one or more locations such as common areas, offices, etc.
+
+    # Relevant Terms and Definitions
+    - **Trust Domain**: a declarative, intent-level grouping that defines which devices are permitted to communicate with each other as if they were on the same LAN and what high-level access policies apply to that group.
+    - **Reboot Request**: A request to reboot a network operator supplied network access device.
+    - **Device**: A network operator supplied network access device that supports network segmentation technologies.  Multiple devices
+    that support LAN connectivity across the same Trust Domain (e.g., mesh Wi-Fi, Thread personal area network,
+    etc.) SHOULD be presented as a single device for implementations of this API.
+    - **API Provider**: Provider that implements this API.
+    - **Network Operator**: Service provider that has operational control of supporting devices.
+    - **Service Owner**: Customer of a network operator and resource owner with one or more devices that supports this
+    API across one or more service sites.
+    - **Service Site**: A distinct service owner location, as interpreted by the network operator, with one or more
+    devices.  A service site typically has a one-to-one relationship with the mailing address of the location.  Network
+    operators that support a single identity or interchangeable identities for multiple service sites at the same
+    mailing address (e.g., a residential and business account, an office and common area account, etc.) MUST provide
+    some distinction in the property address (e.g., attn: Home Office, attn: Common Area, etc.).  Multiple service
+    sites, for the same mailing address, but for unrelated service owner identities, do not have this requirement.
+    - **End-User**: The user connecting to a Trust Domain with a network client.
+    - **Network Client**: End-user equipment connecting to a Trust Domain (e.g., laptop, phone, IoT device, etc.).
+    - **API Client**: A first- or third-party software system using this API.
+
+    # API Functionality
+    This API allows API clients to manage Trust Domains and reboot network access devices.
+
+    ### Authorization and authentication
+
+    The "CAMARA Security and Interoperability Profile" provides details of how an API consumer requests an access token. Please refer to Identity and Consent Management (https://github.com/camaraproject/IdentityAndConsentManagement/) for the released version of the profile.
+
+    The specific authorization flows to be used will be agreed upon during the onboarding process, happening between the API consumer and the API provider, taking into account the declared purpose for accessing the API, whilst also being subject to the prevailing legal framework dictated by local legislation.
+
+    In cases where personal data is processed by the API and users can exercise their rights through mechanisms such as opt-in and/or opt-out, the use of three-legged access tokens is mandatory. This ensures that the API remains in compliance with privacy regulations, upholding the principles of transparency and user-centric privacy-by-design.
+
+    ### Scopes
+    Scopes are used to protect the service owner's information and privacy.  The general format is
+    `<API_name>-<Resource>-<Permission>`.  A resource may be further broken down into `<Resource_name>-<Field>` or
+    `<Resource_name>-<Role>` for granular permissions. Scopes also control output information as opposed to just
+    authorizing endpoints. Each endpoint definition will clearly state what scopes are needed for access and which are
+    needed to access additional information. Below are some general rules for scopes in this API.
+
+    - Regulated information, such as physical locations or hardware addresses of network devices, have special scopes.
+    Network operators are expected to follow any local regulations when sharing this information with an API client.
+    - Scopes have inheritance when one scope would otherwise require the inherited scope.
+    - Read scopes for one resource impacts the output of another resource when the requested resource has a relationship
+    with the first (e.g., listing networks on a device requires both device and network read scopes).
+    - Trust Domains are broken down into 3 roles allowing service owners to grant granular permissions to API
+    clients: only-own, primary, and auxiliary. The primary role allows API clients to manage the main network access
+    configuration. The auxiliary role allows API clients to manage all auxiliary (i.e., secondary) networks. The
+    only-own role allows API clients to manage networks it has created. Only-own networks SHOULD be an auxiliary, or
+    secondary, network. Note that there is an edge case when a service owner revokes the primary role authorization. An
+    API client SHOULD be able to continue managing primary Trust Domains created by the client. Complete
+    administrative control requires both the primary and auxiliary roles.
+
+    | Scope | Description | Inherits
+    |-------|-------------|---------
+    | **network-access-management:service-sites:read** | List a service owner's service sites
+    | **network-access-management:service-sites.location:read** | Read a service site's physical location | network-access-management:service-sites:read
+    | **network-access-management:devices:read** | List a service owner's devices
+    | **network-access-management:devices.hardware-address:read** | Read a service owner's device's hardware address | network-access-management:devices:read
+    | **network-access-management:devices:write** | Modify which networks are configured on a service owner's devices | network-access-management:devices:read
+    | **network-access-management:trust-domains:wifi:read** | List a service owner's Wi-Fi Trust Domains created by the calling API client
+    | **network-access-management:trust-domains:wifi:write** | Create or modify a service owner's Wi-Fi Trust Domains created by the calling API client | network-access-management:trust-domains:wifi:read
+    | **network-access-management:trust-domains:wifi.primary:read** | Access information about a service owner's Wi-Fi primary trust domain
+    | **network-access-management:trust-domains:wifi.primary:write** | Modify a service owner's primary Wi-Fi trust domain | network-access-management:trust-domains:wifi.primary:read
+    | **network-access-management:trust-domains:wifi.auxiliary:read** | List a service owner's auxiliary Wi-Fi Trust Domains | network-access-management:trust-domains:wifi:read
+    | **network-access-management:trust-domains:wifi.auxiliary:write** | Create or modify a service owner's Wi-Fi auxiliary Trust Domains | network-access-management:trust-domains:wifi.auxiliary:read<br />network-access-management:trust-domains:wifi:write
+    | **network-access-management:trust-domains:thread:read** | Read the Thread credentials if they are the API provider's default or the requesting client formed the network
+    | **network-access-management:trust-domains:thread:form** | Form a new Thread network, replacing the API provider's default Thread network if applicable, and modify or delete the existing network if created by the requesting client | network-access-management:trust-domains:thread:read
+    | **network-access-management:trust-domains:thread.admin** | Read or write to any of the service owner's Thread networks | network-access-management:trust-domains:thread:form
+    | **network-access-management:reboot-requests:read** | List a service owner's reboot requests created by the calling API client
+    | **network-access-management:reboot-requests:write** | Create or modify a service owner's reboot request created by the calling API client | network-access-management:reboot-requests:read
+
+    ## General Usage
+    This API is intended for creating, modifying, or deleting Trust Domains using the `/trust-domains` endpoints
+    to build access detail configurations. The `/service-sites` endpoints are used for iterating over a service owner's
+    locations. The exact location may be requested with an additional scope to assist with reconciling information about
+    service sites when the API client operator has an existing relationship with the service owner. Similarly, the
+    `/devices` endpoints are used for iterating over and configuring a service owner's devices.  The hardware address
+    may be requested for the same purpose of reconciling information from another source (e.g., database, persons with
+    physical device access, etc.).
+
+    ## Comments for Network Operators
+    The following comments are for Network Operators implementing this API.
+
+    ### Auto-Deleting Trust Domains
+    When a Trust Domain is not configured on any device the network configuration and its identifier SHOULD be
+    auto-deleted.  API clients MUST not be expected to delete Trust Domains not configured on any device.
+
+    ### Mesh Systems
+    Mesh systems SHOULD be represented as a single device when implementing this API due to the undefined behavior of
+    LAN connectivity across multiple devices with the same Trust Domain.  The recommendation is to use the gateway
+    hardware address of the mesh system when exposing that field, though the hardware address of any node in the mesh
+    may be used.  If an end-user replaces the equipment, all existing Trust Domains SHOULD be synced to the new
+    device representing this mesh.  Alternatively, a synthetic hardware address may also be used if the specification
+    for the address type allows.
+
+    # Additional CAMARA error responses
+
+    The list of error codes in this API specification is not exhaustive. Therefore the API specification may not document some non-mandatory error statuses as indicated in `CAMARA API Design Guide`.
+
+    Please refer to the `CAMARA_common.yaml` of the Commonalities Release associated to this API version for a complete list of error responses. The applicable Commonalities Release can be identified in the `API Readiness Checklist` document associated to this API version.
+
+    As a specific rule, error `501 - NOT_IMPLEMENTED` can be only a possible error response if it is explicitly documented in the API.
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+  version: 0.1.0-alpha.1
+  x-camara-commonalities: 0.6.0
+  contact:
+    email: sp-nam@lists.camaraproject.org
+servers:
+  - url: '{apiRoot}/network-access-management/v0'
+    variables:
+      apiRoot:
+        default: http://localhost:9091
+        description: API root, defined by the service provider, e.g. `api.example.com` or `api.example.com/somepath`
+tags:
+  - name: Trust Domains
+    description: Operations to Create and Manage Trust Domains
+paths:
+  /trust-domains:
+    post:
+      tags:
+        - Trust Domains
+      summary: Create a new Trust Domain
+      security:
+        - openId:
+            - network-access-management:trust-domains:write
+      description: |
+        Creates and returns the new Trust Domain.  Scopes impact the function and output of this endpoint. See the examples
+        for various permutations.
+
+        **Required Scopes:**
+        - **one of**
+          - `network-access-management:trust-domains:wifi:write`
+          - `network-access-management:trust-domains:wifi.primary:write`
+          - `network-access-management:trust-domains:wifi.auxiliary:write`
+      operationId: createTrustDomain
+      requestBody:
+        description: Details of the Trust Domain to be created
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TrustDomainCreate'
+            examples:
+              TrustDomainCreateWpa2Personal:
+                $ref: '#/components/examples/TrustDomainCreateWpa2Personal'
+              TrustDomainCreateInferredSsid:
+                $ref: '#/components/examples/TrustDomainCreateInferredSsid'
+              TrustDomainCreateThreadStructured:
+                $ref: '#/components/examples/TrustDomainCreateThreadStructured'
+              TrustDomainCreateEphemeral:
+                $ref: '#/components/examples/TrustDomainCreateEphemeral'
+              TrustDomainCreateQoSPolicies:
+                $ref: '#/components/examples/TrustDomainCreateQoSPolicies'
+      responses:
+        '201':
+          description: Trust Domain created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TrustDomain'
+              examples:
+                TrustDomainResponseBasic:
+                  $ref: '#/components/examples/TrustDomainResponseBasic'
+                TrustDomainResponseWiFiThread:
+                  $ref: '#/components/examples/TrustDomainResponseWiFiThread'
+        '400':
+          $ref: '#/components/responses/Generic400'
+        '401':
+          $ref: '#/components/responses/Generic401'
+        '403':
+          $ref: '#/components/responses/Generic403'
+        '409':
+          $ref: '#/components/responses/Generic409'
+        '500':
+          $ref: '#/components/responses/Generic500'
+    get:
+      tags:
+        - Trust Domains
+      summary: Get all Trust Domains associated with the service owner
+      security:
+        - openId:
+            - network-access-management:trust-domains:read
+      operationId: getTrustDomains
+      description: This endpoint returns a list of Trust Domains associated with the service owner, each containing details about the network configurations and policies defined within them.
+      responses:
+        '200':
+          description: Contains information about all trust domains
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TrustDomain'
+        '401':
+          $ref: '#/components/responses/Generic401'
+        '403':
+          $ref: '#/components/responses/Generic403'
+        '500':
+          $ref: '#/components/responses/Generic500'
+        '503':
+          $ref: '#/components/responses/Generic503'
+  /trust-domains/{trustDomainId}:
+    parameters:
+      - $ref: '#/components/parameters/trustDomainId'
+    get:
+      tags:
+        - Trust Domains
+      summary: Get a specific Trust Domain
+      security:
+        - openId:
+            - network-access-management:trust-domains:read
+      operationId: getTrustDomain
+      description: |
+        Returns the Trust Domain that matches the given ID, including its network configurations and policies. Scopes impact the output of this endpoint. See the examples for
+        various permutations.
+
+        **Required Scopes:**
+        - **one of**
+          - `network-access-management:trust-domains:wifi:read`
+          - `network-access-management:trust-domains:wifi:write`
+          - `network-access-management:trust-domains:wifi.primary:read`
+          - `network-access-management:trust-domains:wifi.primary:write`
+          - `network-access-management:trust-domains:wifi.auxiliary:read`
+          - `network-access-management:trust-domains:wifi.auxiliary:write`
+      responses:
+        '200':
+          description: Contains information about the specified trust domain
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TrustDomain'
+              examples:
+                TrustDomainResponseBasic:
+                  $ref: '#/components/examples/TrustDomainResponseBasic'
+        '401':
+          $ref: '#/components/responses/Generic401'
+        '403':
+          $ref: '#/components/responses/Generic403'
+        '404':
+          $ref: '#/components/responses/Generic404'
+        '500':
+          $ref: '#/components/responses/Generic500'
+        '503':
+          $ref: '#/components/responses/Generic503'
+    patch:
+      tags:
+        - Trust Domains
+      summary: Update a specific Trust Domain
+      security:
+        - openId:
+            - network-access-management:trust-domains:write
+      operationId: updateTrustDomain
+      description: |
+        Updates the Trust Domain, reconfigures any network access devices configured with the Trust Domain, and returns the Trust Domain that matches
+        the given ID.  Scopes impact the output of this endpoint.  See the examples for various permutations.
+
+        **Required Scopes:**
+        - **one of**
+          - `network-access-management:trust-domains:wifi:write`
+          - `network-access-management:trust-domains:wifi.primary:write`
+          - `network-access-management:trust-domains:wifi.auxiliary:write`
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TrustDomainUpdate'
+        required: true
+      responses:
+        '200':
+          description: Contains information about the updated trust domain
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TrustDomain'
+        '400':
+          $ref: '#/components/responses/Generic400'
+        '401':
+          $ref: '#/components/responses/Generic401'
+        '403':
+          $ref: '#/components/responses/Generic403'
+        '404':
+          $ref: '#/components/responses/Generic404'
+        '500':
+          $ref: '#/components/responses/Generic500'
+        '503':
+          $ref: '#/components/responses/Generic503'
+    delete:
+      tags:
+        - Trust Domains
+      summary: Delete a specific Trust Domain
+      security:
+        - openId:
+            - network-access-management:trust-domains:write
+      operationId: deleteTrustDomain
+      description: |
+        Deletes the Trust Domain and removes the configuration from any network access devices configured with the Trust Domain that matches the
+        given ID.
+
+        **Required Scopes:**
+        - **one of**
+          - `network-access-management:trust-domains:wifi:write`
+          - `network-access-management:trust-domains:wifi.primary:write`
+          - `network-access-management:trust-domains:wifi.auxiliary:write`
+      responses:
+        '204':
+          description: Trust Domain deleted successfully
+        '401':
+          $ref: '#/components/responses/Generic401'
+        '403':
+          $ref: '#/components/responses/Generic403'
+        '404':
+          $ref: '#/components/responses/Generic404'
+        '500':
+          $ref: '#/components/responses/Generic500'
+        '503':
+          $ref: '#/components/responses/Generic503'
+components:
+  securitySchemes:
+    openId:
+      type: openIdConnect
+      description: OpenID Connect
+      openIdConnectUrl: https://example.com/.well-known/openid-configuration
+  schemas:
+    DateTime:
+      type: string
+      format: date-time
+      description: |
+        It must follow [RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339#section-5.6) and must have time zone.
+        Recommended format is yyyy-MM-dd'T'HH:mm:ss.SSSZ (i.e. which allows 2023-07-03T14:27:08.312+02:00 or
+        2023-07-03T12:27:08.312Z)
+      example: '2023-07-03T14:27:08.312+02:00'
+    MaxDevicesPolicy:
+      type: integer
+      minimum: 1
+      description: Limits the number of devices that may join the Trust Domain.
+      example: 10
+    MaxDomainDownstreamKbpsPolicy:
+      type: integer
+      description: Maximum downstream throughput (Kbps) across the domain.
+      example: 50000
+    MaxDomainUpstreamKbpsPolicy:
+      type: integer
+      description: Maximum upstream throughput (Kbps) across the domain.
+      example: 10000
+    EgressAllowedListPolicy:
+      type: array
+      items:
+        type: string
+        description: FQDN or CIDR pattern
+      minItems: 1
+      description: Restricts egress traffic to the specified destinations.
+      example:
+        - api.vendor.com
+        - updates.vendor.com
+    Policies:
+      type: object
+      description: A set of policies governing Trust Domain behavior.
+      properties:
+        maxDevices:
+          $ref: '#/components/schemas/MaxDevicesPolicy'
+        maxDomainDownstreamKbps:
+          $ref: '#/components/schemas/MaxDomainDownstreamKbpsPolicy'
+        maxDomainUpstreamKbps:
+          $ref: '#/components/schemas/MaxDomainUpstreamKbpsPolicy'
+        egressAllowedList:
+          $ref: '#/components/schemas/EgressAllowedListPolicy'
+      additionalProperties: false
+      example:
+        maxDevices: 10
+        maxDomainDownstreamKbps: 50000
+        maxDomainUpstreamKbps: 10000
+        egressAllowedList:
+          - api.vendor.com
+          - updates.vendor.com
+    WpaPersonalDetail:
+      type: object
+      properties:
+        password:
+          type: string
+          maxLength: 255
+          description: The password for the WPA Personal Wi-Fi network
+          example: my-password
+        securityModeType:
+          type: string
+          enum:
+            - WPA2-Personal
+            - WPA2-WPA3-Personal
+            - WPA3-Personal
+          description: |
+            The security mode type for the WPA Personal Wi-Fi network.
+            Leave blank to auto-select.
+          example: WPA3-Personal
+      required:
+        - password
+      example:
+        password: my-password
+        securityModeType: WPA3-Personal
+    WpaEnterpriseDetail:
+      type: object
+      properties:
+        authServer:
+          type: string
+          maxLength: 255
+          description: The authentication server for the WPA Enterprise Wi-Fi network
+          example: 1.2.3.4
+        securityModeType:
+          type: string
+          enum:
+            - WPA2-Enterprise
+            - WPA3-Enterprise
+          description: The security mode type for the WPA Enterprise Wi-Fi network
+          example: WPA3-Enterprise
+      required:
+        - securityModeType
+      example:
+        authServer: 1.2.3.4
+        securityModeType: WPA3-Enterprise
+    WiFiAccessDetail:
+      type: object
+      properties:
+        accessType:
+          type: string
+          enum:
+            - Wi-Fi
+          example: Wi-Fi
+        ssid:
+          type: string
+          minLength: 2
+          maxLength: 32
+          description: The SSID (network name) of the Wi-Fi network
+          example: my-ssid
+        securityMode:
+          oneOf:
+            - $ref: '#/components/schemas/WpaPersonalDetail'
+            - $ref: '#/components/schemas/WpaEnterpriseDetail'
+          discriminator:
+            propertyName: securityModeType
+            mapping:
+              WPA2-Personal: '#/components/schemas/WpaPersonalDetail'
+              WPA2-WPA3-Personal: '#/components/schemas/WpaPersonalDetail'
+              WPA3-Personal: '#/components/schemas/WpaPersonalDetail'
+              WPA2-Enterprise: '#/components/schemas/WpaEnterpriseDetail'
+              WPA3-Enterprise: '#/components/schemas/WpaEnterpriseDetail'
+          description: The security mode details for the Wi-Fi network
+          example:
+            password: my-password
+            securityModeType: WPA3-Personal
+      required:
+        - accessType
+      example:
+        accessType: Wi-Fi
+        ssid: my-ssid
+        securityMode:
+          password: my-password
+          securityModeType: WPA3-Personal
+    ThreadStructuredAccessDetail:
+      type: object
+      properties:
+        mode:
+          type: string
+          description: Structured Thread access details
+          enum:
+            - structured
+          example: structured
+        channel:
+          type: integer
+          minimum: 11
+          maximum: 26
+          description: The Thread channel (IEEE 802.15.4 channel number)
+          example: 13
+        extendedPanId:
+          type: string
+          pattern: ^[0-9a-fA-F]{16}$
+          description: The Extended PAN ID (16 hex digits)
+          example: d63e8e3e495ebbc3
+        networkKey:
+          type: string
+          pattern: ^[0-9a-fA-F]{32}$
+          description: The Thread Network Key (32 hex digits)
+          example: dfd34f0f05cad978ec4e32b0413038ff
+        networkName:
+          type: string
+          minLength: 1
+          maxLength: 16
+          description: The Thread Network Name (1-16 ASCII characters)
+          example: Spec-Thread-B3AF
+        panId:
+          type: string
+          pattern: ^[0-9a-fA-F]{4}$
+          description: The PAN ID (4 hex digits)
+          example: d63e
+      required:
+        - mode
+        - channel
+        - extendedPanId
+        - networkKey
+        - networkName
+        - panId
+      example:
+        mode: structured
+        channel: 13
+        extendedPanId: d63e8e3e495ebbc3
+        networkKey: dfd34f0f05cad978ec4e32b0413038ff
+        networkName: Spec-Thread-B3AF
+        panId: d63e
+    ThreadTlvAccessDetail:
+      type: object
+      properties:
+        mode:
+          type: string
+          description: TLV encoded Thread operational dataset
+          enum:
+            - tlv
+          example: tlv
+        operationalDataset:
+          type: string
+          maxLength: 255
+          description: The Thread network credentials (operational dataset) encoded as a TLV hex string
+          example: 0e08000000000000010010000102030405060708090a0b0c0d0e0f
+      required:
+        - mode
+        - operationalDataset
+      example:
+        mode: tlv
+        operationalDataset: 0e08000000000000010010000102030405060708090a0b0c0d0e0f
+    ThreadAccessDetail:
+      type: object
+      properties:
+        accessType:
+          type: string
+          enum:
+            - Thread
+          example: Thread
+      oneOf:
+        - $ref: '#/components/schemas/ThreadStructuredAccessDetail'
+        - $ref: '#/components/schemas/ThreadTlvAccessDetail'
+      discriminator:
+        propertyName: mode
+        mapping:
+          structured: '#/components/schemas/ThreadStructuredAccessDetail'
+          tlv: '#/components/schemas/ThreadTlvAccessDetail'
+      description: The Thread network details, either structured or TLV encoded
+      required:
+        - accessType
+        - mode
+      example:
+        accessType: Thread
+        mode: structured
+        channel: 13
+        extendedPanId: d63e8e3e495ebbc3
+        networkKey: dfd34f0f05cad978ec4e32b0413038ff
+        networkName: Spec-Thread-B3AF
+        panId: d63e
+    AccessDetail:
+      oneOf:
+        - $ref: '#/components/schemas/WiFiAccessDetail'
+        - $ref: '#/components/schemas/ThreadAccessDetail'
+      discriminator:
+        propertyName: accessType
+        mapping:
+          Wi-Fi: '#/components/schemas/WiFiAccessDetail'
+          Thread: '#/components/schemas/ThreadAccessDetail'
+      example:
+        accessType: Wi-Fi
+        ssid: my-ssid
+        securityMode:
+          password: my-password
+          securityModeType: WPA3-Personal
+    TrustDomainUpdate:
+      type: object
+      description: Represents the updatable fields of a trust domain within the network access management system.
+      properties:
+        name:
+          type: string
+          description: Human-readable name for the trust domain.
+          example: Primary WiFi Network
+        description:
+          type: string
+          description: Detailed description of the trust domain.
+          example: Primary home WiFi Network for all devices
+        enabled:
+          type: boolean
+          description: Indicates whether the trust domain is currently enabled.
+          example: true
+        expiration:
+          $ref: '#/components/schemas/DateTime'
+          description: |
+            The expiration date and time of the network.  It must follow [RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339#section-5.6)
+            and must have time zone. Recommended format is yyyy-MM-dd'T'HH:mm:ss.SSSZ (i.e. which allows
+            2023-07-03T14:27:08.312+02:00 or 2023-07-03T12:27:08.312Z).
+
+            If omitted, the trust domain will not automatically expire.
+        policies:
+          $ref: '#/components/schemas/Policies'
+        accessDetails:
+          type: array
+          description: An optional list of access details for the trust domain.
+          items:
+            $ref: '#/components/schemas/AccessDetail'
+          minItems: 1
+    TrustDomainId:
+      type: string
+      minLength: 1
+      maxLength: 64
+      description: The unique identifier for the trust domain.
+      example: wifi-1
+    TrustDomain:
+      allOf:
+        - $ref: '#/components/schemas/TrustDomainUpdate'
+        - properties:
+            id:
+              $ref: '#/components/schemas/TrustDomainId'
+            createdAt:
+              allOf:
+                - $ref: '#/components/schemas/DateTime'
+                - description: |
+                    The creation date and time of the trust domain.  It must follow [RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339#section-5.6)
+                    and must have time zone. Recommended format is yyyy-MM-dd'T'HH:mm:ss.SSSZ (i.e. which allows
+                    2023-07-03T14:27:08.312+02:00 or 2023-07-03T12:27:08.312Z).
+            createdBy:
+              type: string
+              maxLength: 100
+              description: The user who created the network
+              example: user-1
+            modifiedAt:
+              allOf:
+                - $ref: '#/components/schemas/DateTime'
+                - description: |
+                    The last update date and time of the trust domain.  It must follow [RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339#section-5.6)
+                    and must have time zone. Recommended format is yyyy-MM-dd'T'HH:mm:ss.SSSZ (i.e. which allows
+                    2023-07-03T14:27:08.312+02:00 or 2023-07-03T12:27:08.312Z).
+            modifiedBy:
+              type: string
+              maxLength: 100
+              description: The user who last updated the trust domain
+              example: user-2
+          required:
+            - id
+      additionalProperties: false
+      description: Represents a trust domain within the network access management system.
+    XCorrelator:
+      type: string
+      pattern: ^[a-zA-Z0-9-_:;.\/<>{}]{0,256}$
+      example: b4333c46-49c0-4f62-80d7-f0ef930f1c46
+    ErrorInfo:
+      type: object
+      required:
+        - message
+        - status
+        - code
+      properties:
+        message:
+          type: string
+          description: A human readable description of what the event represent
+        status:
+          type: integer
+          description: HTTP response status code
+        code:
+          type: string
+          description: Friendly Code to describe the error
+    TrustDomainCreate:
+      allOf:
+        - $ref: '#/components/schemas/TrustDomainUpdate'
+      description: Represents the creation of a new trust domain within the network access management system.
+      required:
+        - name
+        - enabled
+        - accessDetails
+  headers:
+    x-correlator:
+      description: Correlation id for the different services
+      schema:
+        $ref: '#/components/schemas/XCorrelator'
+  responses:
+    Generic401:
+      description: Unauthorized
+      headers:
+        x-correlator:
+          $ref: '#/components/headers/x-correlator'
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/ErrorInfo'
+              - type: object
+                properties:
+                  status:
+                    enum:
+                      - 401
+                  code:
+                    enum:
+                      - UNAUTHENTICATED
+          examples:
+            GENERIC_401_UNAUTHENTICATED:
+              description: Request cannot be authenticated
+              value:
+                status: 401
+                code: UNAUTHENTICATED
+                message: Request not authenticated due to missing, invalid, or expired credentials.
+    Generic403:
+      description: Forbidden
+      headers:
+        x-correlator:
+          $ref: '#/components/headers/x-correlator'
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/ErrorInfo'
+              - type: object
+                properties:
+                  status:
+                    enum:
+                      - 403
+                  code:
+                    enum:
+                      - PERMISSION_DENIED
+                      - INVALID_TOKEN_CONTEXT
+          examples:
+            GENERIC_403_PERMISSION_DENIED:
+              description: Permission denied. OAuth2 token access does not have the required scope or when the user fails operational security
+              value:
+                status: 403
+                code: PERMISSION_DENIED
+                message: Client does not have sufficient permissions to perform this action.
+            GENERIC_403_INVALID_TOKEN_CONTEXT:
+              description: Reflect some inconsistency between information in some field of the API and the related OAuth2 Token
+              value:
+                status: 403
+                code: INVALID_TOKEN_CONTEXT
+                message: '{{field}} is not consistent with access token.'
+    Generic500:
+      description: Internal Server Error
+      headers:
+        x-correlator:
+          $ref: '#/components/headers/x-correlator'
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/ErrorInfo'
+              - type: object
+                properties:
+                  status:
+                    enum:
+                      - 500
+                  code:
+                    enum:
+                      - INTERNAL
+          examples:
+            GENERIC_500_INTERNAL:
+              description: Problem in Server side. Regular Server Exception
+              value:
+                status: 500
+                code: INTERNAL
+                message: Unknown server error. Typically a server bug.
+    Generic503:
+      description: Service Unavailable
+      headers:
+        x-correlator:
+          $ref: '#/components/headers/x-correlator'
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/ErrorInfo'
+              - type: object
+                properties:
+                  status:
+                    enum:
+                      - 503
+                  code:
+                    enum:
+                      - UNAVAILABLE
+          examples:
+            GENERIC_503_UNAVAILABLE:
+              description: Service is not available. Temporary situation usually related to maintenance process in the server side
+              value:
+                status: 503
+                code: UNAVAILABLE
+                message: Service Unavailable.
+    Generic400:
+      description: Bad Request
+      headers:
+        x-correlator:
+          $ref: '#/components/headers/x-correlator'
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/ErrorInfo'
+              - type: object
+                properties:
+                  status:
+                    enum:
+                      - 400
+                  code:
+                    enum:
+                      - INVALID_ARGUMENT
+                      - OUT_OF_RANGE
+          examples:
+            GENERIC_400_INVALID_ARGUMENT:
+              description: Invalid Argument. Generic Syntax Exception
+              value:
+                status: 400
+                code: INVALID_ARGUMENT
+                message: Client specified an invalid argument, request body or query param.
+            GENERIC_400_OUT_OF_RANGE:
+              description: Out of Range. Specific Syntax Exception used when a given field has a pre-defined range or a invalid filter criteria combination is requested
+              value:
+                status: 400
+                code: OUT_OF_RANGE
+                message: Client specified an invalid range.
+    Generic409:
+      description: Conflict
+      headers:
+        x-correlator:
+          $ref: '#/components/headers/x-correlator'
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/ErrorInfo'
+              - type: object
+                properties:
+                  status:
+                    enum:
+                      - 409
+                  code:
+                    enum:
+                      - ABORTED
+                      - ALREADY_EXISTS
+                      - CONFLICT
+                      - NETWORK_NOT_REMOVABLE
+          examples:
+            GENERIC_409_ABORTED:
+              description: Concurreny of processes of the same nature/scope
+              value:
+                status: 409
+                code: ABORTED
+                message: Concurrency conflict.
+            GENERIC_409_ALREADY_EXISTS:
+              description: Trying to create an existing resource
+              value:
+                status: 409
+                code: ALREADY_EXISTS
+                message: The resource that a client tried to create already exists.
+            GENERIC_409_CONFLICT:
+              description: Duplication of an existing resource
+              value:
+                status: 409
+                code: CONFLICT
+                message: A specified resource duplicate entry found.
+            GENERIC_409_NETWORK_NOT_REMOVABLE:
+              description: The specified network cannot be removed
+              value:
+                status: 409
+                code: NETWORK_NOT_REMOVABLE
+                message: |
+                  The specified network cannot be removed: {{NetworkId}}: {{reason}}
+    Generic404:
+      description: Not found
+      headers:
+        x-correlator:
+          $ref: '#/components/headers/x-correlator'
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/ErrorInfo'
+              - type: object
+                properties:
+                  status:
+                    enum:
+                      - 404
+                  code:
+                    enum:
+                      - NOT_FOUND
+                      - IDENTIFIER_NOT_FOUND
+                      - SERVICE_SITE_NOT_FOUND
+                      - DEVICE_NOT_FOUND
+                      - NETWORK_NOT_FOUND
+          examples:
+            GENERIC_404_NOT_FOUND:
+              description: Resource is not found
+              value:
+                status: 404
+                code: NOT_FOUND
+                message: The specified resource is not found.
+            GENERIC_404_SERVICE_SITE_NOT_FOUND:
+              description: Service site identitier not found
+              value:
+                status: 404
+                code: SERVICE_SITE_NOT_FOUND
+                message: |
+                  Service site identifier(s) not found: {{ServiceSiteId, ...}}.
+            GENERIC_404_DEVICE_NOT_FOUND:
+              description: Device identifier(s) not found
+              value:
+                status: 404
+                code: DEVICE_NOT_FOUND
+                message: |
+                  Device identifier(s) not found: {{DeviceId, ...}}.
+            GENERIC_404_NETWORK_NOT_FOUND:
+              description: Network identitier(s) not found
+              value:
+                status: 404
+                code: NETWORK_NOT_FOUND
+                message: |
+                  Network identitifer(s) not found: {{NetworkId, ...}}.
+  examples:
+    TrustDomainCreateWpa2Personal:
+      summary: Create a Trust Domain with WPA2-Personal Wi-Fi access.
+      value:
+        name: Primary WiFi Network
+        description: Request defines a Trust Domain with WPA2-Personal Wi-Fi access. The request specifies an SSID, implying the SSID is created on the network infrastructure.
+        enabled: true
+        accessDetails:
+          - accessType: Wi-Fi
+            ssid: my-ssid
+            securityMode:
+              password: my-password
+              securityModeType: WPA2-Personal
+    TrustDomainCreateInferredSsid:
+      summary: Create a Trust Domain with inferred SSID Wi-Fi access.
+      value:
+        name: Inferred SSID Network
+        description: Request defines a Trust Domain with inferred SSID Wi-Fi access. The request omits the SSID, implying the Trust Domain is applied to an existing SSID on the network infrastructure.
+        enabled: true
+        accessDetails:
+          - accessType: Wi-Fi
+            securityMode:
+              password: my-password
+              securityModeType: WPA2-Personal
+    TrustDomainCreateThreadStructured:
+      summary: Create a Trust Domain with Thread structured access details.
+      value:
+        name: Thread Structured Network
+        description: Request defines a Trust Domain with Thread structured access details.
+        enabled: true
+        accessDetails:
+          - accessType: Thread
+            mode: structured
+            channel: 13
+            extendedPanId: d63e8e3e495ebbc3
+            networkKey: dfd34f0f05cad978ec4e32b0413038ff
+            networkName: Spec-Thread-B3AF
+            panId: d63e
+    TrustDomainCreateEphemeral:
+      summary: Create a Trust Domain with ephemeral access details.
+      value:
+        name: Ephemeral Network
+        description: Request defines a Trust Domain with ephemeral access details.
+        enabled: true
+        accessDetails:
+          - accessType: Wi-Fi
+            ssid: my-ssid
+            securityMode:
+              password: my-password
+              securityModeType: WPA3-Personal
+        expiration: '2024-12-31T23:59:59Z'
+        policies:
+          maxDevices: 10
+    TrustDomainCreateQoSPolicies:
+      summary: Create a Trust Domain with QoS policies.
+      value:
+        name: QoS Policy Network
+        description: Request defines a Trust Domain with QoS policies.
+        enabled: true
+        accessDetails:
+          - accessType: Wi-Fi
+            ssid: my-ssid
+            securityMode:
+              password: my-password
+              securityModeType: WPA3-Personal
+        policies:
+          maxDomainDownstreamKbps: 1000000
+          maxDomainUpstreamKbps: 500000
+    TrustDomainResponseBasic:
+      summary: Basic Trust Domain Response
+      description: Example of a created Trust Domain with minimal details.
+      value:
+        id: trustdomain-123
+        name: Basic Trust Domain
+        description: A basic trust domain example
+        enabled: true
+        accessDetails:
+          - accessType: Wi-Fi
+            securityMode:
+              password: my-password
+              securityModeType: WPA2-Personal
+        createdAt: '2025-10-21T14:27:08.312Z'
+        createdBy: user-1
+        modifiedAt: '2025-10-21T14:27:08.312Z'
+        modifiedBy: user-1
+    TrustDomainResponseWiFiThread:
+      summary: Created Trust Domain (Wi-Fi + Thread)
+      description: Example of a created Trust Domain including Wi-Fi and Thread access details and populated policies.
+      value:
+        id: wifi-1
+        name: Primary WiFi Network
+        description: Primary home Wi-Fi Network for all devices
+        enabled: true
+        expiration: '2025-10-21T14:27:08.312Z'
+        policies:
+          egressAllowedList:
+            - api.vendor.com
+            - updates.vendor.com
+        accessDetails:
+          - accessType: Wi-Fi
+            ssid: my-ssid
+            securityMode:
+              password: my-password
+              securityModeType: WPA3-Personal
+          - accessType: Thread
+            mode: structured
+            channel: 13
+            extendedPanId: d63e8e3e495ebbc3
+            networkKey: dfd34f0f05cad978ec4e32b0413038ff
+            networkName: Spec-Thread-B3AF
+            panId: d63e
+        createdAt: '2025-10-21T14:27:08.312Z'
+        createdBy: user-1
+        modifiedAt: '2025-10-21T14:27:08.312Z'
+        modifiedBy: user-2
+  parameters:
+    trustDomainId:
+      name: trustDomainId
+      in: path
+      required: true
+      schema:
+        $ref: '#/components/schemas/TrustDomainId'
+      description: ID of the Trust Domain

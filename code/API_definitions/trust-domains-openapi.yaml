@@ -189,6 +189,8 @@ paths:
               schema:
                 $ref: './Domain/TrustDomains/TrustDomains.yaml#/components/schemas/TrustDomain'
               examples:
+                TrustDomainResponseBasic:
+                  $ref: './Domain/TrustDomains/TrustDomains.yaml#/components/examples/TrustDomainResponseBasic'
                 TrustDomainResponseWiFiThread:
                   $ref: './Domain/TrustDomains/TrustDomains.yaml#/components/examples/TrustDomainResponseWiFiThread'
         '400':
