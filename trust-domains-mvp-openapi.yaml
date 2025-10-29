@@ -65,32 +65,13 @@ info:
     - Scopes have inheritance when one scope would otherwise require the inherited scope.
     - Read scopes for one resource impacts the output of another resource when the requested resource has a relationship
     with the first (e.g., listing networks on a device requires both device and network read scopes).
-    - Trust Domains are broken down into 3 roles allowing service owners to grant granular permissions to API
-    clients: only-own, primary, and auxiliary. The primary role allows API clients to manage the main network access
-    configuration. The auxiliary role allows API clients to manage all auxiliary (i.e., secondary) networks. The
-    only-own role allows API clients to manage networks it has created. Only-own networks SHOULD be an auxiliary, or
-    secondary, network. Note that there is an edge case when a service owner revokes the primary role authorization. An
-    API client SHOULD be able to continue managing primary Trust Domains created by the client. Complete
-    administrative control requires both the primary and auxiliary roles.
 
     | Scope | Description | Inherits
     |-------|-------------|---------
-    | **network-access-management:service-sites:read** | List a service owner's service sites
-    | **network-access-management:service-sites.location:read** | Read a service site's physical location | network-access-management:service-sites:read
-    | **network-access-management:devices:read** | List a service owner's devices
-    | **network-access-management:devices.hardware-address:read** | Read a service owner's device's hardware address | network-access-management:devices:read
-    | **network-access-management:devices:write** | Modify which networks are configured on a service owner's devices | network-access-management:devices:read
-    | **network-access-management:trust-domains:wifi:read** | List a service owner's Wi-Fi Trust Domains created by the calling API client
-    | **network-access-management:trust-domains:wifi:write** | Create or modify a service owner's Wi-Fi Trust Domains created by the calling API client | network-access-management:trust-domains:wifi:read
-    | **network-access-management:trust-domains:wifi.primary:read** | Access information about a service owner's Wi-Fi primary trust domain
-    | **network-access-management:trust-domains:wifi.primary:write** | Modify a service owner's primary Wi-Fi trust domain | network-access-management:trust-domains:wifi.primary:read
-    | **network-access-management:trust-domains:wifi.auxiliary:read** | List a service owner's auxiliary Wi-Fi Trust Domains | network-access-management:trust-domains:wifi:read
-    | **network-access-management:trust-domains:wifi.auxiliary:write** | Create or modify a service owner's Wi-Fi auxiliary Trust Domains | network-access-management:trust-domains:wifi.auxiliary:read<br />network-access-management:trust-domains:wifi:write
-    | **network-access-management:trust-domains:thread:read** | Read the Thread credentials if they are the API provider's default or the requesting client formed the network
-    | **network-access-management:trust-domains:thread:form** | Form a new Thread network, replacing the API provider's default Thread network if applicable, and modify or delete the existing network if created by the requesting client | network-access-management:trust-domains:thread:read
-    | **network-access-management:trust-domains:thread.admin** | Read or write to any of the service owner's Thread networks | network-access-management:trust-domains:thread:form
-    | **network-access-management:reboot-requests:read** | List a service owner's reboot requests created by the calling API client
-    | **network-access-management:reboot-requests:write** | Create or modify a service owner's reboot request created by the calling API client | network-access-management:reboot-requests:read
+    | **network-access-management:trust-domains:read** | List a service owner's Trust Domains created by the calling API client
+    | **network-access-management:trust-domains:write** | Modify a service owner's Trust Domains created by the calling API client | network-access-management:trust-domains:read
+    | **network-access-management:trust-domains:delete** | Delete a service owner's Trust Domains created by the calling API client | network-access-management:trust-domains:read<br />network-access-management:trust-domains:write
+    | **network-access-management:trust-domains:create** | Create a new Trust Domain for a service owner | network-access-management:trust-domains:read<br />network-access-management:trust-domains:write<br />network-access-management:trust-domains:delete
 
     ## General Usage
     This API is intended for creating, modifying, or deleting Trust Domains using the `/trust-domains` endpoints
@@ -147,16 +128,15 @@ paths:
       summary: Create a new Trust Domain
       security:
         - openId:
-            - network-access-management:trust-domains:write
+            - network-access-management:trust-domains:create
       description: |
-        Creates and returns the new Trust Domain.  Scopes impact the function and output of this endpoint. See the examples
-        for various permutations.
+        Creates and returns the new Trust Domain.
 
-        **Required Scopes:**
-        - **one of**
-          - `network-access-management:trust-domains:wifi:write`
-          - `network-access-management:trust-domains:wifi.primary:write`
-          - `network-access-management:trust-domains:wifi.auxiliary:write`
+        **Required Scope:**
+        - `network-access-management:trust-domains:create`
+
+        **Inherited Permissions:**
+        This scope automatically grants `read`, `write`, and `delete` permissions.
       operationId: createTrustDomain
       requestBody:
         description: Details of the Trust Domain to be created
@@ -206,7 +186,15 @@ paths:
         - openId:
             - network-access-management:trust-domains:read
       operationId: getTrustDomains
-      description: This endpoint returns a list of Trust Domains associated with the service owner, each containing details about the network configurations and policies defined within them.
+      description: |
+        This endpoint returns a list of Trust Domains associated with the service owner, each containing details about the network configurations and policies defined within them.
+
+        **Security Requirements:**
+        - Requires one of the following scopes (due to inheritance):
+          - `network-access-management:trust-domains:read` (minimum required)
+          - `network-access-management:trust-domains:write` (inherits read)
+          - `network-access-management:trust-domains:delete` (inherits read + write)
+          - `network-access-management:trust-domains:create` (inherits all permissions)
       responses:
         '200':
           description: Contains information about all trust domains
@@ -236,17 +224,14 @@ paths:
             - network-access-management:trust-domains:read
       operationId: getTrustDomain
       description: |
-        Returns the Trust Domain that matches the given ID, including its network configurations and policies. Scopes impact the output of this endpoint. See the examples for
-        various permutations.
+        Returns the Trust Domain that matches the given ID, including its network configurations and policies.
 
-        **Required Scopes:**
-        - **one of**
-          - `network-access-management:trust-domains:wifi:read`
-          - `network-access-management:trust-domains:wifi:write`
-          - `network-access-management:trust-domains:wifi.primary:read`
-          - `network-access-management:trust-domains:wifi.primary:write`
-          - `network-access-management:trust-domains:wifi.auxiliary:read`
-          - `network-access-management:trust-domains:wifi.auxiliary:write`
+        **Security Requirements:**
+        - Requires one of the following scopes (due to inheritance):
+          - `network-access-management:trust-domains:read` (minimum required)
+          - `network-access-management:trust-domains:write` (inherits read)
+          - `network-access-management:trust-domains:delete` (inherits read + write)
+          - `network-access-management:trust-domains:create` (inherits all permissions)
       responses:
         '200':
           description: Contains information about the specified trust domain
@@ -277,13 +262,13 @@ paths:
       operationId: updateTrustDomain
       description: |
         Updates the Trust Domain, reconfigures any network access devices configured with the Trust Domain, and returns the Trust Domain that matches
-        the given ID.  Scopes impact the output of this endpoint.  See the examples for various permutations.
+        the given ID.
 
-        **Required Scopes:**
-        - **one of**
-          - `network-access-management:trust-domains:wifi:write`
-          - `network-access-management:trust-domains:wifi.primary:write`
-          - `network-access-management:trust-domains:wifi.auxiliary:write`
+        **Security Requirements:**
+        - Requires one of the following scopes (due to inheritance):
+          - `network-access-management:trust-domains:write` (minimum required)
+          - `network-access-management:trust-domains:delete` (inherits read + write)
+          - `network-access-management:trust-domains:create` (inherits all permissions)
       requestBody:
         content:
           application/json:
@@ -315,17 +300,16 @@ paths:
       summary: Delete a specific Trust Domain
       security:
         - openId:
-            - network-access-management:trust-domains:write
+            - network-access-management:trust-domains:delete
       operationId: deleteTrustDomain
       description: |
         Deletes the Trust Domain and removes the configuration from any network access devices configured with the Trust Domain that matches the
         given ID.
 
-        **Required Scopes:**
-        - **one of**
-          - `network-access-management:trust-domains:wifi:write`
-          - `network-access-management:trust-domains:wifi.primary:write`
-          - `network-access-management:trust-domains:wifi.auxiliary:write`
+        **Security Requirements:**
+        - Requires one of the following scopes (due to inheritance):
+          - `network-access-management:trust-domains:delete` (minimum required)
+          - `network-access-management:trust-domains:create` (inherits all permissions)
       responses:
         '204':
           description: Trust Domain deleted successfully
@@ -345,6 +329,11 @@ components:
       type: openIdConnect
       description: OpenID Connect
       openIdConnectUrl: https://example.com/.well-known/openid-configuration
+      scopes:
+        network-access-management:trust-domains:read: List and view Trust Domains
+        network-access-management:trust-domains:write: Modify existing Trust Domains (inherits read)
+        network-access-management:trust-domains:delete: Delete existing Trust Domains (inherits read, write)
+        network-access-management:trust-domains:create: Create new Trust Domains (inherits read, write, delete)
   schemas:
     DateTime:
       type: string

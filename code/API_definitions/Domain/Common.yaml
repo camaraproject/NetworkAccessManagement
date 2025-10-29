@@ -1,10 +1,5 @@
 # OpenAPI Specification for Common Definitions
 components:
-  securitySchemes:
-    openId:
-      type: openIdConnect
-      description: OpenID Connect
-      openIdConnectUrl: https://example.com/.well-known/openid-configuration
 
   headers:
     x-correlator:
