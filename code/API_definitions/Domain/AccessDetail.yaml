@@ -85,12 +85,12 @@ components:
     ThreadStructuredAccessDetail:
       type: object
       properties:
-        mode:
-          type: string
-          description: Structured Thread access details
-          enum:
-            - structured
-          example: "structured"
+        # mode:
+        #   type: string
+        #   description: Structured Thread access details
+        #   enum:
+        #     - structured
+        #   example: "structured"
         channel:
           type: integer
           minimum: 11
@@ -119,14 +119,12 @@ components:
           description: The PAN ID (4 hex digits)
           example: "d63e"
       required:
-        - mode
         - channel
         - extendedPanId
         - networkKey
         - networkName
         - panId
-      example: &thread-structured-access-detail
-        mode: "structured"
+      example:
         channel: 13
         extendedPanId: "d63e8e3e495ebbc3"
         networkKey: "dfd34f0f05cad978ec4e32b0413038ff"
@@ -136,44 +134,50 @@ components:
     ThreadTlvAccessDetail:
       type: object
       properties:
-        mode:
-          type: string
-          description: TLV encoded Thread operational dataset
-          enum:
-            - tlv
-          example: "tlv"
+        # mode:
+        #   type: string
+        #   description: TLV encoded Thread operational dataset
+        #   enum:
+        #     - tlv
+        #   example: "tlv"
         operationalDataset:
           type: string
           maxLength: 255
           description: The Thread network credentials (operational dataset) encoded as a TLV hex string
           example: "0e08000000000000010010000102030405060708090a0b0c0d0e0f"
       required:
-        - mode
         - operationalDataset
-      example: &thread-tlv-access-detail
-        mode: tlv
+      example:
         operationalDataset: "0e08000000000000010010000102030405060708090a0b0c0d0e0f"
 
     ThreadAccessDetail:
-      type: object
-      properties:
-        accessType:
-          type: string
-          enum:
-            - Thread
-          example: "Thread"
-      oneOf:
-        - $ref: "#/components/schemas/ThreadStructuredAccessDetail"
-        - $ref: "#/components/schemas/ThreadTlvAccessDetail"
-      discriminator:
-        propertyName: mode
-        mapping:
-          structured: "#/components/schemas/ThreadStructuredAccessDetail"
-          tlv: "#/components/schemas/ThreadTlvAccessDetail"
+      allOf:
+        - type: object
+          properties:
+            accessType:
+              type: string
+              enum:
+                - Thread
+              example: "Thread"
+            mode:
+              type: string
+              enum:
+                - structured
+                - tlv
+              description: The type of Thread access detail format
+              example: "structured"
+          required:
+            - accessType
+            - mode
+        - oneOf:
+            - $ref: "#/components/schemas/ThreadStructuredAccessDetail"
+            - $ref: "#/components/schemas/ThreadTlvAccessDetail"
+          discriminator:
+            propertyName: mode
+            mapping:
+              structured: "#/components/schemas/ThreadStructuredAccessDetail"
+              tlv: "#/components/schemas/ThreadTlvAccessDetail"
       description: The Thread network details, either structured or TLV encoded
-      required:
-        - accessType
-        - mode
       example: &thread-access-detail
         accessType: "Thread"
         mode: "structured"

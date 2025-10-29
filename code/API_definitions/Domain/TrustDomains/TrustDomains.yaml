@@ -136,7 +136,7 @@ components:
       allOf:
         - $ref: "#/components/schemas/TrustDomainUpdate"
         - type: object
-        - properties:
+          properties:
             id:
               $ref: "../Common.yaml#/components/schemas/UUID"
             createdAt:
@@ -165,7 +165,6 @@ components:
               example: "user-2"
           required:
             - id
-      additionalProperties: false
       description: Represents a trust domain within the network access management system.
 
 

@@ -78,6 +78,23 @@ redocly bundle Templates/network-access-management-template.yaml --output networ
 redocly lint network-access-management-bundled.yaml
 ```
 
+#### Overwrite Official OpenAPI Specification
+
+Once you've created and validated a bundled specification, you can deploy it as the official API specification:
+
+**Manual Deployment:**
+```bash
+# After bundling and validation, overwrite the official specification
+cp network-access-management-bundled.yaml network-access-management.yaml
+
+# Commit the updated official specification
+git add network-access-management.yaml
+git commit -m "Update official API specification from template"
+```
+
+**Automated Deployment:**
+You can automate the bundling and deployment process using a script or CI/CD pipeline to ensure the official specification is always up-to-date with the latest templates.
+
 ### Bundling Configuration
 
 The `redocly.yaml` file contains:
