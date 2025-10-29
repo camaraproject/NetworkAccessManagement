@@ -33,14 +33,14 @@ paths:
             - network-access-management:device:read
       operationId: getDeviceCapabilities
       parameters:
-        - $ref: "./Domain/Common.yaml#/components/parameters/deviceIdParam"
+        - $ref: "../Domain/Common.yaml#/components/parameters/deviceIdParam"
       responses:
         "200":
           description: Capabilities supported by the device
           content:
             application/json:
               schema:
-                $ref: "./Domain/Capabilities.yaml#/components/schemas/DeviceCapabilities"
+                $ref: "../Domain/Capabilities.yaml#/components/schemas/DeviceCapabilities"
         "404":
           description: Device not found
 

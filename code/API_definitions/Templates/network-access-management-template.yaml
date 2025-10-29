@@ -150,40 +150,40 @@ paths:
         content:
           application/json:
             schema:
-              $ref: './Domain/TrustDomains/TrustDomains.yaml#/components/schemas/TrustDomainCreate'
+              $ref: '../Domain/TrustDomains/TrustDomains.yaml#/components/schemas/TrustDomainCreate'
             examples:
               TrustDomainCreateWpa2Personal:
-                $ref: './Domain/TrustDomains/TrustDomains.yaml#/components/examples/TrustDomainCreateWpa2Personal'
+                $ref: '../Domain/TrustDomains/TrustDomains.yaml#/components/examples/TrustDomainCreateWpa2Personal'
               TrustDomainCreateInferredSsid:
-                $ref: './Domain/TrustDomains/TrustDomains.yaml#/components/examples/TrustDomainCreateInferredSsid'
+                $ref: '../Domain/TrustDomains/TrustDomains.yaml#/components/examples/TrustDomainCreateInferredSsid'
               TrustDomainCreateThreadStructured:
-                $ref: './Domain/TrustDomains/TrustDomains.yaml#/components/examples/TrustDomainCreateThreadStructured'
+                $ref: '../Domain/TrustDomains/TrustDomains.yaml#/components/examples/TrustDomainCreateThreadStructured'
               TrustDomainCreateEphemeral:
-                $ref: './Domain/TrustDomains/TrustDomains.yaml#/components/examples/TrustDomainCreateEphemeral'
+                $ref: '../Domain/TrustDomains/TrustDomains.yaml#/components/examples/TrustDomainCreateEphemeral'
               TrustDomainCreateQoSPolicies:
-                $ref: './Domain/TrustDomains/TrustDomains.yaml#/components/examples/TrustDomainCreateQoSPolicies'
+                $ref: '../Domain/TrustDomains/TrustDomains.yaml#/components/examples/TrustDomainCreateQoSPolicies'
       responses:
         '201':
           description: Trust Domain created successfully
           content:
             application/json:
               schema:
-                $ref: './Domain/TrustDomains/TrustDomains.yaml#/components/schemas/TrustDomain'
+                $ref: '../Domain/TrustDomains/TrustDomains.yaml#/components/schemas/TrustDomain'
               examples:
                 TrustDomainResponseBasic:
-                  $ref: './Domain/TrustDomains/TrustDomains.yaml#/components/examples/TrustDomainResponseBasic'
+                  $ref: '../Domain/TrustDomains/TrustDomains.yaml#/components/examples/TrustDomainResponseBasic'
                 TrustDomainResponseWiFiThread:
-                  $ref: './Domain/TrustDomains/TrustDomains.yaml#/components/examples/TrustDomainResponseWiFiThread'
+                  $ref: '../Domain/TrustDomains/TrustDomains.yaml#/components/examples/TrustDomainResponseWiFiThread'
         '400':
-          $ref: './Domain/Common.yaml#/components/responses/Generic400'
+          $ref: '../Domain/Common.yaml#/components/responses/Generic400'
         '401':
-          $ref: './Domain/Common.yaml#/components/responses/Generic401'
+          $ref: '../Domain/Common.yaml#/components/responses/Generic401'
         '403':
-          $ref: './Domain/Common.yaml#/components/responses/Generic403'
+          $ref: '../Domain/Common.yaml#/components/responses/Generic403'
         '409':
-          $ref: './Domain/Common.yaml#/components/responses/Generic409'
+          $ref: '../Domain/Common.yaml#/components/responses/Generic409'
         '500':
-          $ref: './Domain/Common.yaml#/components/responses/Generic500'
+          $ref: '../Domain/Common.yaml#/components/responses/Generic500'
 
     get:
       tags:
@@ -214,19 +214,19 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: "Domain/TrustDomains/TrustDomains.yaml#/components/schemas/TrustDomain"
+                  $ref: "../Domain/TrustDomains/TrustDomains.yaml#/components/schemas/TrustDomain"
         "401":
-          $ref: "./Domain/Common.yaml#/components/responses/Generic401"
+          $ref: "../Domain/Common.yaml#/components/responses/Generic401"
         "403":
-          $ref: "./Domain/Common.yaml#/components/responses/Generic403"
+          $ref: "../Domain/Common.yaml#/components/responses/Generic403"
         "500":
-          $ref: "./Domain/Common.yaml#/components/responses/Generic500"
+          $ref: "../Domain/Common.yaml#/components/responses/Generic500"
         "503":
-          $ref: "./Domain/Common.yaml#/components/responses/Generic503"
+          $ref: "../Domain/Common.yaml#/components/responses/Generic503"
 
   /trust-domains/{trustDomainId}:
     parameters:
-      - $ref: './Domain/TrustDomains/TrustDomains.yaml#/components/parameters/trustDomainId'
+      - $ref: '../Domain/TrustDomains/TrustDomains.yaml#/components/parameters/trustDomainId'
 
     get:
       tags:
@@ -256,20 +256,20 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "./Domain/TrustDomains/TrustDomains.yaml#/components/schemas/TrustDomain"
+                $ref: "../Domain/TrustDomains/TrustDomains.yaml#/components/schemas/TrustDomain"
               examples:
                 TrustDomainResponseBasic:
-                  $ref: './Domain/TrustDomains/TrustDomains.yaml#/components/examples/TrustDomainResponseBasic'
+                  $ref: '../Domain/TrustDomains/TrustDomains.yaml#/components/examples/TrustDomainResponseBasic'
         "401":
-          $ref: "./Domain/Common.yaml#/components/responses/Generic401"
+          $ref: "../Domain/Common.yaml#/components/responses/Generic401"
         "403":
-          $ref: "./Domain/Common.yaml#/components/responses/Generic403"
+          $ref: "../Domain/Common.yaml#/components/responses/Generic403"
         "404":
-          $ref: "./Domain/Common.yaml#/components/responses/Generic404"
+          $ref: "../Domain/Common.yaml#/components/responses/Generic404"
         "500":
-          $ref: "./Domain/Common.yaml#/components/responses/Generic500"
+          $ref: "../Domain/Common.yaml#/components/responses/Generic500"
         "503":
-          $ref: "./Domain/Common.yaml#/components/responses/Generic503"
+          $ref: "../Domain/Common.yaml#/components/responses/Generic503"
 
     patch:
       tags:
@@ -296,7 +296,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "./Domain/TrustDomains/TrustDomains.yaml#/components/schemas/TrustDomainUpdate"
+              $ref: "../Domain/TrustDomains/TrustDomains.yaml#/components/schemas/TrustDomainUpdate"
         required: true
       responses:
         "200":
@@ -304,20 +304,20 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "./Domain/TrustDomains/TrustDomains.yaml#/components/schemas/TrustDomain"
+                $ref: "../Domain/TrustDomains/TrustDomains.yaml#/components/schemas/TrustDomain"
 
         "400":
-          $ref: "./Domain/Common.yaml#/components/responses/Generic400"
+          $ref: "../Domain/Common.yaml#/components/responses/Generic400"
         "401":
-          $ref: "./Domain/Common.yaml#/components/responses/Generic401"
+          $ref: "../Domain/Common.yaml#/components/responses/Generic401"
         "403":
-          $ref: "./Domain/Common.yaml#/components/responses/Generic403"
+          $ref: "../Domain/Common.yaml#/components/responses/Generic403"
         "404":
-          $ref: "./Domain/Common.yaml#/components/responses/Generic404"
+          $ref: "../Domain/Common.yaml#/components/responses/Generic404"
         "500":
-          $ref: "./Domain/Common.yaml#/components/responses/Generic500"
+          $ref: "../Domain/Common.yaml#/components/responses/Generic500"
         "503":
-          $ref: "./Domain/Common.yaml#/components/responses/Generic503"
+          $ref: "../Domain/Common.yaml#/components/responses/Generic503"
 
     delete:
       tags:
@@ -343,18 +343,18 @@ paths:
         "204":
           description: Trust Domain deleted successfully
         "401":
-          $ref: "./Domain/Common.yaml#/components/responses/Generic401"
+          $ref: "../Domain/Common.yaml#/components/responses/Generic401"
         "403":
-          $ref: "./Domain/Common.yaml#/components/responses/Generic403"
+          $ref: "../Domain/Common.yaml#/components/responses/Generic403"
         "404":
-          $ref: "./Domain/Common.yaml#/components/responses/Generic404"
+          $ref: "../Domain/Common.yaml#/components/responses/Generic404"
         "500":
-          $ref: "./Domain/Common.yaml#/components/responses/Generic500"
+          $ref: "../Domain/Common.yaml#/components/responses/Generic500"
         "503":
-          $ref: "./Domain/Common.yaml#/components/responses/Generic503"
+          $ref: "../Domain/Common.yaml#/components/responses/Generic503"
 
 
 components:
   securitySchemes:
     openId:
-      $ref: './Domain/TrustDomains/TrustDomains.yaml#/components/securitySchemes/openId'
+      $ref: '../Domain/TrustDomains/TrustDomains.yaml#/components/securitySchemes/openId'
