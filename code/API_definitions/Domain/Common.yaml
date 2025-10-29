@@ -60,6 +60,18 @@ components:
       description: The unique identifier for a device
       example: device-1
 
+    UUID:
+      type: string
+      format: uuid
+      pattern: '^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$'
+      minLength: 36
+      maxLength: 36
+      description: |
+        A universally unique identifier (UUID) as defined by RFC 4122.
+        Must be a valid UUID format with proper version (1-5) and variant bits.
+        Only lowercase hexadecimal characters are accepted for consistency.
+      example: "550e8400-e29b-41d4-a716-446655440000"
+
   examples:
     date-time-example:
       summary: Example of DateTime format

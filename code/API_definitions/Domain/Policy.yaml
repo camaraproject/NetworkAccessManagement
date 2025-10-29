@@ -1,3 +1,5 @@
+# This file defines the Policies schema model that describe the various policies applicable to
+#Trust Domains.
 components:
   schemas:
 

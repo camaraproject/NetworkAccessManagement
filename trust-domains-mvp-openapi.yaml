@@ -623,18 +623,24 @@ components:
           items:
             $ref: '#/components/schemas/AccessDetail'
           minItems: 1
-    TrustDomainId:
+    UUID:
       type: string
-      minLength: 1
-      maxLength: 64
-      description: The unique identifier for the trust domain.
-      example: wifi-1
+      format: uuid
+      pattern: ^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$
+      minLength: 36
+      maxLength: 36
+      description: |
+        A universally unique identifier (UUID) as defined by RFC 4122.
+        Must be a valid UUID format with proper version (1-5) and variant bits.
+        Only lowercase hexadecimal characters are accepted for consistency.
+      example: 550e8400-e29b-41d4-a716-446655440000
     TrustDomain:
       allOf:
         - $ref: '#/components/schemas/TrustDomainUpdate'
+        - type: object
         - properties:
             id:
-              $ref: '#/components/schemas/TrustDomainId'
+              $ref: '#/components/schemas/UUID'
             createdAt:
               allOf:
                 - $ref: '#/components/schemas/DateTime'
@@ -1005,7 +1011,7 @@ components:
       summary: Basic Trust Domain Response
       description: Example of a created Trust Domain with minimal details.
       value:
-        id: trustdomain-123
+        id: 3fa85f64-5717-4562-b3fc-2c963f66afa6
         name: Basic Trust Domain
         description: A basic trust domain example
         enabled: true
@@ -1022,7 +1028,7 @@ components:
       summary: Created Trust Domain (Wi-Fi + Thread)
       description: Example of a created Trust Domain including Wi-Fi and Thread access details and populated policies.
       value:
-        id: wifi-1
+        id: 3fa85f64-5717-4562-b3fc-2c963f66afa6
         name: Primary WiFi Network
         description: Primary home Wi-Fi Network for all devices
         enabled: true
@@ -1054,5 +1060,5 @@ components:
       in: path
       required: true
       schema:
-        $ref: '#/components/schemas/TrustDomainId'
+        $ref: '#/components/schemas/UUID'
       description: ID of the Trust Domain

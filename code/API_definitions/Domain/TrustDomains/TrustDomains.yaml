@@ -1,3 +1,55 @@
+
+# Local anchor definitions for external component examples. There isn't a native OpenAPI way to
+# cross-reference examples across files, so we define them here for reuse.
+_imported_examples:
+  uuid-example: &uuid-example "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+  wifi-wpa2-personal-basic-example: &wifi-wpa2-personal-basic-example
+    accessType: "Wi-Fi"
+    securityMode:
+      password: "my-password"
+      securityModeType: "WPA2-Personal"
+
+  wifi-wpa2-personal-example: &wifi-wpa2-personal-example
+    accessType: "Wi-Fi"
+    ssid: "my-ssid"
+    securityMode:
+      password: "my-password"
+      securityModeType: "WPA2-Personal"
+
+  wifi-wpa3-personal-example: &wifi-wpa3-personal-example
+    accessType: "Wi-Fi"
+    ssid: "my-ssid"
+    securityMode:
+      password: "my-password"
+      securityModeType: "WPA3-Personal"
+
+  thread-structured-example: &thread-structured-example
+    accessType: "Thread"
+    mode: "structured"
+    channel: 13
+    extendedPanId: "d63e8e3e495ebbc3"
+    networkKey: "dfd34f0f05cad978ec4e32b0413038ff"
+    networkName: "Spec-Thread-B3AF"
+    panId: "d63e"
+
+  thread-tlv-example: &thread-tlv-example
+    accessType: "Thread"
+    mode: tlv
+    operationalDataset: "0e08000000000000010010000102030405060708090a0b0c0d0e0f"
+
+  max-devices-policy-example: &max-devices-policy-example
+    maxDevices: 10
+
+  max-bandwidth-policy-example: &max-bandwidth-policy-example
+    maxDomainDownstreamKbps: 1000000
+    maxDomainUpstreamKbps: 500000
+
+  egress-allowed-list-policy-example: &egress-allowed-list-policy-example
+    egressAllowedList:
+      - "api.vendor.com"
+      - "updates.vendor.com"
+
+
 components:
 
   parameters:
@@ -6,16 +58,10 @@ components:
       in: path
       required: true
       schema:
-        $ref: "#/components/schemas/TrustDomainId"
+        $ref: "../Common.yaml#/components/schemas/UUID"
       description: ID of the Trust Domain
 
   schemas:
-    TrustDomainId:
-      type: string
-      minLength: 1
-      maxLength: 64
-      description: The unique identifier for the trust domain.
-      example: "wifi-1"
 
     TrustDomainUpdate:
       type: object
@@ -62,9 +108,10 @@ components:
     TrustDomain:
       allOf:
         - $ref: "#/components/schemas/TrustDomainUpdate"
+        - type: object
         - properties:
             id:
-              $ref: "#/components/schemas/TrustDomainId"
+              $ref: "../Common.yaml#/components/schemas/UUID"
             createdAt:
               allOf:
                 - $ref: "../Common.yaml#/components/schemas/DateTime"
@@ -96,55 +143,6 @@ components:
 
 
   examples:
-
-    WifiAccessDetailWPA2PersonalBasic: &wifi-wpa2-personal-basic-example
-      accessType: "Wi-Fi"
-      securityMode:
-        password: "my-password"
-        securityModeType: "WPA2-Personal"
-
-    WifiAccessDetailWPA2Personal: &wifi-wpa2-personal-example
-      accessType: "Wi-Fi"
-      ssid: "my-ssid"
-      securityMode:
-        password: "my-password"
-        securityModeType: "WPA2-Personal"
-
-    WifiAccessDetailWPA3Personal: &wifi-wpa3-personal-example
-      accessType: "Wi-Fi"
-      ssid: "my-ssid"
-      securityMode:
-        password: "my-password"
-        securityModeType: "WPA3-Personal"
-
-    ThreadAccessDetailStructuredExample: &thread-structured-example
-      accessType: "Thread"
-      mode: "structured"
-      channel: 13
-      extendedPanId: "d63e8e3e495ebbc3"
-      networkKey: "dfd34f0f05cad978ec4e32b0413038ff"
-      networkName: "Spec-Thread-B3AF"
-      panId: "d63e"
-
-    ThreadAccessDetailTlvExample: &thread-tlv-example
-      mode: tlv
-      operationalDataset: "0e08000000000000010010000102030405060708090a0b0c0d0e0f"
-
-    MaxDevicesPolicyExample: &max-devices-policy-example
-      maxDevices: 10
-
-    MaxBandwidthPolicyExample: &max-bandwidth-policy-example
-      maxDomainDownstreamKbps: 1000000
-      maxDomainUpstreamKbps: 500000
-
-    EgressAllowedListPolicyExample: &egress-allowed-list-policy-example
-      egressAllowedList:
-        - "api.vendor.com"
-        - "updates.vendor.com"
-
-
-
-    # All examples below are example objects (summary + value) for use in API definitions. Pure JSON object aliases should go above.
 
     TrustDomainCreateWpa2Personal:
       summary: Create a Trust Domain with WPA2-Personal Wi-Fi access.
@@ -203,7 +201,7 @@ components:
       summary: Basic Trust Domain Response
       description: Example of a created Trust Domain with minimal details.
       value:
-        id: "trustdomain-123"
+        id: *uuid-example
         name: "Basic Trust Domain"
         description: "A basic trust domain example"
         enabled: true
@@ -218,7 +216,7 @@ components:
       summary: Created Trust Domain (Wi-Fi + Thread)
       description: Example of a created Trust Domain including Wi-Fi and Thread access details and populated policies.
       value:
-        id: "wifi-1"
+        id: *uuid-example
         name: "Primary WiFi Network"
         description: "Primary home Wi-Fi Network for all devices"
         enabled: true

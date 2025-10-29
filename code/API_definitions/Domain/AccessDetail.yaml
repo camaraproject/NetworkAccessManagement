@@ -1,4 +1,5 @@
-
+# This file defines the AccessDetail schema model for different network access types.
+# It includes Wi-Fi and Thread access details with various security modes.
 components:
   schemas:
     WpaPersonalDetail:
