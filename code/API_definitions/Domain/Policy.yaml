@@ -9,17 +9,21 @@ components:
       properties:
         maxDevices:
           $ref: '#/components/schemas/MaxDevicesPolicy'
-        maxDomainDownstreamKbps:
-          $ref: '#/components/schemas/MaxDomainDownstreamKbpsPolicy'
-        maxDomainUpstreamKbps:
-          $ref: '#/components/schemas/MaxDomainUpstreamKbpsPolicy'
+        maxDomainDownstreamRate:
+          $ref: '#/components/schemas/MaxDomainDownstreamRatePolicy'
+        maxDomainUpstreamRate:
+          $ref: '#/components/schemas/MaxDomainUpstreamRatePolicy'
         egressAllowedList:
           $ref: '#/components/schemas/EgressAllowedListPolicy'
       additionalProperties: false
-      example: &all-policies-example
+      example:
         maxDevices: 10
-        maxDomainDownstreamKbps: 50000
-        maxDomainUpstreamKbps: 10000
+        maxDomainDownstreamRate:
+          value: 500000
+          unit: Kbps
+        maxDomainUpstreamRate:
+          value: 10000
+          unit: Kbps
         egressAllowedList:
           - "api.vendor.com"
           - "updates.vendor.com"
@@ -28,17 +32,43 @@ components:
       type: integer
       minimum: 1
       description: Limits the number of devices that may join the Trust Domain.
-      example: &max-devices-policy 10
+      example: 10
 
-    MaxDomainDownstreamKbpsPolicy:
-      type: integer
-      description: Maximum downstream throughput (Kbps) across the domain.
-      example: &max-domain-downstream-kbps-policy 50000
+    MaxDomainDownstreamRatePolicy:
+      type: object
+      properties:
+        value:
+          type: integer
+          description: Maximum downstream throughput across the domain.
+        unit:
+          type: string
+          enum: [Kbps, Mbps, Gbps]
+          description: Unit of measurement for downstream throughput.
+      required:
+        - value
+        - unit
+      description: Maximum downstream throughput policy across the Trust Domain.
+      example:
+        value: 1000000
+        unit: Kbps
 
-    MaxDomainUpstreamKbpsPolicy:
-      type: integer
-      description: Maximum upstream throughput (Kbps) across the domain.
-      example: &max-domain-upstream-kbps-policy 10000
+    MaxDomainUpstreamRatePolicy:
+      type: object
+      properties:
+        value:
+          type: integer
+          description: Maximum upstream throughput across the domain.
+        unit:
+          type: string
+          enum: [Kbps, Mbps, Gbps]
+          description: Unit of measurement for upstream throughput.
+      required:
+        - value
+        - unit
+      description: Maximum upstream throughput policy across the Trust Domain.
+      example:
+        value: 500000
+        unit: Kbps
 
     EgressAllowedListPolicy:
       type: array
@@ -47,6 +77,6 @@ components:
         description: FQDN or CIDR pattern
       minItems: 1
       description: Restricts egress traffic to the specified destinations.
-      example: &egress-allowed-list-policy
+      example:
         - "api.vendor.com"
         - "updates.vendor.com"

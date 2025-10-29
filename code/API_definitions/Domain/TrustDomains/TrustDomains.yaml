@@ -41,8 +41,12 @@ _imported_examples:
     maxDevices: 10
 
   max-bandwidth-policy-example: &max-bandwidth-policy-example
-    maxDomainDownstreamKbps: 1000000
-    maxDomainUpstreamKbps: 500000
+    maxDomainDownstreamRate:
+      value: 1000000
+      unit: Kbps
+    maxDomainUpstreamRate:
+      value: 500000
+      unit: Kbps
 
   egress-allowed-list-policy-example: &egress-allowed-list-policy-example
     egressAllowedList:

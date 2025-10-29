@@ -189,6 +189,9 @@ paths:
       description: |
         This endpoint returns a list of Trust Domains associated with the service owner, each containing details about the network configurations and policies defined within them.
 
+        **Resource Isolation:**
+        The returned Trust Domains are limited to those created by the calling API client for the service owner.
+
         **Security Requirements:**
         - Requires one of the following scopes (due to inheritance):
           - `network-access-management:trust-domains:read` (minimum required)
@@ -225,6 +228,9 @@ paths:
       operationId: getTrustDomain
       description: |
         Returns the Trust Domain that matches the given ID, including its network configurations and policies.
+
+        **Resource Isolation:**
+        The returned Trust Domain is limited to the one created by the calling API client for the service owner.
 
         **Security Requirements:**
         - Requires one of the following scopes (due to inheritance):
@@ -263,6 +269,9 @@ paths:
       description: |
         Updates the Trust Domain, reconfigures any network access devices configured with the Trust Domain, and returns the Trust Domain that matches
         the given ID.
+
+        **Resource Isolation:**
+        Updating a Trust Domain is limited to the one created by the calling API client for the service owner.
 
         **Security Requirements:**
         - Requires one of the following scopes (due to inheritance):
@@ -305,6 +314,9 @@ paths:
       description: |
         Deletes the Trust Domain and removes the configuration from any network access devices configured with the Trust Domain that matches the
         given ID.
+
+        **Resource Isolation:**
+        Deleting a Trust Domain is limited to the one created by the calling API client for the service owner.
 
         **Security Requirements:**
         - Requires one of the following scopes (due to inheritance):
@@ -360,14 +372,46 @@ components:
       minimum: 1
       description: Limits the number of devices that may join the Trust Domain.
       example: 10
-    MaxDomainDownstreamKbpsPolicy:
-      type: integer
-      description: Maximum downstream throughput (Kbps) across the domain.
-      example: 50000
-    MaxDomainUpstreamKbpsPolicy:
-      type: integer
-      description: Maximum upstream throughput (Kbps) across the domain.
-      example: 10000
+    MaxDomainDownstreamRatePolicy:
+      type: object
+      properties:
+        value:
+          type: integer
+          description: Maximum downstream throughput across the domain.
+        unit:
+          type: string
+          enum:
+            - Kbps
+            - Mbps
+            - Gbps
+          description: Unit of measurement for downstream throughput.
+      required:
+        - value
+        - unit
+      description: Maximum downstream throughput policy across the Trust Domain.
+      example:
+        value: 1000000
+        unit: Kbps
+    MaxDomainUpstreamRatePolicy:
+      type: object
+      properties:
+        value:
+          type: integer
+          description: Maximum upstream throughput across the domain.
+        unit:
+          type: string
+          enum:
+            - Kbps
+            - Mbps
+            - Gbps
+          description: Unit of measurement for upstream throughput.
+      required:
+        - value
+        - unit
+      description: Maximum upstream throughput policy across the Trust Domain.
+      example:
+        value: 500000
+        unit: Kbps
     EgressAllowedListPolicy:
       type: array
       items:
@@ -384,17 +428,21 @@ components:
       properties:
         maxDevices:
           $ref: '#/components/schemas/MaxDevicesPolicy'
-        maxDomainDownstreamKbps:
-          $ref: '#/components/schemas/MaxDomainDownstreamKbpsPolicy'
-        maxDomainUpstreamKbps:
-          $ref: '#/components/schemas/MaxDomainUpstreamKbpsPolicy'
+        maxDomainDownstreamRate:
+          $ref: '#/components/schemas/MaxDomainDownstreamRatePolicy'
+        maxDomainUpstreamRate:
+          $ref: '#/components/schemas/MaxDomainUpstreamRatePolicy'
         egressAllowedList:
           $ref: '#/components/schemas/EgressAllowedListPolicy'
       additionalProperties: false
       example:
         maxDevices: 10
-        maxDomainDownstreamKbps: 50000
-        maxDomainUpstreamKbps: 10000
+        maxDomainDownstreamRate:
+          value: 500000
+          unit: Kbps
+        maxDomainUpstreamRate:
+          value: 10000
+          unit: Kbps
         egressAllowedList:
           - api.vendor.com
           - updates.vendor.com
@@ -1006,8 +1054,12 @@ components:
               password: my-password
               securityModeType: WPA3-Personal
         policies:
-          maxDomainDownstreamKbps: 1000000
-          maxDomainUpstreamKbps: 500000
+          maxDomainDownstreamRate:
+            value: 1000000
+            unit: Kbps
+          maxDomainUpstreamRate:
+            value: 500000
+            unit: Kbps
     TrustDomainResponseBasic:
       summary: Basic Trust Domain Response
       description: Example of a created Trust Domain with minimal details.
