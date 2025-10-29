@@ -196,6 +196,9 @@ paths:
       description: |
         This endpoint returns a list of Trust Domains associated with the service owner, each containing details about the network configurations and policies defined within them.
 
+        **Resource Isolation:**
+        The returned Trust Domains are limited to those created by the calling API client for the service owner.
+
         **Security Requirements:**
         - Requires one of the following scopes (due to inheritance):
           - `network-access-management:trust-domains:read` (minimum required)
@@ -235,6 +238,9 @@ paths:
       operationId: getTrustDomain
       description: |
         Returns the Trust Domain that matches the given ID, including its network configurations and policies.
+
+        **Resource Isolation:**
+        The returned Trust Domain is limited to the one created by the calling API client for the service owner.
 
         **Security Requirements:**
         - Requires one of the following scopes (due to inheritance):
@@ -276,6 +282,9 @@ paths:
       description: |
         Updates the Trust Domain, reconfigures any network access devices configured with the Trust Domain, and returns the Trust Domain that matches
         the given ID.
+
+        **Resource Isolation:**
+        Updating a Trust Domain is limited to the one created by the calling API client for the service owner.
 
         **Security Requirements:**
         - Requires one of the following scopes (due to inheritance):
@@ -321,6 +330,9 @@ paths:
       description: |
         Deletes the Trust Domain and removes the configuration from any network access devices configured with the Trust Domain that matches the
         given ID.
+
+        **Resource Isolation:**
+        Deleting a Trust Domain is limited to the one created by the calling API client for the service owner.
 
         **Security Requirements:**
         - Requires one of the following scopes (due to inheritance):
