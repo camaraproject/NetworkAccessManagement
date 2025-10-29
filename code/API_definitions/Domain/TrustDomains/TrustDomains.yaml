@@ -4,27 +4,27 @@
 _imported_examples:
   uuid-example: &uuid-example "3fa85f64-5717-4562-b3fc-2c963f66afa6"
   wifi-wpa2-personal-basic-example: &wifi-wpa2-personal-basic-example
-    accessType: "Wi-Fi"
+    accessType: "Wi-Fi:WPA_PERSONAL"
     securityMode:
       password: "my-password"
       securityModeType: "WPA2-Personal"
 
   wifi-wpa2-personal-example: &wifi-wpa2-personal-example
-    accessType: "Wi-Fi"
+    accessType: "Wi-Fi:WPA_PERSONAL"
     ssid: "my-ssid"
     securityMode:
       password: "my-password"
       securityModeType: "WPA2-Personal"
 
   wifi-wpa3-personal-example: &wifi-wpa3-personal-example
-    accessType: "Wi-Fi"
+    accessType: "Wi-Fi:WPA_PERSONAL"
     ssid: "my-ssid"
     securityMode:
       password: "my-password"
       securityModeType: "WPA3-Personal"
 
   thread-structured-example: &thread-structured-example
-    accessType: "Thread"
+    accessType: "Thread:STRUCTURED"
     mode: "structured"
     channel: 13
     extendedPanId: "d63e8e3e495ebbc3"
@@ -33,7 +33,7 @@ _imported_examples:
     panId: "d63e"
 
   thread-tlv-example: &thread-tlv-example
-    accessType: "Thread"
+    accessType: "Thread:TLV"
     mode: tlv
     operationalDataset: "0e08000000000000010010000102030405060708090a0b0c0d0e0f"
 
@@ -118,7 +118,7 @@ components:
           $ref: "../Policy.yaml#/components/schemas/Policies"
         accessDetails:
           type: array
-          description: An optional list of access details for the trust domain.
+          description: A list of access details for the trust domain. Defines how devices gain admittance to the network via this trust domain.
           items:
             $ref: "../AccessDetail.yaml#/components/schemas/AccessDetail"
           minItems: 1
@@ -186,7 +186,7 @@ components:
         description: "Request defines a Trust Domain with inferred SSID Wi-Fi access. The request omits the SSID, implying the Trust Domain is applied to an existing SSID on the network infrastructure."
         enabled: true
         accessDetails:
-          - accessType: "Wi-Fi"
+          - accessType: "Wi-Fi:WPA_PERSONAL"
             securityMode:
               password: "my-password"
               securityModeType: "WPA2-Personal"

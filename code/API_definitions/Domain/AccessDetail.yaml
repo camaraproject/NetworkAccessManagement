@@ -1,7 +1,9 @@
 # This file defines the AccessDetail schema model for different network access types.
 # It includes Wi-Fi and Thread access details with various security modes.
+
 components:
   schemas:
+    # Base security mode schemas (unchanged)
     WpaPersonalDetail:
       type: object
       properties:
@@ -47,50 +49,69 @@ components:
         authServer: *wpa-enterprise-auth-server
         securityModeType: *wpa-enterprise-security-mode-type
 
-    WiFiAccessDetail:
+    # Flattened concrete implementations for Wi-Fi
+    WiFiWpaPersonalAccessDetail:
       type: object
       properties:
         accessType:
           type: string
           enum:
-            - Wi-Fi
-          example: &wifi-access-detail-access-type "Wi-Fi"
+            - "Wi-Fi:WPA_PERSONAL"
+          example: "Wi-Fi:WPA_PERSONAL"
         ssid:
           type: string
           minLength: 2
           maxLength: 32
           description: The SSID (network name) of the Wi-Fi network
-          example: &wifi-access-detail-ssid "my-ssid"
+          example: &wifi-ssid "my-ssid"
         securityMode:
-          oneOf:
+          allOf:
             - $ref: "#/components/schemas/WpaPersonalDetail"
-            - $ref: "#/components/schemas/WpaEnterpriseDetail"
-          discriminator:
-            propertyName: securityModeType
-            mapping:
-              WPA2-Personal: "#/components/schemas/WpaPersonalDetail"
-              WPA2-WPA3-Personal: "#/components/schemas/WpaPersonalDetail"
-              WPA3-Personal: "#/components/schemas/WpaPersonalDetail"
-              WPA2-Enterprise: "#/components/schemas/WpaEnterpriseDetail"
-              WPA3-Enterprise: "#/components/schemas/WpaEnterpriseDetail"
-          description: The security mode details for the Wi-Fi network
+          description: WPA Personal security mode details
           example: *wpa-personal
       required:
         - accessType
-      example: &wifi-access-detail
-        accessType: *wifi-access-detail-access-type
-        ssid: *wifi-access-detail-ssid
+        - securityMode
+      example: &wifi-wpa-personal-access-detail
+        accessType: "Wi-Fi:WPA_PERSONAL"
+        ssid: *wifi-ssid
         securityMode: *wpa-personal
+
+    WiFiWpaEnterpriseAccessDetail:
+      type: object
+      properties:
+        accessType:
+          type: string
+          enum:
+            - "Wi-Fi:WPA_ENTERPRISE"
+          example: "Wi-Fi:WPA_ENTERPRISE"
+        ssid:
+          type: string
+          minLength: 2
+          maxLength: 32
+          description: The SSID (network name) of the Wi-Fi network
+          example: *wifi-ssid
+        securityMode:
+          allOf:
+            - $ref: "#/components/schemas/WpaEnterpriseDetail"
+          description: WPA Enterprise security mode details
+          example: *wpa-enterprise
+      required:
+        - accessType
+        - securityMode
+      example: &wifi-wpa-enterprise-access-detail
+        accessType: "Wi-Fi:WPA_ENTERPRISE"
+        ssid: *wifi-ssid
+        securityMode: *wpa-enterprise
 
     ThreadStructuredAccessDetail:
       type: object
       properties:
-        # mode:
-        #   type: string
-        #   description: Structured Thread access details
-        #   enum:
-        #     - structured
-        #   example: "structured"
+        accessType:
+          type: string
+          enum:
+            - "Thread:STRUCTURED"
+          example: "Thread:STRUCTURED"
         channel:
           type: integer
           minimum: 11
@@ -119,12 +140,14 @@ components:
           description: The PAN ID (4 hex digits)
           example: "d63e"
       required:
+        - accessType
         - channel
         - extendedPanId
         - networkKey
         - networkName
         - panId
-      example:
+      example: &thread-structured-access-detail
+        accessType: "Thread:STRUCTURED"
         channel: 13
         extendedPanId: "d63e8e3e495ebbc3"
         networkKey: "dfd34f0f05cad978ec4e32b0413038ff"
@@ -134,66 +157,48 @@ components:
     ThreadTlvAccessDetail:
       type: object
       properties:
-        # mode:
-        #   type: string
-        #   description: TLV encoded Thread operational dataset
-        #   enum:
-        #     - tlv
-        #   example: "tlv"
+        accessType:
+          type: string
+          enum:
+            - "Thread:TLV"
+          example: "Thread:TLV"
         operationalDataset:
           type: string
           maxLength: 255
           description: The Thread network credentials (operational dataset) encoded as a TLV hex string
           example: "0e08000000000000010010000102030405060708090a0b0c0d0e0f"
       required:
+        - accessType
         - operationalDataset
-      example:
+      example: &thread-tlv-access-detail
+        accessType: "Thread:TLV"
         operationalDataset: "0e08000000000000010010000102030405060708090a0b0c0d0e0f"
 
-    ThreadAccessDetail:
-      allOf:
-        - type: object
-          properties:
-            accessType:
-              type: string
-              enum:
-                - Thread
-              example: "Thread"
-            mode:
-              type: string
-              enum:
-                - structured
-                - tlv
-              description: The type of Thread access detail format
-              example: "structured"
-          required:
-            - accessType
-            - mode
-        - oneOf:
-            - $ref: "#/components/schemas/ThreadStructuredAccessDetail"
-            - $ref: "#/components/schemas/ThreadTlvAccessDetail"
-          discriminator:
-            propertyName: mode
-            mapping:
-              structured: "#/components/schemas/ThreadStructuredAccessDetail"
-              tlv: "#/components/schemas/ThreadTlvAccessDetail"
-      description: The Thread network details, either structured or TLV encoded
-      example: &thread-access-detail
-        accessType: "Thread"
-        mode: "structured"
-        channel: 13
-        extendedPanId: "d63e8e3e495ebbc3"
-        networkKey: "dfd34f0f05cad978ec4e32b0413038ff"
-        networkName: "Spec-Thread-B3AF"
-        panId: "d63e"
-
+    # Single discriminated union with namespaced values
     AccessDetail:
+      type: object
+      properties:
+        accessType:
+          type: string
+          enum:
+            - "Wi-Fi:WPA_PERSONAL"
+            - "Wi-Fi:WPA_ENTERPRISE"
+            - "Thread:STRUCTURED"
+            - "Thread:TLV"
+          description: The type and variant of network access
       oneOf:
-        - $ref: "#/components/schemas/WiFiAccessDetail"
-        - $ref: "#/components/schemas/ThreadAccessDetail"
+        - $ref: "#/components/schemas/WiFiWpaPersonalAccessDetail"
+        - $ref: "#/components/schemas/WiFiWpaEnterpriseAccessDetail"
+        - $ref: "#/components/schemas/ThreadStructuredAccessDetail"
+        - $ref: "#/components/schemas/ThreadTlvAccessDetail"
       discriminator:
         propertyName: accessType
         mapping:
-          Wi-Fi: "#/components/schemas/WiFiAccessDetail"
-          Thread: "#/components/schemas/ThreadAccessDetail"
-      example: *wifi-access-detail
+          "Wi-Fi:WPA_PERSONAL": "#/components/schemas/WiFiWpaPersonalAccessDetail"
+          "Wi-Fi:WPA_ENTERPRISE": "#/components/schemas/WiFiWpaEnterpriseAccessDetail"
+          "Thread:STRUCTURED": "#/components/schemas/ThreadStructuredAccessDetail"
+          "Thread:TLV": "#/components/schemas/ThreadTlvAccessDetail"
+      required:
+        - accessType
+      description: Network access details for different network types and variants
+      example: *wifi-wpa-personal-access-detail
