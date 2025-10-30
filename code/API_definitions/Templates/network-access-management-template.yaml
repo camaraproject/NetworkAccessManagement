@@ -126,6 +126,50 @@ tags:
     description: Operations to Create and Manage Trust Domains
 
 paths:
+  /trust-domains/capabilities:
+    get:
+      tags:
+        - Trust Domains
+      summary: Get Trust Domain capabilities
+      security:
+        - openId:
+            - network-access-management:trust-domains:read
+      operationId: getTrustDomainCapabilities
+      description: |
+        Returns the Trust Domain configuration capabilities supported by this API provider.
+
+        This endpoint enables API clients to discover:
+        - Which access types are supported (Wi-Fi variants, Thread modes, etc.)
+        - What policy types are available
+        - Operational limits and constraints
+        - Advanced features and configuration options
+
+        **Use this endpoint before creating Trust Domains** to ensure your configuration
+        is supported by the target API provider/network operator.
+
+        **Security Requirements:**
+        - Requires one of the following scopes (due to inheritance):
+          - `network-access-management:trust-domains:read` (minimum required)
+          - `network-access-management:trust-domains:write` (inherits read)
+          - `network-access-management:trust-domains:delete` (inherits read + write)
+          - `network-access-management:trust-domains:create` (inherits all permissions)
+
+      responses:
+        "200":
+          description: Trust Domain capabilities supported by this API provider
+          content:
+            application/json:
+              schema:
+                $ref: "../Domain/TrustDomains/TrustDomainCapabilities.yaml#/components/schemas/TrustDomainCapabilities"
+        "401":
+          $ref: "../Domain/Common.yaml#/components/responses/Generic401"
+        "403":
+          $ref: "../Domain/Common.yaml#/components/responses/Generic403"
+        "500":
+          $ref: "../Domain/Common.yaml#/components/responses/Generic500"
+        "503":
+          $ref: "../Domain/Common.yaml#/components/responses/Generic503"
+
   /trust-domains:
     post:
       tags:

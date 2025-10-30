@@ -12,11 +12,10 @@ The API definitions have been restructured from a monolithic approach to a modul
 API_definitions/
 ├── README.md                                    # This file
 ├── redocly.yaml                                 # Bundling configuration
-├── network-access-management-template.yaml      # Main Network Access Management API template (source)
 ├── network-access-management.yaml               # The bundled API specification (generated)
 ├── Templates/                                   # Pre-bundled template specifications
-│   ├── capabilities.yaml                        # Network Access Device capabilities API template
-│   └── network-access-management.yaml           # Complete Network Access Management API template
+│   ├── capabilities-template.yaml               # Network Access Device capabilities API template
+│   └── network-access-management-template.yaml  # Complete Network Access Management API template
 └── Domain/                                      # Reusable schema components
     ├── AccessDetail.yaml                        # Network access detail schemas (Wi-Fi, Thread)
     ├── Capabilities.yaml                        # Network Access Device capability schemas
@@ -24,6 +23,7 @@ API_definitions/
     ├── Policy.yaml                              # Trust Domain policy schemas
     └── TrustDomains/
         └── TrustDomains.yaml                    # Trust Domain core schemas and examples
+        └── TrustDomainCapabilities.yaml          # Trust Domain capabilities schemas
 ```
 
 ## Architecture Rationale
