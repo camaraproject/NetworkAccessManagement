@@ -1,0 +1,276 @@
+components:
+  schemas:
+    TrustDomainCapabilities:
+      type: object
+      properties:
+        supportedAccessTypes:
+          type: array
+          description: List of supported access types and their variants
+          items:
+            $ref: "#/components/schemas/SupportedAccessType"
+          minItems: 1
+        supportedPolicies:
+          type: object
+          description: Map of supported policy types to their capability details
+          properties:
+            maxDevices:
+              $ref: "#/components/schemas/MaxDevicesPolicyCapability"
+            maxDomainDownstreamRate:
+              $ref: "#/components/schemas/BandwidthPolicyCapability"
+            maxDomainUpstreamRate:
+              $ref: "#/components/schemas/BandwidthPolicyCapability"
+            egressAllowedList:
+              $ref: "#/components/schemas/EgressPolicyCapability"
+          example:
+            maxDevices:
+              maxValue: 100
+              minValue: 1
+            maxDomainDownstreamRate:
+              maxValue: 1000000000
+              minValue: 1000000
+      required:
+        - supportedAccessTypes
+      description: Describes the Trust Domain configuration capabilities supported by this API provider
+
+    SupportedAccessType:
+      type: object
+      properties:
+        accessType:
+          type: string
+          enum:
+            - "Wi-Fi:WPA_PERSONAL"
+            - "Wi-Fi:WPA_ENTERPRISE"
+            - "Thread:STRUCTURED"
+            - "Thread:TLV"
+          description: The supported access type identifier (must match POST endpoint values)
+      oneOf:
+        - $ref: "#/components/schemas/SupportedWiFiWpaPersonalAccessType"
+        - $ref: "#/components/schemas/SupportedWiFiWpaEnterpriseAccessType"
+        - $ref: "#/components/schemas/SupportedThreadStructuredAccessType"
+        - $ref: "#/components/schemas/SupportedThreadTlvAccessType"
+      discriminator:
+        propertyName: accessType
+        mapping:
+          "Wi-Fi:WPA_PERSONAL": "#/components/schemas/SupportedWiFiWpaPersonalAccessType"
+          "Wi-Fi:WPA_ENTERPRISE": "#/components/schemas/SupportedWiFiWpaEnterpriseAccessType"
+          "Thread:STRUCTURED": "#/components/schemas/SupportedThreadStructuredAccessType"
+          "Thread:TLV": "#/components/schemas/SupportedThreadTlvAccessType"
+      required:
+        - accessType
+      description: Access type capabilities with discriminated properties based on accessType
+
+    SupportedWiFiWpaPersonalAccessType:
+      type: object
+      properties:
+        accessType:
+          type: string
+          enum:
+            - "Wi-Fi:WPA_PERSONAL"
+          example: "Wi-Fi:WPA_PERSONAL"
+        wifiProperties:
+          $ref: "#/components/schemas/WiFiAccessTypeProperties"
+      required:
+        - accessType
+        - wifiProperties
+      description: Wi-Fi WPA Personal access type capabilities
+
+    SupportedWiFiWpaEnterpriseAccessType:
+      type: object
+      properties:
+        accessType:
+          type: string
+          enum:
+            - "Wi-Fi:WPA_ENTERPRISE"
+          example: "Wi-Fi:WPA_ENTERPRISE"
+        wifiProperties:
+          $ref: "#/components/schemas/WiFiAccessTypeProperties"
+      required:
+        - accessType
+        - wifiProperties
+      description: Wi-Fi WPA Enterprise access type capabilities
+
+    SupportedThreadStructuredAccessType:
+      type: object
+      properties:
+        accessType:
+          type: string
+          enum:
+            - "Thread:STRUCTURED"
+          example: "Thread:STRUCTURED"
+        threadProperties:
+          $ref: "#/components/schemas/ThreadAccessTypeProperties"
+      required:
+        - accessType
+        - threadProperties
+      description: Thread structured access type capabilities
+
+    SupportedThreadTlvAccessType:
+      type: object
+      properties:
+        accessType:
+          type: string
+          enum:
+            - "Thread:TLV"
+          example: "Thread:TLV"
+        threadProperties:
+          $ref: "#/components/schemas/ThreadAccessTypeProperties"
+      required:
+        - accessType
+        - threadProperties
+      description: Thread TLV access type capabilities
+
+    # Explicit policy capability schemas
+    MaxDevicesPolicyCapability:
+      type: object
+      properties:
+        maxValue:
+          type: integer
+          minimum: 1
+          description: Maximum number of devices allowed
+          example: 100
+        minValue:
+          type: integer
+          minimum: 1
+          description: Minimum number of devices allowed
+          example: 1
+      required:
+        - maxValue
+        - minValue
+      description: Capabilities for maximum devices policy
+
+    BandwidthPolicyCapability:
+      type: object
+      properties:
+        maxValue:
+          type: integer
+          minimum: 1
+          description: Maximum bandwidth value in bits per second
+          example: 1000000000
+        minValue:
+          type: integer
+          minimum: 1
+          description: Minimum bandwidth value in bits per second
+          example: 1000000
+      required:
+        - maxValue
+        - minValue
+      description: Capabilities for bandwidth control policies
+
+    EgressPolicyCapability:
+      type: object
+      properties:
+        maxEntries:
+          type: integer
+          minimum: 1
+          description: Maximum number of allowed egress destinations
+          example: 50
+        supportedDestinationTypes:
+          type: array
+          items:
+            type: string
+            enum: ["IP", "FQDN", "CIDR"]
+          description: Supported destination address formats
+          example: ["IP", "FQDN", "CIDR"]
+      required:
+        - maxEntries
+        - supportedDestinationTypes
+      description: Capabilities for egress allowed list policy
+
+    # Explicit access type property schemas
+    WiFiAccessTypeProperties:
+      type: object
+      properties:
+        ssidRequired:
+          type: boolean
+          description: Whether SSID must be provided (false if can be inferred)
+          example: true
+        supportedSecurityModes:
+          type: array
+          items:
+            type: string
+            enum:
+              - "WPA2-Personal"
+              - "WPA3-Personal"
+              - "WPA2-WPA3-Personal"
+              - "WPA2-Enterprise"
+              - "WPA3-Enterprise"
+          description: Supported Wi-Fi security mode types
+          example: ["WPA2-Personal", "WPA3-Personal"]
+        passwordConstraints:
+          $ref: "#/components/schemas/PasswordConstraints"
+        authServerRequired:
+          type: boolean
+          description: Whether authentication server must be specified for Enterprise modes
+          example: false
+      description: Wi-Fi specific access type properties
+
+    ThreadAccessTypeProperties:
+      type: object
+      properties:
+        supportedChannels:
+          type: object
+          properties:
+            min:
+              type: integer
+              minimum: 11
+              maximum: 26
+              description: Minimum supported Thread channel
+              example: 11
+            max:
+              type: integer
+              minimum: 11
+              maximum: 26
+              description: Maximum supported Thread channel
+              example: 26
+          required:
+            - min
+            - max
+          description: Range of supported Thread channels
+        networkKeyFormat:
+          type: string
+          enum: ["32-hex-digits"]
+          description: Required format for Thread network keys
+          example: "32-hex-digits"
+        networkNameConstraints:
+          type: object
+          properties:
+            minLength:
+              type: integer
+              minimum: 1
+              example: 1
+            maxLength:
+              type: integer
+              minimum: 1
+              example: 16
+          required:
+            - minLength
+            - maxLength
+          description: Constraints on Thread network names
+        maxDatasetLength:
+          type: integer
+          minimum: 1
+          description: Maximum length for TLV operational dataset (applies to Thread:TLV)
+          example: 255
+      description: Thread specific access type properties
+
+    PasswordConstraints:
+      type: object
+      properties:
+        minLength:
+          type: integer
+          minimum: 1
+          description: Minimum password length
+          example: 8
+        maxLength:
+          type: integer
+          minimum: 1
+          description: Maximum password length
+          example: 63
+        requireSpecialCharacters:
+          type: boolean
+          description: Whether special characters are required
+          example: false
+      required:
+        - minLength
+        - maxLength
+      description: Password validation constraints
