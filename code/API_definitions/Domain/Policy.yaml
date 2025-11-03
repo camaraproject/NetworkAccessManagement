@@ -1,0 +1,82 @@
+# This file defines the Policies schema model that describe the various policies applicable to
+#Trust Domains.
+components:
+  schemas:
+
+    Policies:
+      type: object
+      description: A set of policies governing Trust Domain behavior.
+      properties:
+        maxDevices:
+          $ref: '#/components/schemas/MaxDevicesPolicy'
+        maxDomainDownstreamRate:
+          $ref: '#/components/schemas/MaxDomainDownstreamRatePolicy'
+        maxDomainUpstreamRate:
+          $ref: '#/components/schemas/MaxDomainUpstreamRatePolicy'
+        egressAllowedList:
+          $ref: '#/components/schemas/EgressAllowedListPolicy'
+      additionalProperties: false
+      example:
+        maxDevices: 10
+        maxDomainDownstreamRate:
+          value: 500000
+          unit: Kbps
+        maxDomainUpstreamRate:
+          value: 10000
+          unit: Kbps
+        egressAllowedList:
+          - "api.vendor.com"
+          - "updates.vendor.com"
+
+    MaxDevicesPolicy:
+      type: integer
+      minimum: 1
+      description: Limits the number of devices that may join the Trust Domain.
+      example: 10
+
+    MaxDomainDownstreamRatePolicy:
+      type: object
+      properties:
+        value:
+          type: integer
+          description: Maximum downstream throughput across the domain.
+        unit:
+          type: string
+          enum: [Kbps, Mbps, Gbps]
+          description: Unit of measurement for downstream throughput.
+      required:
+        - value
+        - unit
+      description: Maximum downstream throughput policy across the Trust Domain.
+      example:
+        value: 1000000
+        unit: Kbps
+
+    MaxDomainUpstreamRatePolicy:
+      type: object
+      properties:
+        value:
+          type: integer
+          description: Maximum upstream throughput across the domain.
+        unit:
+          type: string
+          enum: [Kbps, Mbps, Gbps]
+          description: Unit of measurement for upstream throughput.
+      required:
+        - value
+        - unit
+      description: Maximum upstream throughput policy across the Trust Domain.
+      example:
+        value: 500000
+        unit: Kbps
+
+    EgressAllowedListPolicy:
+      type: array
+      items:
+        type: string
+        description: FQDN or CIDR pattern
+      minItems: 1
+      description: Restricts egress traffic to the specified destinations.
+      example:
+        - "api.vendor.com"
+        - "updates.vendor.com"
