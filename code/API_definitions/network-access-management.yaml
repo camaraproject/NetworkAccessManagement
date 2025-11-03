@@ -40,10 +40,10 @@ info:
     sites, for the same mailing address, but for unrelated service owner identities, do not have this requirement.
     - **End-User**: The user connecting to a Trust Domain with a network client.
     - **Network Client**: End-user equipment connecting to a Trust Domain (e.g., laptop, phone, IoT device, etc.).
-    - **API Client**: A first- or third-party software system using this API.
+    - **API Consumer**: A first- or third-party software system using this API.
 
     # API Functionality
-    This API allows API clients to manage Trust Domains and reboot network access devices.
+    This API allows API Consumers to manage Trust Domains and reboot network access devices.
 
     ### Authorization and authentication
 
