@@ -25,7 +25,6 @@ _imported_examples:
 
   thread-structured-example: &thread-structured-example
     accessType: "Thread:STRUCTURED"
-    mode: "structured"
     channel: 13
     extendedPanId: "d63e8e3e495ebbc3"
     networkKey: "dfd34f0f05cad978ec4e32b0413038ff"
