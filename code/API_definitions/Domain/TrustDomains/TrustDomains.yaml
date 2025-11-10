@@ -56,29 +56,6 @@ _imported_examples:
 
 components:
 
-  securitySchemes:
-    openId:
-      type: openIdConnect
-      description:  |
-        OpenID Connect authentication with scope-based authorization.
-
-        **Resource Isolation:**
-        All scopes only grant access to Trust Domains created by the same API client.
-        API clients cannot access Trust Domains created by other API clients.
-
-        **Scope Inheritance:**
-        - `create` inherits `read`, `write`, and `delete`
-        - `delete` inherits `read` and `write`
-        - `write` inherits `read`
-        - `read` is the base permission level
-
-        **Available Scopes:**
-        - `network-access-management:trust-domains:read` - List and view Trust Domains created by this API client
-        - `network-access-management:trust-domains:write` - Modify existing Trust Domains created by this API client (inherits read)
-        - `network-access-management:trust-domains:delete` - Delete existing Trust Domains created by this API client (inherits read, write)
-        - `network-access-management:trust-domains:create` - Create new Trust Domains (inherits read, write, delete)
-      openIdConnectUrl: https://example.com/.well-known/openid-configuration
-
   parameters:
     trustDomainId:
       name: trustDomainId
