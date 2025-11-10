@@ -124,6 +124,8 @@ servers:
 tags:
   - name: Trust Domains
     description: Operations to Create and Manage Trust Domains
+  - name: Reboot Requests
+    description: Operations to Create and Manage Reboot Requests for Network Access Devices
 
 paths:
   /trust-domains/capabilities:
@@ -386,6 +388,37 @@ paths:
       responses:
         "204":
           description: Trust Domain deleted successfully
+        "401":
+          $ref: "../Domain/CAMARA_common.yaml#/components/responses/Generic401"
+        "403":
+          $ref: "../Domain/CAMARA_common.yaml#/components/responses/Generic403"
+        "404":
+          $ref: "../Domain/CAMARA_common.yaml#/components/responses/Generic404"
+        "500":
+          $ref: "../Domain/CAMARA_common.yaml#/components/responses/Generic500"
+        "503":
+          $ref: "../Domain/CAMARA_common.yaml#/components/responses/Generic503"
+
+  /network-access-devices:
+    get:
+      tags:
+        -  Reboot Requests
+      summary: Get all Network Access Devices associated with the service owner
+      security:
+        - openId:
+            - network-access-management:trust-domains:read
+      operationId: getNetworkAccessDevices
+      description: |
+        This endpoint returns a list of Network Access Devices associated with the service owner.
+      responses:
+        "200":
+          description: Contains the list of network access devices
+          content:
+            application/json:
+              schema:
+                $ref: "../Domain/NetworkAccessDevices/NetworkAccessDevices.yaml#/components/schemas/NetworkAccessDeviceList"
+        "400":
+          $ref: "../Domain/CAMARA_common.yaml#/components/responses/Generic400"
         "401":
           $ref: "../Domain/CAMARA_common.yaml#/components/responses/Generic401"
         "403":
