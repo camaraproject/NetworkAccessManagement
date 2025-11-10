@@ -162,13 +162,13 @@ paths:
               schema:
                 $ref: "../Domain/TrustDomains/TrustDomainCapabilities.yaml#/components/schemas/TrustDomainCapabilities"
         "401":
-          $ref: "../Domain/Common.yaml#/components/responses/Generic401"
+          $ref: "../Domain/CAMARA_common.yaml#/components/responses/Generic401"
         "403":
-          $ref: "../Domain/Common.yaml#/components/responses/Generic403"
+          $ref: "../Domain/CAMARA_common.yaml#/components/responses/Generic403"
         "500":
-          $ref: "../Domain/Common.yaml#/components/responses/Generic500"
+          $ref: "../Domain/CAMARA_common.yaml#/components/responses/Generic500"
         "503":
-          $ref: "../Domain/Common.yaml#/components/responses/Generic503"
+          $ref: "../Domain/CAMARA_common.yaml#/components/responses/Generic503"
 
   /trust-domains:
     post:
@@ -219,15 +219,15 @@ paths:
                 TrustDomainResponseWiFiThread:
                   $ref: '../Domain/TrustDomains/TrustDomains.yaml#/components/examples/TrustDomainResponseWiFiThread'
         '400':
-          $ref: '../Domain/Common.yaml#/components/responses/Generic400'
+          $ref: '../Domain/CAMARA_common.yaml#/components/responses/Generic400'
         '401':
-          $ref: '../Domain/Common.yaml#/components/responses/Generic401'
+          $ref: '../Domain/CAMARA_common.yaml#/components/responses/Generic401'
         '403':
-          $ref: '../Domain/Common.yaml#/components/responses/Generic403'
+          $ref: '../Domain/CAMARA_common.yaml#/components/responses/Generic403'
         '409':
-          $ref: '../Domain/Common.yaml#/components/responses/Generic409'
+          $ref: '../Domain/CAMARA_common.yaml#/components/responses/Generic409'
         '500':
-          $ref: '../Domain/Common.yaml#/components/responses/Generic500'
+          $ref: '../Domain/CAMARA_common.yaml#/components/responses/Generic500'
 
     get:
       tags:
@@ -260,13 +260,13 @@ paths:
                 items:
                   $ref: "../Domain/TrustDomains/TrustDomains.yaml#/components/schemas/TrustDomain"
         "401":
-          $ref: "../Domain/Common.yaml#/components/responses/Generic401"
+          $ref: "../Domain/CAMARA_common.yaml#/components/responses/Generic401"
         "403":
-          $ref: "../Domain/Common.yaml#/components/responses/Generic403"
+          $ref: "../Domain/CAMARA_common.yaml#/components/responses/Generic403"
         "500":
-          $ref: "../Domain/Common.yaml#/components/responses/Generic500"
+          $ref: "../Domain/CAMARA_common.yaml#/components/responses/Generic500"
         "503":
-          $ref: "../Domain/Common.yaml#/components/responses/Generic503"
+          $ref: "../Domain/CAMARA_common.yaml#/components/responses/Generic503"
 
   /trust-domains/{trustDomainId}:
     parameters:
@@ -305,15 +305,15 @@ paths:
                 TrustDomainResponseBasic:
                   $ref: '../Domain/TrustDomains/TrustDomains.yaml#/components/examples/TrustDomainResponseBasic'
         "401":
-          $ref: "../Domain/Common.yaml#/components/responses/Generic401"
+          $ref: "../Domain/CAMARA_common.yaml#/components/responses/Generic401"
         "403":
-          $ref: "../Domain/Common.yaml#/components/responses/Generic403"
+          $ref: "../Domain/CAMARA_common.yaml#/components/responses/Generic403"
         "404":
-          $ref: "../Domain/Common.yaml#/components/responses/Generic404"
+          $ref: "../Domain/CAMARA_common.yaml#/components/responses/Generic404"
         "500":
-          $ref: "../Domain/Common.yaml#/components/responses/Generic500"
+          $ref: "../Domain/CAMARA_common.yaml#/components/responses/Generic500"
         "503":
-          $ref: "../Domain/Common.yaml#/components/responses/Generic503"
+          $ref: "../Domain/CAMARA_common.yaml#/components/responses/Generic503"
 
     patch:
       tags:
@@ -351,17 +351,17 @@ paths:
                 $ref: "../Domain/TrustDomains/TrustDomains.yaml#/components/schemas/TrustDomain"
 
         "400":
-          $ref: "../Domain/Common.yaml#/components/responses/Generic400"
+          $ref: "../Domain/CAMARA_common.yaml#/components/responses/Generic400"
         "401":
-          $ref: "../Domain/Common.yaml#/components/responses/Generic401"
+          $ref: "../Domain/CAMARA_common.yaml#/components/responses/Generic401"
         "403":
-          $ref: "../Domain/Common.yaml#/components/responses/Generic403"
+          $ref: "../Domain/CAMARA_common.yaml#/components/responses/Generic403"
         "404":
-          $ref: "../Domain/Common.yaml#/components/responses/Generic404"
+          $ref: "../Domain/CAMARA_common.yaml#/components/responses/Generic404"
         "500":
-          $ref: "../Domain/Common.yaml#/components/responses/Generic500"
+          $ref: "../Domain/CAMARA_common.yaml#/components/responses/Generic500"
         "503":
-          $ref: "../Domain/Common.yaml#/components/responses/Generic503"
+          $ref: "../Domain/CAMARA_common.yaml#/components/responses/Generic503"
 
     delete:
       tags:
@@ -387,15 +387,15 @@ paths:
         "204":
           description: Trust Domain deleted successfully
         "401":
-          $ref: "../Domain/Common.yaml#/components/responses/Generic401"
+          $ref: "../Domain/CAMARA_common.yaml#/components/responses/Generic401"
         "403":
-          $ref: "../Domain/Common.yaml#/components/responses/Generic403"
+          $ref: "../Domain/CAMARA_common.yaml#/components/responses/Generic403"
         "404":
-          $ref: "../Domain/Common.yaml#/components/responses/Generic404"
+          $ref: "../Domain/CAMARA_common.yaml#/components/responses/Generic404"
         "500":
-          $ref: "../Domain/Common.yaml#/components/responses/Generic500"
+          $ref: "../Domain/CAMARA_common.yaml#/components/responses/Generic500"
         "503":
-          $ref: "../Domain/Common.yaml#/components/responses/Generic503"
+          $ref: "../Domain/CAMARA_common.yaml#/components/responses/Generic503"
 
 
 components:
