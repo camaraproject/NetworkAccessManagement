@@ -401,4 +401,4 @@ paths:
 components:
   securitySchemes:
     openId:
-      $ref: '../Domain/Common.yaml#/components/securitySchemes/openId'
+      $ref: '../Domain/NAM_Common.yaml#/components/securitySchemes/openId'

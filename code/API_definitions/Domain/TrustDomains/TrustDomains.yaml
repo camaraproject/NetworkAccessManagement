@@ -61,7 +61,7 @@ components:
       in: path
       required: true
       schema:
-        $ref: "../Common.yaml#/components/schemas/UUID"
+        $ref: "../NAM_Common.yaml#/components/schemas/UUID"
       description: ID of the Trust Domain
 
   schemas:
@@ -83,7 +83,7 @@ components:
           description: Indicates whether the trust domain is currently enabled.
           example: true
         expiration:
-          $ref: "../Common.yaml#/components/schemas/DateTime"
+          $ref: "../NAM_Common.yaml#/components/schemas/DateTime"
           description: |
             The expiration date and time of the network.  It must follow [RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339#section-5.6)
             and must have time zone. Recommended format is yyyy-MM-dd'T'HH:mm:ss.SSSZ (i.e. which allows
@@ -114,10 +114,10 @@ components:
         - type: object
           properties:
             id:
-              $ref: "../Common.yaml#/components/schemas/UUID"
+              $ref: "../NAM_Common.yaml#/components/schemas/UUID"
             createdAt:
               allOf:
-                - $ref: "../Common.yaml#/components/schemas/DateTime"
+                - $ref: "../NAM_Common.yaml#/components/schemas/DateTime"
                 - description: |
                     The creation date and time of the trust domain.  It must follow [RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339#section-5.6)
                     and must have time zone. Recommended format is yyyy-MM-dd'T'HH:mm:ss.SSSZ (i.e. which allows
@@ -129,7 +129,7 @@ components:
               example: "user-1"
             modifiedAt:
               allOf:
-                - $ref: "../Common.yaml#/components/schemas/DateTime"
+                - $ref: "../NAM_Common.yaml#/components/schemas/DateTime"
                 - description: |
                     The last update date and time of the trust domain.  It must follow [RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339#section-5.6)
                     and must have time zone. Recommended format is yyyy-MM-dd'T'HH:mm:ss.SSSZ (i.e. which allows
