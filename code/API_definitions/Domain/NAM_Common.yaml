@@ -169,6 +169,7 @@ components:
       properties:
         id:
           $ref: "#/components/schemas/UUID"
+          readOnly: true
       required:
         - id
       description: A generic schema for resources identified by a unique ID.
@@ -217,7 +218,6 @@ components:
         Must be a valid UUID format with proper version (1-5) and variant bits.
         Only lowercase hexadecimal characters are accepted for consistency.
       example: "550e8400-e29b-41d4-a716-446655440000"
-      readOnly: true
 
   examples:
     dev-list-example:

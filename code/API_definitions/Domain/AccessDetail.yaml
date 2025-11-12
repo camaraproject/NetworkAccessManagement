@@ -9,7 +9,10 @@ components:
       properties:
         password:
           type: string
+          writeOnly: true
+          minLength: 8
           maxLength: 255
+          pattern: "^[\\x20-\\x7E]{8,63}$"
           description: The password for the WPA Personal Wi-Fi network
           example: &wpa-personal-password "my-password"
         securityModeType:
@@ -64,7 +67,13 @@ components:
           type: string
           minLength: 2
           maxLength: 32
-          description: The SSID (network name) of the Wi-Fi network
+          pattern: "^(?! )[\\x20-\\x7E]{2,32}(?<! )$"
+          description: |
+            SSID (2-32 printable ASCII characters). No leading or trailing space.
+            Pattern enforces:
+            - Printable ASCII only (0x20-0x7E)
+            - First character not space
+            - Last character not space
           example: &wifi-ssid "my-ssid"
         securityMode:
           allOf:
@@ -92,7 +101,13 @@ components:
           type: string
           minLength: 2
           maxLength: 32
-          description: The SSID (network name) of the Wi-Fi network
+          pattern: "^(?! )[\\x20-\\x7E]{2,32}(?<! )$"
+          description: |
+            SSID (2-32 printable ASCII characters). No leading or trailing space.
+            Pattern enforces:
+            - Printable ASCII only (0x20-0x7E)
+            - First character not space
+            - Last character not space
           example: *wifi-ssid
         securityMode:
           allOf:

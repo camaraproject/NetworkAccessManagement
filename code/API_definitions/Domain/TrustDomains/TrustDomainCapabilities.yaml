@@ -258,7 +258,7 @@ components:
       properties:
         minLength:
           type: integer
-          minimum: 1
+          minimum: 8
           description: Minimum password length
           example: 8
         maxLength:

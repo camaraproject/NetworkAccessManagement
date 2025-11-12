@@ -615,7 +615,7 @@ paths:
       operationId: updateRebootRequest
       requestBody:
         content:
-          propertyName:
+          application/json:
             schema:
               $ref: '../Domain/RebootRequests/RebootRequests.yaml#/components/schemas/RebootRequestUpdate'
         required: true

@@ -41,6 +41,7 @@ components:
       properties:
         id:
           $ref: "../NAM_Common.yaml#/components/schemas/UUID"
+          readOnly: true
         name:
           type: string
           maxLength: 64
@@ -72,6 +73,7 @@ components:
     NetworkAccessDevice:
       allOf:
         - $ref: "../NAM_Common.yaml#/components/schemas/ResourceIdentifier"
+          readOnly: true
         - $ref: "../CAMARA_common.yaml#/components/schemas/Device"
         - type: object
           properties:
