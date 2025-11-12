@@ -27,8 +27,15 @@ _imported_examples:
 
 
 components:
+  parameters:
+    netDeviceId:
+      name: netDeviceId
+      in: path
+      description: The unique identifier of the Network Access Device
+      required: true
+      schema:
+        $ref: "../NAM_Common.yaml#/components/schemas/UUID"
   schemas:
-
     ServiceSite:
       type: object
       properties:
@@ -64,11 +71,10 @@ components:
 
     NetworkAccessDevice:
       allOf:
+        - $ref: "../NAM_Common.yaml#/components/schemas/ResourceIdentifier"
         - $ref: "../CAMARA_common.yaml#/components/schemas/Device"
         - type: object
           properties:
-            id:
-              $ref: "../NAM_Common.yaml#/components/schemas/UUID"
             name:
               type: string
               minLength: 1

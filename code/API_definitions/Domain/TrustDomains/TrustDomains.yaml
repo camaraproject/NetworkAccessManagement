@@ -110,37 +110,9 @@ components:
 
     TrustDomain:
       allOf:
+        - $ref: "../NAM_Common.yaml#/components/schemas/ResourceIdentifier"
         - $ref: "#/components/schemas/TrustDomainUpdate"
-        - type: object
-          properties:
-            id:
-              $ref: "../NAM_Common.yaml#/components/schemas/UUID"
-            createdAt:
-              allOf:
-                - $ref: "../NAM_Common.yaml#/components/schemas/DateTime"
-                - description: |
-                    The creation date and time of the trust domain.  It must follow [RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339#section-5.6)
-                    and must have time zone. Recommended format is yyyy-MM-dd'T'HH:mm:ss.SSSZ (i.e. which allows
-                    2023-07-03T14:27:08.312+02:00 or 2023-07-03T12:27:08.312Z).
-            createdBy:
-              type: string
-              maxLength: 100
-              description: The user who created the network
-              example: "user-1"
-            modifiedAt:
-              allOf:
-                - $ref: "../NAM_Common.yaml#/components/schemas/DateTime"
-                - description: |
-                    The last update date and time of the trust domain.  It must follow [RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339#section-5.6)
-                    and must have time zone. Recommended format is yyyy-MM-dd'T'HH:mm:ss.SSSZ (i.e. which allows
-                    2023-07-03T14:27:08.312+02:00 or 2023-07-03T12:27:08.312Z).
-            modifiedBy:
-              type: string
-              maxLength: 100
-              description: The user who last updated the trust domain
-              example: "user-2"
-          required:
-            - id
+        - $ref: "../NAM_Common.yaml#/components/schemas/ResourceAudit"
       description: Represents a trust domain within the network access management system.
 
 

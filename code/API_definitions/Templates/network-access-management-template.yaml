@@ -125,8 +125,30 @@ tags:
   - name: Trust Domains
     description: Operations to Create and Manage Trust Domains
   - name: Reboot Requests
-    description: Operations to Create and Manage Reboot Requests for Network Access Devices
+    description: |
+      Operations to Create and Manage Reboot Requests for Network Access Devices
 
+      1. Discover devices (GET /network-access-devices) to obtain UUIDs when multiple devices exist.
+      2. If only one device is provisioned and “default device inference” is supported, you MAY omit the devices array in POST /reboot-requests.
+      3. Always include explicit device IDs when:
+         - Multiple devices exist.
+         - You need to reboot a subset.
+         - Capabilities endpoint reports inferenceUnsupported=true.
+
+      Interaction:
+      - /network-access-devices: enumeration and capability hints (e.g., rebootCapable=true).
+      - /reboot-requests: create, list, modify, cancel scheduled reboots.
+
+      Behavior guarantees:
+      - Omitted devices + successful inference → response normalizes to explicit devices list.
+      - Atomic validation: any invalid device ID aborts the request.
+      - No partial success.
+
+      Recommended client flow:
+      - Call capabilities (if available).
+      - If multi-device or inference unsupported → fetch devices, build devices[] explicitly.
+      - POST reboot request (immediate or scheduled).
+      - Poll GET /reboot-requests/{id} for status (future extension).
 paths:
   /trust-domains/capabilities:
     get:
@@ -429,6 +451,232 @@ paths:
           $ref: "../Domain/CAMARA_common.yaml#/components/responses/Generic500"
         "503":
           $ref: "../Domain/CAMARA_common.yaml#/components/responses/Generic503"
+
+  /network-access-devices/{netDeviceId}:
+    get:
+      tags:
+        -  Reboot Requests
+      summary: Get a specific Network Access Device
+      security:
+        - openId:
+            - network-access-management:trust-domains:read
+      operationId: getNetworkAccessDevice
+      description: |
+        Returns the Network Access Device that matches the given ID.
+      parameters:
+        - $ref: '../Domain/NetworkAccessDevices/NetworkAccessDevices.yaml#/components/parameters/netDeviceId'
+      responses:
+        "200":
+          description: Contains information about the specified network access device
+          content:
+            application/json:
+              schema:
+                $ref: "../Domain/NetworkAccessDevices/NetworkAccessDevices.yaml#/components/schemas/NetworkAccessDevice"
+        "400":
+          $ref: "../Domain/CAMARA_common.yaml#/components/responses/Generic400"
+        "401":
+          $ref: "../Domain/CAMARA_common.yaml#/components/responses/Generic401"
+        "403":
+          $ref: "../Domain/CAMARA_common.yaml#/components/responses/Generic403"
+        "404":
+          $ref: "../Domain/CAMARA_common.yaml#/components/responses/Generic404"
+        "500":
+          $ref: "../Domain/CAMARA_common.yaml#/components/responses/Generic500"
+        "503":
+          $ref: "../Domain/CAMARA_common.yaml#/components/responses/Generic503"
+
+  /reboot-requests:
+    post:
+      tags:
+        - Reboot Requests
+      summary: Create a new Reboot Request
+      security:
+        - openId:
+            - network-access-management:reboot
+      description: |
+        Creates and returns the new Reboot Request.
+
+        **Required Scope:**
+        - `network-access-management:reboot`
+
+      operationId: createRebootRequest
+      requestBody:
+        description: |
+          Creates a reboot request for one or more network access devices. Supports two targeting modes:
+
+          Targeting modes:
+          - Inferred (implicit/default device): Omit the 'devices' array to request a reboot of the single
+            default device associated with the subscriber context. This is only valid when exactly one
+            device is eligible. If no default device exists or multiple devices are provisioned, the
+            request MUST be rejected (e.g. 400 INVALID_ARGUMENT or 422 MISSING_IDENTIFIER).
+          - Explicit (targeted devices): Provide a 'devices' array of one or more device UUIDs to request
+            reboots on those specific devices. Validation MUST fail if any supplied device ID is unknown,
+            not reboot-capable, or the caller lacks authorization.
+
+          Scheduling:
+          - Immediate reboot: Omit 'atTime'.
+          - Scheduled reboot: Include 'atTime' (RFC 3339 with timezone). Time MUST be in the future; past
+            values SHOULD produce a 400 OUT_OF_RANGE error.
+
+          Idempotency / duplication:
+          - Multiple identical pending reboot requests (same device set and same atTime) MAY be rejected
+            with 409 CONFLICT or collapsed by implementation.
+
+          Error conditions (examples):
+          - 400 INVALID_ARGUMENT: Unsupported time format, too many device IDs, malformed UUID.
+          - 404 IDENTIFIER_NOT_FOUND: One or more device IDs not found.
+          - 403 PERMISSION_DENIED: Caller lacks scope or device ownership.
+          - 409 CONFLICT: Reboot already scheduled for the same devices and time.
+          - 422 MISSING_IDENTIFIER (implementation-specific): 'devices' omitted but no default device.
+
+          Behavioral guarantees:
+          - If 'devices' omitted and inference succeeds, the response MUST reflect the resolved device list.
+          - If any device fails validation, no reboot request is created (atomic failure).
+          - Partial success is NOT permitted.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '../Domain/RebootRequests/RebootRequests.yaml#/components/schemas/RebootRequestCreate'
+            examples:
+              RebootRequestCreateImmediate:
+                $ref: '../Domain/RebootRequests/RebootRequests.yaml#/components/examples/RebootRequestCreateImmediateDefaultDevice'
+              RebootRequestCreateScheduled:
+                $ref: '../Domain/RebootRequests/RebootRequests.yaml#/components/examples/RebootRequestCreateScheduledMultipleDevices'
+      responses:
+        '201':
+          description: Reboot Request created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '../Domain/RebootRequests/RebootRequests.yaml#/components/schemas/RebootRequest'
+        '400':
+          $ref: '../Domain/CAMARA_common.yaml#/components/responses/Generic400'
+        '403':
+          $ref: '../Domain/CAMARA_common.yaml#/components/responses/Generic403'
+        '404':
+          $ref: '../Domain/CAMARA_common.yaml#/components/responses/Generic404'
+        '409':
+          $ref: '../Domain/CAMARA_common.yaml#/components/responses/Generic409'
+        '422':
+          $ref: '../Domain/CAMARA_common.yaml#/components/responses/Generic422'
+        '500':
+          $ref: '../Domain/CAMARA_common.yaml#/components/responses/Generic500'
+
+    get:
+      tags:
+        -  Reboot Requests
+      summary: Get all Reboot Requests created by the calling API client
+      security:
+        - openId:
+            - network-access-management:reboot
+      operationId: getRebootRequests
+      description: |
+        This endpoint returns a list of Reboot Requests associated with the service owner created by the calling API client.
+      responses:
+        '200':
+          description: Contains information about all reboot requests
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '../Domain/RebootRequests/RebootRequests.yaml#/components/schemas/RebootRequest'
+        '400':
+          $ref: '../Domain/CAMARA_common.yaml#/components/responses/Generic400'
+        '403':
+          $ref: '../Domain/CAMARA_common.yaml#/components/responses/Generic403'
+        '500':
+          $ref: '../Domain/CAMARA_common.yaml#/components/responses/Generic500'
+
+  /reboot-requests/{rebootRequestId}:
+    parameters:
+      - $ref: '../Domain/RebootRequests/RebootRequests.yaml#/components/parameters/rebootRequestId'
+
+    get:
+      tags:
+        -  Reboot Requests
+      summary: Get a specific Reboot Request
+      security:
+        - openId:
+            - network-access-management:reboot
+      operationId: getRebootRequest
+      description: |
+        Returns the Reboot Request that matches the given ID.
+      responses:
+        '200':
+          description: Contains information about the specified Reboot Request
+          content:
+            application/json:
+              schema:
+                $ref: '../Domain/RebootRequests/RebootRequests.yaml#/components/schemas/RebootRequest'
+        '400':
+          $ref: '../Domain/CAMARA_common.yaml#/components/responses/Generic400'
+        '403':
+          $ref: '../Domain/CAMARA_common.yaml#/components/responses/Generic403'
+        '404':
+          $ref: '../Domain/CAMARA_common.yaml#/components/responses/Generic404'
+        '500':
+          $ref: '../Domain/CAMARA_common.yaml#/components/responses/Generic500'
+
+    patch:
+      tags:
+        -  Reboot Requests
+      summary: Update an existing Reboot Request
+      security:
+        - openId:
+            - network-access-management:reboot
+      description: |
+        Updates an existing Reboot Request to modify its scheduled time or cancel it.
+      operationId: updateRebootRequest
+      requestBody:
+        content:
+          propertyName:
+            schema:
+              $ref: '../Domain/RebootRequests/RebootRequests.yaml#/components/schemas/RebootRequestUpdate'
+        required: true
+      responses:
+        '200':
+          description: Reboot Request updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '../Domain/RebootRequests/RebootRequests.yaml#/components/schemas/RebootRequest'
+        '400':
+          $ref: '../Domain/CAMARA_common.yaml#/components/responses/Generic400'
+        '403':
+          $ref: '../Domain/CAMARA_common.yaml#/components/responses/Generic403'
+        '404':
+          $ref: '../Domain/CAMARA_common.yaml#/components/responses/Generic404'
+        '409':
+          $ref: '../Domain/CAMARA_common.yaml#/components/responses/Generic409'
+        '422':
+          $ref: '../Domain/CAMARA_common.yaml#/components/responses/Generic422'
+        '500':
+          $ref: '../Domain/CAMARA_common.yaml#/components/responses/Generic500'
+
+    delete:
+      tags:
+        -  Reboot Requests
+      summary: Delete an existing Reboot Request
+      security:
+        - openId:
+            - network-access-management:reboot
+      description: |
+        Deletes an existing Reboot Request, cancelling the scheduled reboot if it has not yet occurred.
+      operationId: deleteRebootRequest
+      responses:
+        '204':
+          description: Reboot Request deleted successfully
+        '400':
+          $ref: '../Domain/CAMARA_common.yaml#/components/responses/Generic400'
+        '403':
+          $ref: '../Domain/CAMARA_common.yaml#/components/responses/Generic403'
+        '404':
+          $ref: '../Domain/CAMARA_common.yaml#/components/responses/Generic404'
+        '500':
+          $ref: '../Domain/CAMARA_common.yaml#/components/responses/Generic500'
+
 
 
 components:
