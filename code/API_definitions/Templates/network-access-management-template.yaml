@@ -82,6 +82,62 @@ info:
     may be requested for the same purpose of reconciling information from another source (e.g., database, persons with
     physical device access, etc.).
 
+    ## Comments for API Clients
+
+    ### Reboot Requests
+    Reboot Requests provide a declarative mechanism for API clients to trigger an
+    immediate or scheduled reboot of one or more Network Access Devices associated
+    with a subscriber. The following clarifies expected behavior, device inference
+    rules, and recommended client patterns.
+
+    #### Device Targeting
+    Clients MAY target devices in one of two ways:
+
+    1. **Explicit Targeting**
+       The client provides a `devices` array containing one or more device UUIDs.
+       This mode MUST be used when:
+       - multiple devices exist for the subscriber
+       - reboot is intended for a subset of devices
+       - the provider indicates that inference is unsupported
+
+    2. **Implicit (“Default Device”) Targeting**
+       Clients MAY omit the `devices` array to reboot a default device, if and only if:
+       - exactly one device is provisioned for the subscriber
+       - the provider supports inference
+       - the device is reboot-capable
+
+       If inference fails, the request MUST be rejected (e.g., 400 INVALID_ARGUMENT or
+       422 MISSING_IDENTIFIER).
+
+    #### Behavior Guarantees
+
+    - If `devices` is omitted and inference succeeds, the response MUST contain the
+      provider-resolved device list.
+    - Validation is atomic: if any device ID is invalid, unauthorized, or not
+      reboot-capable, the request MUST fail without side effects.
+    - Partial success is not allowed.
+    - Providers MAY reject duplicate reboot requests targeting the same devices and time.
+
+    #### Interaction with Related Endpoints
+
+    - `GET /network-access-devices`
+      Used to enumerate devices and their configuration.
+
+    - `POST /reboot-requests`
+      Create a reboot request (immediate or scheduled).
+
+    - `GET /reboot-requests/{id}`
+      Retrieve the status of a previously-created request. Implementations MAY extend
+      the status model over time.
+
+    #### Recommended Client Flow
+
+    1. (Optional) Query device capabilities using `/network-access-devices`.
+    2. If multiple devices exist or inference is unsupported, build an explicit
+       device list.
+    3. Create the reboot request with immediate or scheduled execution (`atTime`).
+    4. (Optional) Poll the individual reboot request status for asynchronous flows.
+
     ## Comments for Network Operators
     The following comments are for Network Operators implementing this API.
 
@@ -127,27 +183,6 @@ tags:
     description: |
       Operations to Create and Manage Reboot Requests for Network Access Devices
 
-      1. Discover devices (GET /network-access-devices) to obtain UUIDs when multiple devices exist.
-      2. If only one device is provisioned and “default device inference” is supported, you MAY omit the devices array in POST /reboot-requests.
-      3. Always include explicit device IDs when:
-         - Multiple devices exist.
-         - You need to reboot a subset.
-         - Capabilities endpoint reports inferenceUnsupported=true.
-
-      Interaction:
-      - /network-access-devices: enumeration and capability hints (e.g., rebootCapable=true).
-      - /reboot-requests: create, list, modify, cancel scheduled reboots.
-
-      Behavior guarantees:
-      - Omitted devices + successful inference → response normalizes to explicit devices list.
-      - Atomic validation: any invalid device ID aborts the request.
-      - No partial success.
-
-      Recommended client flow:
-      - Call capabilities (if available).
-      - If multi-device or inference unsupported → fetch devices, build devices[] explicitly.
-      - POST reboot request (immediate or scheduled).
-      - Poll GET /reboot-requests/{id} for status (future extension).
 paths:
   /trust-domains/capabilities:
     get:
