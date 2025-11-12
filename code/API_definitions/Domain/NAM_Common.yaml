@@ -8,20 +8,24 @@ components:
         OpenID Connect authentication with scope-based authorization.
 
         **Resource Isolation:**
-        All scopes only grant access to Trust Domains created by the same API client.
-        API clients cannot access Trust Domains created by other API clients.
+        Unless otherwise specified, all scopes only grant access to resources
+        (e.g., Trust Domains, Reboot Requests) created by the same API client.
+        API clients cannot access or modify resources created by other API clients
+        unless the `:read-all` or `:admin` scope variants are explicitly granted.
 
-        **Scope Inheritance:**
-        - `create` inherits `read`, `write`, and `delete`
-        - `delete` inherits `read` and `write`
-        - `write` inherits `read`
-        - `read` is the base permission level
+        **Scope Model:**
+        This API uses a simplified scope model to balance clarity with flexibility.
+        Functional authorization (e.g., managing Trust Domains) is handled by scopes,
+        while ownership enforcement is handled by the API provider.
 
         **Available Scopes:**
-        - `network-access-management:trust-domains:read` - List and view Trust Domains created by this API client
-        - `network-access-management:trust-domains:write` - Modify existing Trust Domains created by this API client (inherits read)
-        - `network-access-management:trust-domains:delete` - Delete existing Trust Domains created by this API client (inherits read, write)
-        - `network-access-management:trust-domains:create` - Create new Trust Domains (inherits read, write, delete)
+        - `network-access-management:trust-domains` — Full management of Trust Domains created by the calling API client
+          (includes create, read, modify, and delete actions).
+        - `network-access-management:trust-domains:read-all` — Read-only access to all Trust Domains
+          associated with the same subscriber, including those created by other API clients.
+          Intended for use cases involving federated discovery or configuration replication.
+        - `network-access-management:reboot` — Create, list, and manage Reboot Requests for network
+          access devices owned by or delegated to the calling API client.
       openIdConnectUrl: https://example.com/.well-known/openid-configuration
 
   schemas:

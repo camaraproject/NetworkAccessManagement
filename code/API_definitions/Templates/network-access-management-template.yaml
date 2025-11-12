@@ -26,7 +26,7 @@ info:
     # Relevant Terms and Definitions
     - **Trust Domain**: a declarative, intent-level grouping that defines which devices are permitted to communicate with each other as if they were on the same LAN and what high-level access policies apply to that group.
     - **Reboot Request**: A request to reboot a network operator supplied network access device.
-    - **Device**: A network operator supplied network access device that supports network segmentation technologies.  Multiple devices
+    - **Network Access Device**: A network operator supplied network access device that supports network segmentation technologies.  Multiple devices
     that support LAN connectivity across the same Trust Domain (e.g., mesh Wi-Fi, Thread personal area network,
     etc.) SHOULD be presented as a single device for implementations of this API.
     - **API Provider**: Provider that implements this API.
@@ -67,12 +67,11 @@ info:
     - Read scopes for one resource impacts the output of another resource when the requested resource has a relationship
     with the first (e.g., listing networks on a device requires both device and network read scopes).
 
-    | Scope | Description | Inherits
-    |-------|-------------|---------
-    | **network-access-management:trust-domains:read** | List a service owner's Trust Domains created by the calling API client
-    | **network-access-management:trust-domains:write** | Modify a service owner's Trust Domains created by the calling API client | network-access-management:trust-domains:read
-    | **network-access-management:trust-domains:delete** | Delete a service owner's Trust Domains created by the calling API client | network-access-management:trust-domains:read<br />network-access-management:trust-domains:write
-    | **network-access-management:trust-domains:create** | Create a new Trust Domain for a service owner | network-access-management:trust-domains:read<br />network-access-management:trust-domains:write<br />network-access-management:trust-domains:delete
+    | Scope | Description |
+    |-------|-------------|
+    | **network-access-management:trust-domains** | Manage the caller's own Trust Domains (create, modify, delete, view). |
+    | **network-access-management:trust-domains:read-all** | Read all Trust Domains belonging to the subscriber, including those created by other clients (requires subscriber consent). |
+    | **network-access-management:reboot** | Create, list, and manage Reboot Requests for owned devices. |
 
     ## General Usage
     This API is intended for creating, modifying, or deleting Trust Domains using the `/trust-domains` endpoints
@@ -157,10 +156,11 @@ paths:
       summary: Get Trust Domain capabilities
       security:
         - openId:
-            - network-access-management:trust-domains:read
+            - network-access-management:trust-domains
       operationId: getTrustDomainCapabilities
       description: |
-        Returns the Trust Domain configuration capabilities supported by this API provider.
+        Retrieves the set of Trust Domain configuration capabilities supported by the API provider.
+        Capabilities describe supported access types, policy constraints, and configuration limits.
 
         This endpoint enables API clients to discover:
         - Which access types are supported (Wi-Fi variants, Thread modes, etc.)
@@ -168,15 +168,8 @@ paths:
         - Operational limits and constraints
         - Advanced features and configuration options
 
-        **Use this endpoint before creating Trust Domains** to ensure your configuration
+        Use this endpoint before creating Trust Domains to ensure your configuration
         is supported by the target API provider/network operator.
-
-        **Security Requirements:**
-        - Requires one of the following scopes (due to inheritance):
-          - `network-access-management:trust-domains:read` (minimum required)
-          - `network-access-management:trust-domains:write` (inherits read)
-          - `network-access-management:trust-domains:delete` (inherits read + write)
-          - `network-access-management:trust-domains:create` (inherits all permissions)
 
       responses:
         "200":
@@ -199,15 +192,9 @@ paths:
       summary: Create a new Trust Domain
       security:
         - openId:
-            - network-access-management:trust-domains:create
+            - network-access-management:trust-domains
       description: |
         Creates and returns the new Trust Domain.
-
-        **Required Scope:**
-        - `network-access-management:trust-domains:create`
-
-        **Inherited Permissions:**
-        This scope automatically grants `read`, `write`, and `delete` permissions.
 
       operationId: createTrustDomain
       requestBody:
@@ -252,23 +239,19 @@ paths:
     get:
       tags:
         - Trust Domains
-      summary: Get all Trust Domains associated with the service owner
+      summary: Retrieves all Trust Domains visible to the calling API client
       security:
         - openId:
-            - network-access-management:trust-domains:read
+            - network-access-management:trust-domains
+        - openId:
+            - network-access-management:trust-domains:read-all
       operationId: getTrustDomains
       description: |
-        This endpoint returns a list of Trust Domains associated with the service owner, each containing details about the network configurations and policies defined within them.
+        Retrieves all Trust Domains visible to the calling API client.
 
-        **Resource Isolation:**
-        The returned Trust Domains are limited to those created by the calling API client for the service owner.
-
-        **Security Requirements:**
-        - Requires one of the following scopes (due to inheritance):
-          - `network-access-management:trust-domains:read` (minimum required)
-          - `network-access-management:trust-domains:write` (inherits read)
-          - `network-access-management:trust-domains:delete` (inherits read + write)
-          - `network-access-management:trust-domains:create` (inherits all permissions)
+        If the caller has `network-access-management:trust-domains`, the response is limited to
+        Trust Domains created by the caller. If the caller has `network-access-management:trust-domains:read-all`,
+        the response includes all Trust Domains associated with the subscriber.
       responses:
 
         "200":
@@ -296,20 +279,14 @@ paths:
       summary: Get a specific Trust Domain
       security:
         - openId:
-            - network-access-management:trust-domains:read
+            - network-access-management:trust-domains
+        - openId:
+            - network-access-management:trust-domains:read-all
       operationId: getTrustDomain
       description: |
-        Returns the Trust Domain that matches the given ID, including its network configurations and policies.
-
-        **Resource Isolation:**
-        The returned Trust Domain is limited to the one created by the calling API client for the service owner.
-
-        **Security Requirements:**
-        - Requires one of the following scopes (due to inheritance):
-          - `network-access-management:trust-domains:read` (minimum required)
-          - `network-access-management:trust-domains:write` (inherits read)
-          - `network-access-management:trust-domains:delete` (inherits read + write)
-          - `network-access-management:trust-domains:create` (inherits all permissions)
+        Retrieves the Trust Domain identified by the given ID. Visibility of this Trust Domain depends on the caller's scope and ownership:
+          - `trust-domains` restricts access to caller-owned Trust Domains.
+          - `trust-domains:read-all` allows retrieval of any Trust Domain associated with the subscriber.
 
       responses:
 
@@ -337,20 +314,10 @@ paths:
       summary: Update a specific Trust Domain
       security:
         -  openId:
-            - network-access-management:trust-domains:write
+            - network-access-management:trust-domains
       operationId: updateTrustDomain
       description: |
-        Updates the Trust Domain, reconfigures any network access devices configured with the Trust Domain, and returns the Trust Domain that matches
-        the given ID.
-
-        **Resource Isolation:**
-        Updating a Trust Domain is limited to the one created by the calling API client for the service owner.
-
-        **Security Requirements:**
-        - Requires one of the following scopes (due to inheritance):
-          - `network-access-management:trust-domains:write` (minimum required)
-          - `network-access-management:trust-domains:delete` (inherits read + write)
-          - `network-access-management:trust-domains:create` (inherits all permissions)
+        Updates the Trust Domain identified by the given ID. Any changes are automatically applied to all network access devices where the Trust Domain is configured.
 
       requestBody:
         content:
@@ -383,19 +350,10 @@ paths:
       summary: Delete a specific Trust Domain
       security:
         -  openId:
-            - network-access-management:trust-domains:delete
+            - network-access-management:trust-domains
       operationId: deleteTrustDomain
       description: |
-        Deletes the Trust Domain and removes the configuration from any network access devices configured with the Trust Domain that matches the
-        given ID.
-
-        **Resource Isolation:**
-        Deleting a Trust Domain is limited to the one created by the calling API client for the service owner.
-
-        **Security Requirements:**
-        - Requires one of the following scopes (due to inheritance):
-          - `network-access-management:trust-domains:delete` (minimum required)
-          - `network-access-management:trust-domains:create` (inherits all permissions)
+        Deletes the Trust Domain identified by the given ID and removes its configuration from all network access devices where it is applied.
 
       responses:
         "204":
@@ -416,10 +374,10 @@ paths:
       summary: Get all Network Access Devices associated with the service owner
       security:
         - openId:
-            - network-access-management:trust-domains:read
+            - network-access-management:reboot
       operationId: getNetworkAccessDevices
       description: |
-        This endpoint returns a list of Network Access Devices associated with the service owner.
+        Retrieves all Network Access Devices associated with the subscriber that the caller is authorized to manage using the `network-access-management:reboot` scope.
       responses:
         "200":
           description: Contains the list of network access devices
@@ -445,10 +403,10 @@ paths:
       summary: Get a specific Network Access Device
       security:
         - openId:
-            - network-access-management:trust-domains:read
+            - network-access-management:reboot
       operationId: getNetworkAccessDevice
       description: |
-        Returns the Network Access Device that matches the given ID.
+         Retrieves the Network Access Device that matches the given ID.
       parameters:
         - $ref: '../Domain/NetworkAccessDevices/NetworkAccessDevices.yaml#/components/parameters/netDeviceId'
       responses:
@@ -478,11 +436,7 @@ paths:
         - openId:
             - network-access-management:reboot
       description: |
-        Creates and returns the new Reboot Request.
-
-        **Required Scope:**
-        - `network-access-management:reboot`
-
+        Creates a new Reboot Request targeting one or more Network Access Devices.
       operationId: createRebootRequest
       requestBody:
         description: |
@@ -586,7 +540,7 @@ paths:
             - network-access-management:reboot
       operationId: getRebootRequest
       description: |
-        Returns the Reboot Request that matches the given ID.
+        Retrieves the Reboot Request that matches the given ID.
       responses:
         '200':
           description: Contains information about the specified Reboot Request
@@ -660,8 +614,6 @@ paths:
           $ref: '../Domain/CAMARA_common.yaml#/components/responses/Generic404'
         '500':
           $ref: '../Domain/CAMARA_common.yaml#/components/responses/Generic500'
-
-
 
 components:
   securitySchemes:
