@@ -31,13 +31,14 @@ components:
     netDeviceId:
       name: netDeviceId
       in: path
-      description: The unique identifier of the Network Access Device
+      description: The unique identifier of the Network Access Device. If the device exists but the caller lacks permission to access it, the API returns 403.
       required: true
       schema:
         $ref: "../NAM_Common.yaml#/components/schemas/UUID"
   schemas:
     ServiceSite:
       type: object
+      description: A Service Site represents a subscriber location associated with one or more Network Access Devices. Implementations MAY provide geographic coordinates, postal address data, or both, depending on local regulatory and operational requirements.
       properties:
         id:
           $ref: "../NAM_Common.yaml#/components/schemas/UUID"
@@ -71,6 +72,11 @@ components:
         location: *service-site-location
 
     NetworkAccessDevice:
+      description: |
+        Represents a network access device managed within the network access management system.
+        This schema represents operator-supplied network access equipment (e.g., gateways, mesh Wi-Fi systems).
+        It extends the Commonalities Device model but MUST NOT be confused with end-user devices.
+        The identifiers and addressing fields reflect the operator-managed equipment, not client equipment.
       allOf:
         - $ref: "../NAM_Common.yaml#/components/schemas/ResourceIdentifier"
           readOnly: true

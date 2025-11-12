@@ -62,7 +62,7 @@ components:
       required: true
       schema:
         $ref: "../NAM_Common.yaml#/components/schemas/UUID"
-      description: ID of the Trust Domain
+      description: ID of the Trust Domain. If the Trust Domain exists but the caller lacks permission to access it, the API returns 403.
 
   schemas:
 
@@ -94,7 +94,37 @@ components:
           $ref: "../Policy.yaml#/components/schemas/Policies"
         accessDetails:
           type: array
-          description: A list of access details for the trust domain. Defines how devices gain admittance to the network via this trust domain.
+          description: |
+            A list of access configurations that define how end-user devices may join the
+            Trust Domain. Each entry represents one access type (e.g., Wi-Fi WPA Personal,
+            Wi-Fi WPA Enterprise, Thread Structured, Thread TLV).
+
+            **Multiplicity and Uniqueness**
+            - A Trust Domain MUST contain at least one accessDetail entry.
+            - Each `accessType` SHOULD appear at most once. If multiple entries of the same
+              `accessType` are provided, the API provider MAY reject the request.
+            - Order of entries has no semantic meaning.
+
+            **Creation and Update Semantics**
+            - On creation (POST), the full list of accessDetails MUST be provided.
+            - On update (PATCH), the list replaces the previous list entirely when included.
+              Partial merge semantics are not defined; clients MUST supply the complete
+              desired configuration for this field.
+            - To remove all access types, clients MAY provide an empty array, although the
+              API provider MAY reject configurations that result in no valid admittance
+              method for the Trust Domain.
+
+            **Validation Expectations**
+            - The API provider MUST validate that the requested access types and their
+              properties conform to the provider's advertised capabilities
+              (via GET /trust-domains/capabilities).
+            - Providers MAY enforce additional constraints (e.g., SSID uniqueness,
+              channel restrictions, Thread dataset rules) based on local policy.
+
+            **Deployment Behavior**
+            - All Network Access Devices configured with this Trust Domain MUST apply all
+              supplied accessDetails entries, unless the provider’s capabilities indicate
+              that certain access types are not supported on specific devices.
           items:
             $ref: "../AccessDetail.yaml#/components/schemas/AccessDetail"
           minItems: 1

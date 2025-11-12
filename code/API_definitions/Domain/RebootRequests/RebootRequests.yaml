@@ -19,7 +19,7 @@ components:
       required: true
       schema:
         $ref: "../NAM_Common.yaml#/components/schemas/UUID"
-      description: ID of the Reboot Request
+      description: ID of the Reboot Request. If the Reboot Request exists but the caller lacks permission to access it, the API returns 403.
 
   schemas:
     RebootRequestUpdate:
@@ -40,6 +40,7 @@ components:
                 2023-07-03T12:27:08.312Z).
 
     RebootRequestCreate:
+      description: Represents the creation of a reboot request, including target devices and optional scheduling. If devices is omitted, the provider MAY infer a default device. Inference rules vary by implementation. If inference is unsupported or ambiguous, creation MUST fail.
       allOf:
         - $ref: "#/components/schemas/RebootRequestUpdate"
         - properties:
