@@ -1876,8 +1876,8 @@ components:
                 $ref: '#/components/schemas/UUID'
               description: List of devices to reboot. When undefined, the reboot targets the 'default' device (simple use case that wouldn't use locations or devices). Throws an error when creating if there is no 'default' device.
               example:
-                - 3fa85f64-5717-4562-b3fc-2c963f66afa6
-                - 123e4567-e89b-12d3-a456-426614174000
+                - 934ee3f4-1234-5678-9abc-abcdef123456
+                - 454ee3f4-1234-5678-9abc-abcdef123456
     RebootRequest:
       allOf:
         - $ref: '#/components/schemas/ResourceIdentifier'
@@ -2288,8 +2288,8 @@ components:
         message: Scheduled reboot for maintenance
         atTime: '2023-07-03T12:27:08.312Z'
         devices:
-          - 3fa85f64-5717-4562-b3fc-2c963f66afa6
-          - 123e4567-e89b-12d3-a456-426614174000
+          - 934ee3f4-1234-5678-9abc-abcdef123456
+          - 454ee3f4-1234-5678-9abc-abcdef123456
   parameters:
     trustDomainId:
       name: trustDomainId

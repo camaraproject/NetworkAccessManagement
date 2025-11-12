@@ -1,14 +1,14 @@
 # Local anchor definitions for external component examples. There isn't a native OpenAPI way to
 # cross-reference examples across files, so we define them here for reuse.
 _imported_examples:
-  uuid-example: &uuid-example "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+  uuid-example: &uuid-example-1 "3fa85f64-5717-4562-b3fc-2c963f66afa6"
   uuid-example-2: &uuid-example-2 "123e4567-e89b-12d3-a456-426614174000"
   date-time: &date-time "2023-07-03T12:27:08.312Z"
+  device-uuid-1: &device-uuid-1 "934ee3f4-1234-5678-9abc-abcdef123456"
+  device-uuid-2: &device-uuid-2 "454ee3f4-1234-5678-9abc-abcdef123456"
   device-id-list: &device-id-list
-    - *uuid-example
-    - *uuid-example-2
-  example-test:
-    $ref: "../NAM_Common.yaml#/components/examples/dev-list-example"
+    - *device-uuid-1
+    - *device-uuid-2
 
 components:
 
@@ -80,17 +80,15 @@ components:
       value:
         message: "Scheduled reboot for maintenance"
         atTime: *date-time
-        devices:
-          - "3fa85f64-5717-4562-b3fc-2c963f66afa6"
-          - "123e4567-e89b-12d3-a456-426614174000"
+        devices: *device-id-list
 
     RebootRequestResponseInferred:
       summary: Response after inferred default device reboot request
       value:
-        id: "8c1f1d02-5f15-4b41-ad30-8f9b6c2d7e91"
+        id: *uuid-example-1
         message: "reboot to correct performance"
         devices:
-          - id: "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+          - *device-uuid-1
         atTime: *date-time
         createdAt: *date-time
         createdBy: "user-1"
@@ -100,11 +98,9 @@ components:
     RebootRequestResponseExplicit:
       summary: Response after explicit multi-device reboot request
       value:
-        id: "1d2e3f44-1111-2222-3333-444455556666"
+        id: *uuid-example-2
         message: "scheduled maintenance reboot"
-        devices:
-          - id: "3fa85f64-5717-4562-b3fc-2c963f66afa6"
-          - id: "123e4567-e89b-12d3-a456-426614174000"
+        devices: *device-id-list
         atTime: *date-time
         createdAt: *date-time
         createdBy: "ops-user"
