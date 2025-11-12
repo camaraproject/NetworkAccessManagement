@@ -28,8 +28,8 @@ _imported_examples:
 
 components:
   parameters:
-    netDeviceId:
-      name: netDeviceId
+    networkAccessDeviceId:
+      name: networkAccessDeviceId
       in: path
       description: The unique identifier of the Network Access Device. If the device exists but the caller lacks permission to access it, the API returns 403.
       required: true

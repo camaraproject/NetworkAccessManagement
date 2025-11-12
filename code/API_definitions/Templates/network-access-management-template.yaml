@@ -2,8 +2,15 @@ openapi: 3.0.3
 
 info:
   title: Home Devices - Network Access Management
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+  version: 0.1.0-alpha.1
+  x-camara-commonalities: 0.6.0
+  contact:
+    email: sp-nam@lists.camaraproject.org
   description: |
-    Service enabling API for managing network operator supplied network access devices. This APIs initial focus is on
+    Service enabling API for managing network operator supplied network access devices. This API's initial focus is on
     managing **Trust Domains** and device reboot requests.
 
     # Introduction
@@ -160,14 +167,6 @@ info:
     Please refer to the `CAMARA_common.yaml` of the Commonalities Release associated to this API version for a complete list of error responses. The applicable Commonalities Release can be identified in the `API Readiness Checklist` document associated to this API version.
 
     As a specific rule, error `501 - NOT_IMPLEMENTED` can be only a possible error response if it is explicitly documented in the API.
-
-  license:
-    name: Apache 2.0
-    url: https://www.apache.org/licenses/LICENSE-2.0.html
-  version: 0.1.0-alpha.1
-  x-camara-commonalities: 0.6.0
-  contact:
-    email: sp-nam@lists.camaraproject.org
 
 servers:
   - url: "{apiRoot}/network-access-management/v0"
@@ -431,7 +430,7 @@ paths:
         "503":
           $ref: "../Domain/CAMARA_common.yaml#/components/responses/Generic503"
 
-  /network-access-devices/{netDeviceId}:
+  /network-access-devices/{networkAccessDeviceId}:
     get:
       tags:
         -  Reboot Requests
@@ -443,7 +442,7 @@ paths:
       description: |
          Retrieves the Network Access Device that matches the given ID.
       parameters:
-        - $ref: '../Domain/NetworkAccessDevices/NetworkAccessDevices.yaml#/components/parameters/netDeviceId'
+        - $ref: '../Domain/NetworkAccessDevices/NetworkAccessDevices.yaml#/components/parameters/networkAccessDeviceId'
       responses:
         "200":
           description: Contains information about the specified network access device
