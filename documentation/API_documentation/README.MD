@@ -27,7 +27,7 @@ Each CAMARA User Story should include:
 |-------|--------------|-----------|
 | **Title / Summary** | “As a \<role\>, I want \<goal\> so that \<outcome\>.” | User-centric phrasing. |
 | **Roles** | Acceptable values: `customer:user`, `customer:administrator`, `customer:business manager` (from Commonalities template). | Choose based on the actor’s function and access level. |
-| **Actor(s)** | Entity or system executing or triggering the story (e.g., API Client, Operator BSS, Service Owner). | Prefer roles over specific implementations. |
+| **Actor(s)** | Entity or system executing or triggering the story (e.g., API Consumer, API Provider, Service Owner). | Prefer roles over specific implementations. |
 | **Scope** | Lifecycle area(s) impacted. See Section 3 below. | Select **one or more** of: Design time, P2O, O2A, U2C, T2R. |
 | **Pre-conditions / Begins when** | Required system or business state before the story starts. | Often references catalog or active service. |
 | **Steps** | Numbered flow of actions. | Keep technology-neutral. |
