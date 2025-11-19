@@ -34,6 +34,7 @@ components:
 
     SupportedAccessType:
       type: object
+      description: Access type capabilities with discriminated properties based on accessType. Represents the configuration options supported by the API provider for a given access type. This is distinct from AccessDetail, which represents the configuration requested by an API client.
       properties:
         accessType:
           type: string
@@ -57,7 +58,6 @@ components:
           "Thread:TLV": "#/components/schemas/SupportedThreadTlvAccessType"
       required:
         - accessType
-      description: Access type capabilities with discriminated properties based on accessType
 
     SupportedWiFiWpaPersonalAccessType:
       type: object
@@ -258,7 +258,7 @@ components:
       properties:
         minLength:
           type: integer
-          minimum: 1
+          minimum: 8
           description: Minimum password length
           example: 8
         maxLength:
