@@ -1,0 +1,224 @@
+# OpenAPI Specification for Common Definitions
+components:
+
+  securitySchemes: # Using this over CAMARA_common.yaml in order to add description
+    openId:
+      type: openIdConnect
+      description:  |
+        OpenID Connect authentication with scope-based authorization.
+
+        **Resource Isolation:**
+        Unless otherwise specified, all scopes only grant access to resources
+        (e.g., Trust Domains, Reboot Requests) created by the same API client.
+        API clients cannot access or modify resources created by other API clients
+        unless the `:read-all` or `:admin` scope variants are explicitly granted.
+
+        **Scope Model:**
+        This API uses a simplified scope model to balance clarity with flexibility.
+        Functional authorization (e.g., managing Trust Domains) is handled by scopes,
+        while ownership enforcement is handled by the API provider.
+
+        **Available Scopes:**
+        - `network-access-management:trust-domains` — Full management of Trust Domains created by the calling API client
+          (includes create, read, modify, and delete actions).
+        - `network-access-management:trust-domains:read-all` — Read-only access to all Trust Domains
+          associated with the same subscriber, including those created by other API clients.
+          Intended for use cases involving federated discovery or configuration replication.
+        - `network-access-management:reboot` — Create, list, and manage Reboot Requests for network
+          access devices owned by or delegated to the calling API client.
+      openIdConnectUrl: https://example.com/.well-known/openid-configuration
+
+  schemas:
+
+    DateTime:
+      type: string
+      format: date-time
+      description: |
+        It must follow [RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339#section-5.6) and must have time zone.
+        Recommended format is yyyy-MM-dd'T'HH:mm:ss.SSSZ (i.e. which allows 2023-07-03T14:27:08.312+02:00 or
+        2023-07-03T12:27:08.312Z)
+      example: &date-time "2023-07-03T14:27:08.312+02:00"
+
+    PropertyAddress:
+      type: object
+      externalDocs:
+        description: TMF673 Geographic Address Management API User Guide v4.0.0
+        url: https://www.tmforum.org/resources/specification/tmf673-geographic-address-management-api-user-guide-v4-0-0/
+      properties:
+        id:
+          type: string
+          description: The unique identifier for the property address
+          minLength: 1
+          maxLength: 64
+          example: &property-address-id "address-123"
+        addressLine1:
+          type: string
+          maxLength: 128
+          description: The first line of the address
+          example: &property-address-address-line-1 "123 Main St"
+        addressLine2:
+          type: string
+          maxLength: 128
+          description: The second line of the address
+          example: &property-address-address-line-2 "Suite 456"
+        streetNr:
+          type: string
+          maxLength: 64
+          description: The street number
+          example: &property-address-street-nr "123"
+        streetNrSuffix:
+          type: string
+          maxLength: 64
+          description: The suffix for the street number
+          example: &property-address-street-nr-suffix "A"
+        streetNrLast:
+          type: string
+          maxLength: 64
+          description: The last street number
+          example: &property-address-street-nr-last "125"
+        streetNrLastSuffix:
+          type: string
+          maxLength: 64
+          description: The suffix for the last street number
+          example: &property-address-street-nr-last-suffix "B"
+        streetName:
+          type: string
+          maxLength: 64
+          description: The name of the street
+          example: &property-address-street-name "Main"
+        subUnitType:
+          type: string
+          maxLength: 64
+          description: The type of sub-unit (e.g., Apartment, Suite)
+          example: &property-address-sub-unit-type "Apartment"
+        subUnitNr:
+          type: string
+          maxLength: 64
+          description: The number of the sub-unit
+          example: &property-address-sub-unit-nr "A12"
+        levelType:
+          type: string
+          maxLength: 64
+          description: The type of level (e.g., Floor, Basement)
+          example: &property-address-level-type "Floor"
+        levelNr:
+          type: string
+          maxLength: 64
+          description: The number of the level
+          example: &property-address-level-nr "3"
+        buildingName:
+          type: string
+          maxLength: 64
+          description: The name of the building
+          example: &property-address-building-name "Example Building"
+        privateStreetName:
+          type: string
+          maxLength: 64
+          description: The name of a private street
+          example: &property-address-private-street-name "Private Rd"
+        locality:
+          type: string
+          maxLength: 64
+          description: The locality (neighborhood, area)
+          example: &property-address-locality "Example Locality"
+        city:
+          type: string
+          maxLength: 128
+          description: The city or town
+          example: &property-address-city "Example State"
+        stateOrProvince:
+          type: string
+          maxLength: 64
+          description: The state or province
+          example: &property-address-state-or-province "EX"
+        country:
+          type: string
+          maxLength: 64
+          description: The country
+          example: &property-address-country "United States"
+        postCode:
+          type: string
+          maxLength: 64
+          description: The postal code or ZIP code
+          example: &property-address-post-code "12345"
+        postCodeExtension:
+          type: string
+          maxLength: 64
+          description: The postal code extension
+          example: &property-address-post-code-extension "6789"
+      example: &property-address
+        id: *property-address-id
+        addressLine1: *property-address-address-line-1
+        addressLine2: *property-address-address-line-2
+        streetNr: *property-address-street-nr
+        streetNrSuffix: *property-address-street-nr-suffix
+        streetNrLast: *property-address-street-nr-last
+        streetNrLastSuffix: *property-address-street-nr-last-suffix
+        streetName: *property-address-street-name
+        subUnitType: *property-address-sub-unit-type
+        subUnitNr: *property-address-sub-unit-nr
+        levelType: *property-address-level-type
+        levelNr: *property-address-level-nr
+        buildingName: *property-address-building-name
+        privateStreetName: *property-address-private-street-name
+        locality: *property-address-locality
+        city: *property-address-city
+        stateOrProvince: *property-address-state-or-province
+        country: *property-address-country
+        postCode: *property-address-post-code
+        postCodeExtension: *property-address-post-code-extension
+
+    ResourceIdentifier:
+      type: object
+      properties:
+        id:
+          $ref: "#/components/schemas/UUID"
+          readOnly: true
+      required:
+        - id
+      description: A generic schema for resources identified by a unique ID.
+
+    ResourceAudit: # Generic reusable unique resource schema
+      type: object
+      properties:
+        createdAt:
+          allOf:
+            - $ref: "#/components/schemas/DateTime"
+            - description: |
+                The creation date and time of the trust domain.  It must follow [RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339#section-5.6)
+                and must have time zone. Recommended format is yyyy-MM-dd'T'HH:mm:ss.SSSZ (i.e. which allows
+                2023-07-03T14:27:08.312+02:00 or 2023-07-03T12:27:08.312Z).
+            - readOnly: true
+        createdBy:
+          type: string
+          maxLength: 100
+          description: The user who created the network
+          example: "user-1"
+          readOnly: true
+        modifiedAt:
+          allOf:
+            - $ref: "#/components/schemas/DateTime"
+            - description: |
+                The last update date and time of the trust domain.  It must follow [RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339#section-5.6)
+                and must have time zone. Recommended format is yyyy-MM-dd'T'HH:mm:ss.SSSZ (i.e. which allows
+                2023-07-03T14:27:08.312+02:00 or 2023-07-03T12:27:08.312Z).
+            - readOnly: true
+        modifiedBy:
+          type: string
+          maxLength: 100
+          description: The user who last updated the trust domain
+          example: "user-2"
+          readOnly: true
+      description: A generic schema for resources with unique identifiers and audit fields.
+
+    UUID:
+      type: string
+      format: uuid
+      pattern: '^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$'
+      minLength: 36
+      maxLength: 36
+      description: |
+        A universally unique identifier (UUID) as defined by RFC 4122.
+        Must be a valid UUID format with proper version (1-5) and variant bits.
+        Only lowercase hexadecimal characters are accepted for consistency.
+      example: "550e8400-e29b-41d4-a716-446655440000"

@@ -1,8 +1,15 @@
 openapi: 3.0.3
 info:
   title: Home Devices - Network Access Management
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+  version: 0.1.0-alpha.1
+  x-camara-commonalities: 0.6.0
+  contact:
+    email: sp-nam@lists.camaraproject.org
   description: |
-    Service enabling API for managing network operator supplied network access devices. This APIs initial focus is on
+    Service enabling API for managing network operator supplied network access devices. This API's initial focus is on
     managing **Trust Domains** and device reboot requests.
 
     # Introduction
@@ -25,7 +32,7 @@ info:
     # Relevant Terms and Definitions
     - **Trust Domain**: a declarative, intent-level grouping that defines which devices are permitted to communicate with each other as if they were on the same LAN and what high-level access policies apply to that group.
     - **Reboot Request**: A request to reboot a network operator supplied network access device.
-    - **Device**: A network operator supplied network access device that supports network segmentation technologies.  Multiple devices
+    - **Network Access Device**: A network operator supplied network access device that supports network segmentation technologies.  Multiple devices
     that support LAN connectivity across the same Trust Domain (e.g., mesh Wi-Fi, Thread personal area network,
     etc.) SHOULD be presented as a single device for implementations of this API.
     - **API Provider**: Provider that implements this API.
@@ -66,12 +73,11 @@ info:
     - Read scopes for one resource impacts the output of another resource when the requested resource has a relationship
     with the first (e.g., listing networks on a device requires both device and network read scopes).
 
-    | Scope | Description | Inherits
-    |-------|-------------|---------
-    | **network-access-management:trust-domains:read** | List a service owner's Trust Domains created by the calling API client
-    | **network-access-management:trust-domains:write** | Modify a service owner's Trust Domains created by the calling API client | network-access-management:trust-domains:read
-    | **network-access-management:trust-domains:delete** | Delete a service owner's Trust Domains created by the calling API client | network-access-management:trust-domains:read<br />network-access-management:trust-domains:write
-    | **network-access-management:trust-domains:create** | Create a new Trust Domain for a service owner | network-access-management:trust-domains:read<br />network-access-management:trust-domains:write<br />network-access-management:trust-domains:delete
+    | Scope | Description |
+    |-------|-------------|
+    | **network-access-management:trust-domains** | Manage the caller's own Trust Domains (create, modify, delete, view). |
+    | **network-access-management:trust-domains:read-all** | Read all Trust Domains belonging to the subscriber, including those created by other clients (requires subscriber consent). |
+    | **network-access-management:reboot** | Create, list, and manage Reboot Requests for owned devices. |
 
     ## General Usage
     This API is intended for creating, modifying, or deleting Trust Domains using the `/trust-domains` endpoints
@@ -81,6 +87,62 @@ info:
     `/devices` endpoints are used for iterating over and configuring a service owner's devices.  The hardware address
     may be requested for the same purpose of reconciling information from another source (e.g., database, persons with
     physical device access, etc.).
+
+    ## Comments for API Clients
+
+    ### Reboot Requests
+    Reboot Requests provide a declarative mechanism for API clients to trigger an
+    immediate or scheduled reboot of one or more Network Access Devices associated
+    with a subscriber. The following clarifies expected behavior, device inference
+    rules, and recommended client patterns.
+
+    #### Device Targeting
+    Clients MAY target devices in one of two ways:
+
+    1. **Explicit Targeting**
+       The client provides a `devices` array containing one or more device UUIDs.
+       This mode MUST be used when:
+       - multiple devices exist for the subscriber
+       - reboot is intended for a subset of devices
+       - the provider indicates that inference is unsupported
+
+    2. **Implicit (“Default Device”) Targeting**
+       Clients MAY omit the `devices` array to reboot a default device, if and only if:
+       - exactly one device is provisioned for the subscriber
+       - the provider supports inference
+       - the device is reboot-capable
+
+       If inference fails, the request MUST be rejected (e.g., 400 INVALID_ARGUMENT or
+       422 MISSING_IDENTIFIER).
+
+    #### Behavior Guarantees
+
+    - If `devices` is omitted and inference succeeds, the response MUST contain the
+      provider-resolved device list.
+    - Validation is atomic: if any device ID is invalid, unauthorized, or not
+      reboot-capable, the request MUST fail without side effects.
+    - Partial success is not allowed.
+    - Providers MAY reject duplicate reboot requests targeting the same devices and time.
+
+    #### Interaction with Related Endpoints
+
+    - `GET /network-access-devices`
+      Used to enumerate devices and their configuration.
+
+    - `POST /reboot-requests`
+      Create a reboot request (immediate or scheduled).
+
+    - `GET /reboot-requests/{id}`
+      Retrieve the status of a previously-created request. Implementations MAY extend
+      the status model over time.
+
+    #### Recommended Client Flow
+
+    1. (Optional) Query device capabilities using `/network-access-devices`.
+    2. If multiple devices exist or inference is unsupported, build an explicit
+       device list.
+    3. Create the reboot request with immediate or scheduled execution (`atTime`).
+    4. (Optional) Poll the individual reboot request status for asynchronous flows.
 
     ## Comments for Network Operators
     The following comments are for Network Operators implementing this API.
@@ -104,13 +166,6 @@ info:
     Please refer to the `CAMARA_common.yaml` of the Commonalities Release associated to this API version for a complete list of error responses. The applicable Commonalities Release can be identified in the `API Readiness Checklist` document associated to this API version.
 
     As a specific rule, error `501 - NOT_IMPLEMENTED` can be only a possible error response if it is explicitly documented in the API.
-  license:
-    name: Apache 2.0
-    url: https://www.apache.org/licenses/LICENSE-2.0.html
-  version: wip
-  x-camara-commonalities: 0.6.0
-  contact:
-    email: sp-nam@lists.camaraproject.org
 servers:
   - url: "{apiRoot}/network-access-management/vwip"
     variables:
@@ -120,6 +175,9 @@ servers:
 tags:
   - name: Trust Domains
     description: Operations to Create and Manage Trust Domains
+  - name: Reboot Requests
+    description: |
+      Operations to Create and Manage Reboot Requests for Network Access Devices
 paths:
   /trust-domains/capabilities:
     get:
@@ -128,10 +186,11 @@ paths:
       summary: Get Trust Domain capabilities
       security:
         - openId:
-            - network-access-management:trust-domains:read
+            - network-access-management:trust-domains
       operationId: getTrustDomainCapabilities
       description: |
-        Returns the Trust Domain configuration capabilities supported by this API provider.
+        Retrieves the set of Trust Domain configuration capabilities supported by the API provider.
+        Capabilities describe supported access types, policy constraints, and configuration limits.
 
         This endpoint enables API clients to discover:
         - Which access types are supported (Wi-Fi variants, Thread modes, etc.)
@@ -139,15 +198,8 @@ paths:
         - Operational limits and constraints
         - Advanced features and configuration options
 
-        **Use this endpoint before creating Trust Domains** to ensure your configuration
+        Use this endpoint before creating Trust Domains to ensure your configuration
         is supported by the target API provider/network operator.
-
-        **Security Requirements:**
-        - Requires one of the following scopes (due to inheritance):
-          - `network-access-management:trust-domains:read` (minimum required)
-          - `network-access-management:trust-domains:write` (inherits read)
-          - `network-access-management:trust-domains:delete` (inherits read + write)
-          - `network-access-management:trust-domains:create` (inherits all permissions)
       responses:
         '200':
           description: Trust Domain capabilities supported by this API provider
@@ -155,8 +207,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/TrustDomainCapabilities'
-        '401':
-          $ref: '#/components/responses/Generic401'
         '403':
           $ref: '#/components/responses/Generic403'
         '500':
@@ -170,15 +220,9 @@ paths:
       summary: Create a new Trust Domain
       security:
         - openId:
-            - network-access-management:trust-domains:create
+            - network-access-management:trust-domains
       description: |
         Creates and returns the new Trust Domain.
-
-        **Required Scope:**
-        - `network-access-management:trust-domains:create`
-
-        **Inherited Permissions:**
-        This scope automatically grants `read`, `write`, and `delete` permissions.
       operationId: createTrustDomain
       requestBody:
         description: Details of the Trust Domain to be created
@@ -212,8 +256,6 @@ paths:
                   $ref: '#/components/examples/TrustDomainResponseWiFiThread'
         '400':
           $ref: '#/components/responses/Generic400'
-        '401':
-          $ref: '#/components/responses/Generic401'
         '403':
           $ref: '#/components/responses/Generic403'
         '409':
@@ -223,23 +265,19 @@ paths:
     get:
       tags:
         - Trust Domains
-      summary: Get all Trust Domains associated with the service owner
+      summary: Retrieves all Trust Domains visible to the calling API client
       security:
         - openId:
-            - network-access-management:trust-domains:read
+            - network-access-management:trust-domains
+        - openId:
+            - network-access-management:trust-domains:read-all
       operationId: getTrustDomains
       description: |
-        This endpoint returns a list of Trust Domains associated with the service owner, each containing details about the network configurations and policies defined within them.
+        Retrieves all Trust Domains visible to the calling API client.
 
-        **Resource Isolation:**
-        The returned Trust Domains are limited to those created by the calling API client for the service owner.
-
-        **Security Requirements:**
-        - Requires one of the following scopes (due to inheritance):
-          - `network-access-management:trust-domains:read` (minimum required)
-          - `network-access-management:trust-domains:write` (inherits read)
-          - `network-access-management:trust-domains:delete` (inherits read + write)
-          - `network-access-management:trust-domains:create` (inherits all permissions)
+        If the caller has `network-access-management:trust-domains`, the response is limited to
+        Trust Domains created by the caller. If the caller has `network-access-management:trust-domains:read-all`,
+        the response includes all Trust Domains associated with the subscriber.
       responses:
         '200':
           description: Contains information about all trust domains
@@ -249,8 +287,6 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/TrustDomain'
-        '401':
-          $ref: '#/components/responses/Generic401'
         '403':
           $ref: '#/components/responses/Generic403'
         '500':
@@ -266,20 +302,14 @@ paths:
       summary: Get a specific Trust Domain
       security:
         - openId:
-            - network-access-management:trust-domains:read
+            - network-access-management:trust-domains
+        - openId:
+            - network-access-management:trust-domains:read-all
       operationId: getTrustDomain
       description: |
-        Returns the Trust Domain that matches the given ID, including its network configurations and policies.
-
-        **Resource Isolation:**
-        The returned Trust Domain is limited to the one created by the calling API client for the service owner.
-
-        **Security Requirements:**
-        - Requires one of the following scopes (due to inheritance):
-          - `network-access-management:trust-domains:read` (minimum required)
-          - `network-access-management:trust-domains:write` (inherits read)
-          - `network-access-management:trust-domains:delete` (inherits read + write)
-          - `network-access-management:trust-domains:create` (inherits all permissions)
+        Retrieves the Trust Domain identified by the given ID. Visibility of this Trust Domain depends on the caller's scope and ownership:
+          - `trust-domains` restricts access to caller-owned Trust Domains.
+          - `trust-domains:read-all` allows retrieval of any Trust Domain associated with the subscriber.
       responses:
         '200':
           description: Contains information about the specified trust domain
@@ -290,8 +320,6 @@ paths:
               examples:
                 TrustDomainResponseBasic:
                   $ref: '#/components/examples/TrustDomainResponseBasic'
-        '401':
-          $ref: '#/components/responses/Generic401'
         '403':
           $ref: '#/components/responses/Generic403'
         '404':
@@ -306,20 +334,10 @@ paths:
       summary: Update a specific Trust Domain
       security:
         - openId:
-            - network-access-management:trust-domains:write
+            - network-access-management:trust-domains
       operationId: updateTrustDomain
       description: |
-        Updates the Trust Domain, reconfigures any network access devices configured with the Trust Domain, and returns the Trust Domain that matches
-        the given ID.
-
-        **Resource Isolation:**
-        Updating a Trust Domain is limited to the one created by the calling API client for the service owner.
-
-        **Security Requirements:**
-        - Requires one of the following scopes (due to inheritance):
-          - `network-access-management:trust-domains:write` (minimum required)
-          - `network-access-management:trust-domains:delete` (inherits read + write)
-          - `network-access-management:trust-domains:create` (inherits all permissions)
+        Updates the Trust Domain identified by the given ID. Any changes are automatically applied to all network access devices where the Trust Domain is configured.
       requestBody:
         content:
           application/json:
@@ -335,8 +353,6 @@ paths:
                 $ref: '#/components/schemas/TrustDomain'
         '400':
           $ref: '#/components/responses/Generic400'
-        '401':
-          $ref: '#/components/responses/Generic401'
         '403':
           $ref: '#/components/responses/Generic403'
         '404':
@@ -351,24 +367,13 @@ paths:
       summary: Delete a specific Trust Domain
       security:
         - openId:
-            - network-access-management:trust-domains:delete
+            - network-access-management:trust-domains
       operationId: deleteTrustDomain
       description: |
-        Deletes the Trust Domain and removes the configuration from any network access devices configured with the Trust Domain that matches the
-        given ID.
-
-        **Resource Isolation:**
-        Deleting a Trust Domain is limited to the one created by the calling API client for the service owner.
-
-        **Security Requirements:**
-        - Requires one of the following scopes (due to inheritance):
-          - `network-access-management:trust-domains:delete` (minimum required)
-          - `network-access-management:trust-domains:create` (inherits all permissions)
+        Deletes the Trust Domain identified by the given ID and removes its configuration from all network access devices where it is applied.
       responses:
         '204':
           description: Trust Domain deleted successfully
-        '401':
-          $ref: '#/components/responses/Generic401'
         '403':
           $ref: '#/components/responses/Generic403'
         '404':
@@ -377,6 +382,246 @@ paths:
           $ref: '#/components/responses/Generic500'
         '503':
           $ref: '#/components/responses/Generic503'
+  /network-access-devices:
+    get:
+      tags:
+        - Reboot Requests
+      summary: Get all Network Access Devices associated with the service owner
+      security:
+        - openId:
+            - network-access-management:reboot
+      operationId: getNetworkAccessDevices
+      description: |
+        Retrieves all Network Access Devices associated with the subscriber that the caller is authorized to manage using the `network-access-management:reboot` scope.
+      responses:
+        '200':
+          description: Contains the list of network access devices
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NetworkAccessDeviceList'
+        '400':
+          $ref: '#/components/responses/Generic400'
+        '403':
+          $ref: '#/components/responses/Generic403'
+        '404':
+          $ref: '#/components/responses/Generic404'
+        '500':
+          $ref: '#/components/responses/Generic500'
+        '503':
+          $ref: '#/components/responses/Generic503'
+  /network-access-devices/{networkAccessDeviceId}:
+    get:
+      tags:
+        - Reboot Requests
+      summary: Get a specific Network Access Device
+      security:
+        - openId:
+            - network-access-management:reboot
+      operationId: getNetworkAccessDevice
+      description: |
+        Retrieves the Network Access Device that matches the given ID.
+      parameters:
+        - $ref: '#/components/parameters/networkAccessDeviceId'
+      responses:
+        '200':
+          description: Contains information about the specified network access device
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NetworkAccessDevice'
+        '400':
+          $ref: '#/components/responses/Generic400'
+        '403':
+          $ref: '#/components/responses/Generic403'
+        '404':
+          $ref: '#/components/responses/Generic404'
+        '500':
+          $ref: '#/components/responses/Generic500'
+        '503':
+          $ref: '#/components/responses/Generic503'
+  /reboot-requests:
+    post:
+      tags:
+        - Reboot Requests
+      summary: Create a new Reboot Request
+      security:
+        - openId:
+            - network-access-management:reboot
+      description: |
+        Creates a new Reboot Request targeting one or more Network Access Devices.
+      operationId: createRebootRequest
+      requestBody:
+        description: |
+          Creates a reboot request for one or more network access devices. Supports two targeting modes:
+
+          Targeting modes:
+          - Inferred (implicit/default device): Omit the 'devices' array to request a reboot of the single
+            default device associated with the subscriber context. This is only valid when exactly one
+            device is eligible. If no default device exists or multiple devices are provisioned, the
+            request MUST be rejected (e.g. 400 INVALID_ARGUMENT or 422 MISSING_IDENTIFIER).
+          - Explicit (targeted devices): Provide a 'devices' array of one or more device UUIDs to request
+            reboots on those specific devices. Validation MUST fail if any supplied device ID is unknown,
+            not reboot-capable, or the caller lacks authorization.
+
+          Scheduling:
+          - Immediate reboot: Omit 'atTime'.
+          - Scheduled reboot: Include 'atTime' (RFC 3339 with timezone). Time MUST be in the future; past
+            values SHOULD produce a 400 OUT_OF_RANGE error.
+
+          Idempotency / duplication:
+          - Multiple identical pending reboot requests (same device set and same atTime) MAY be rejected
+            with 409 CONFLICT or collapsed by implementation.
+
+          Error conditions (examples):
+          - 400 INVALID_ARGUMENT: Unsupported time format, too many device IDs, malformed UUID.
+          - 404 IDENTIFIER_NOT_FOUND: One or more device IDs not found.
+          - 403 PERMISSION_DENIED: Caller lacks scope or device ownership.
+          - 409 CONFLICT: Reboot already scheduled for the same devices and time.
+          - 422 MISSING_IDENTIFIER (implementation-specific): 'devices' omitted but no default device.
+
+          Behavioral guarantees:
+          - If 'devices' omitted and inference succeeds, the response MUST reflect the resolved device list.
+          - If any device fails validation, no reboot request is created (atomic failure).
+          - Partial success is NOT permitted.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RebootRequestCreate'
+            examples:
+              RebootRequestCreateImmediate:
+                $ref: '#/components/examples/RebootRequestCreateImmediateDefaultDevice'
+              RebootRequestCreateScheduled:
+                $ref: '#/components/examples/RebootRequestCreateScheduledMultipleDevices'
+      responses:
+        '201':
+          description: Reboot Request created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RebootRequest'
+        '400':
+          $ref: '#/components/responses/Generic400'
+        '403':
+          $ref: '#/components/responses/Generic403'
+        '404':
+          $ref: '#/components/responses/Generic404'
+        '409':
+          $ref: '#/components/responses/Generic409'
+        '422':
+          $ref: '#/components/responses/Generic422'
+        '500':
+          $ref: '#/components/responses/Generic500'
+    get:
+      tags:
+        - Reboot Requests
+      summary: Get all Reboot Requests created by the calling API client
+      security:
+        - openId:
+            - network-access-management:reboot
+      operationId: getRebootRequests
+      description: |
+        This endpoint returns a list of Reboot Requests associated with the service owner created by the calling API client.
+      responses:
+        '200':
+          description: Contains information about all reboot requests
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RebootRequest'
+        '400':
+          $ref: '#/components/responses/Generic400'
+        '403':
+          $ref: '#/components/responses/Generic403'
+        '500':
+          $ref: '#/components/responses/Generic500'
+  /reboot-requests/{rebootRequestId}:
+    parameters:
+      - $ref: '#/components/parameters/rebootRequestId'
+    get:
+      tags:
+        - Reboot Requests
+      summary: Get a specific Reboot Request
+      security:
+        - openId:
+            - network-access-management:reboot
+      operationId: getRebootRequest
+      description: |
+        Retrieves the Reboot Request that matches the given ID.
+      responses:
+        '200':
+          description: Contains information about the specified Reboot Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RebootRequest'
+        '400':
+          $ref: '#/components/responses/Generic400'
+        '403':
+          $ref: '#/components/responses/Generic403'
+        '404':
+          $ref: '#/components/responses/Generic404'
+        '500':
+          $ref: '#/components/responses/Generic500'
+    patch:
+      tags:
+        - Reboot Requests
+      summary: Update an existing Reboot Request
+      security:
+        - openId:
+            - network-access-management:reboot
+      description: |
+        Updates an existing Reboot Request to modify its scheduled time or cancel it.
+      operationId: updateRebootRequest
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RebootRequestUpdate'
+        required: true
+      responses:
+        '200':
+          description: Reboot Request updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RebootRequest'
+        '400':
+          $ref: '#/components/responses/Generic400'
+        '403':
+          $ref: '#/components/responses/Generic403'
+        '404':
+          $ref: '#/components/responses/Generic404'
+        '409':
+          $ref: '#/components/responses/Generic409'
+        '422':
+          $ref: '#/components/responses/Generic422'
+        '500':
+          $ref: '#/components/responses/Generic500'
+    delete:
+      tags:
+        - Reboot Requests
+      summary: Delete an existing Reboot Request
+      security:
+        - openId:
+            - network-access-management:reboot
+      description: |
+        Deletes an existing Reboot Request, cancelling the scheduled reboot if it has not yet occurred.
+      operationId: deleteRebootRequest
+      responses:
+        '204':
+          description: Reboot Request deleted successfully
+        '400':
+          $ref: '#/components/responses/Generic400'
+        '403':
+          $ref: '#/components/responses/Generic403'
+        '404':
+          $ref: '#/components/responses/Generic404'
+        '500':
+          $ref: '#/components/responses/Generic500'
 components:
   securitySchemes:
     openId:
@@ -385,20 +630,24 @@ components:
         OpenID Connect authentication with scope-based authorization.
 
         **Resource Isolation:**
-        All scopes only grant access to Trust Domains created by the same API client.
-        API clients cannot access Trust Domains created by other API clients.
+        Unless otherwise specified, all scopes only grant access to resources
+        (e.g., Trust Domains, Reboot Requests) created by the same API client.
+        API clients cannot access or modify resources created by other API clients
+        unless the `:read-all` or `:admin` scope variants are explicitly granted.
 
-        **Scope Inheritance:**
-        - `create` inherits `read`, `write`, and `delete`
-        - `delete` inherits `read` and `write`
-        - `write` inherits `read`
-        - `read` is the base permission level
+        **Scope Model:**
+        This API uses a simplified scope model to balance clarity with flexibility.
+        Functional authorization (e.g., managing Trust Domains) is handled by scopes,
+        while ownership enforcement is handled by the API provider.
 
         **Available Scopes:**
-        - `network-access-management:trust-domains:read` - List and view Trust Domains created by this API client
-        - `network-access-management:trust-domains:write` - Modify existing Trust Domains created by this API client (inherits read)
-        - `network-access-management:trust-domains:delete` - Delete existing Trust Domains created by this API client (inherits read, write)
-        - `network-access-management:trust-domains:create` - Create new Trust Domains (inherits read, write, delete)
+        - `network-access-management:trust-domains` — Full management of Trust Domains created by the calling API client
+          (includes create, read, modify, and delete actions).
+        - `network-access-management:trust-domains:read-all` — Read-only access to all Trust Domains
+          associated with the same subscriber, including those created by other API clients.
+          Intended for use cases involving federated discovery or configuration replication.
+        - `network-access-management:reboot` — Create, list, and manage Reboot Requests for network
+          access devices owned by or delegated to the calling API client.
       openIdConnectUrl: https://example.com/.well-known/openid-configuration
   schemas:
     PasswordConstraints:
@@ -406,7 +655,7 @@ components:
       properties:
         minLength:
           type: integer
-          minimum: 1
+          minimum: 8
           description: Minimum password length
           example: 8
         maxLength:
@@ -557,6 +806,7 @@ components:
       description: Thread TLV access type capabilities
     SupportedAccessType:
       type: object
+      description: Access type capabilities with discriminated properties based on accessType. Represents the configuration options supported by the API provider for a given access type. This is distinct from AccessDetail, which represents the configuration requested by an API client.
       properties:
         accessType:
           type: string
@@ -580,7 +830,6 @@ components:
           Thread:TLV: '#/components/schemas/SupportedThreadTlvAccessType'
       required:
         - accessType
-      description: Access type capabilities with discriminated properties based on accessType
     MaxDevicesPolicyCapability:
       type: object
       properties:
@@ -678,19 +927,39 @@ components:
     ErrorInfo:
       type: object
       required:
-        - message
         - status
         - code
+        - message
       properties:
-        message:
-          type: string
-          description: A human readable description of what the event represent
         status:
           type: integer
           description: HTTP response status code
         code:
           type: string
-          description: Friendly Code to describe the error
+          description: A human-readable code to describe the error
+        message:
+          type: string
+          description: A human-readable description of what the event represents
+    UUID:
+      type: string
+      format: uuid
+      pattern: ^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$
+      minLength: 36
+      maxLength: 36
+      description: |
+        A universally unique identifier (UUID) as defined by RFC 4122.
+        Must be a valid UUID format with proper version (1-5) and variant bits.
+        Only lowercase hexadecimal characters are accepted for consistency.
+      example: 550e8400-e29b-41d4-a716-446655440000
+    ResourceIdentifier:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/UUID'
+          readOnly: true
+      required:
+        - id
+      description: A generic schema for resources identified by a unique ID.
     DateTime:
       type: string
       format: date-time
@@ -756,7 +1025,7 @@ components:
         - updates.vendor.com
     Policies:
       type: object
-      description: A set of policies governing Trust Domain behavior.
+      description: A set of policies governing Trust Domain behavior. Omission of a policy indicates no constraint for that category. Policies are applied independently unless otherwise specified by the implementation.
       properties:
         maxDevices:
           $ref: '#/components/schemas/MaxDevicesPolicy'
@@ -783,7 +1052,10 @@ components:
       properties:
         password:
           type: string
+          writeOnly: true
+          minLength: 8
           maxLength: 255
+          pattern: ^[\x20-\x7E]{8,63}$
           description: The password for the WPA Personal Wi-Fi network
           example: my-password
         securityModeType:
@@ -796,6 +1068,7 @@ components:
             The security mode type for the WPA Personal Wi-Fi network.
             Leave blank to auto-select.
           example: WPA3-Personal
+      additionalProperties: false
       required:
         - password
       example:
@@ -813,7 +1086,13 @@ components:
           type: string
           minLength: 2
           maxLength: 32
-          description: The SSID (network name) of the Wi-Fi network
+          pattern: ^(?! )[\x20-\x7E]{2,32}(?<! )$
+          description: |
+            SSID (2-32 printable ASCII characters). No leading or trailing space.
+            Pattern enforces:
+            - Printable ASCII only (0x20-0x7E)
+            - First character not space
+            - Last character not space
           example: my-ssid
         securityMode:
           allOf:
@@ -822,6 +1101,7 @@ components:
           example:
             password: my-password
             securityModeType: WPA3-Personal
+      additionalProperties: false
       required:
         - accessType
         - securityMode
@@ -846,6 +1126,7 @@ components:
             - WPA3-Enterprise
           description: The security mode type for the WPA Enterprise Wi-Fi network
           example: WPA3-Enterprise
+      additionalProperties: false
       required:
         - securityModeType
       example:
@@ -863,7 +1144,13 @@ components:
           type: string
           minLength: 2
           maxLength: 32
-          description: The SSID (network name) of the Wi-Fi network
+          pattern: ^(?! )[\x20-\x7E]{2,32}(?<! )$
+          description: |
+            SSID (2-32 printable ASCII characters). No leading or trailing space.
+            Pattern enforces:
+            - Printable ASCII only (0x20-0x7E)
+            - First character not space
+            - Last character not space
           example: my-ssid
         securityMode:
           allOf:
@@ -872,6 +1159,7 @@ components:
           example:
             authServer: 1.2.3.4
             securityModeType: WPA3-Enterprise
+      additionalProperties: false
       required:
         - accessType
         - securityMode
@@ -916,6 +1204,7 @@ components:
           pattern: ^[0-9a-fA-F]{4}$
           description: The PAN ID (4 hex digits)
           example: d63e
+      additionalProperties: false
       required:
         - accessType
         - channel
@@ -943,6 +1232,7 @@ components:
           maxLength: 255
           description: The Thread network credentials (operational dataset) encoded as a TLV hex string
           example: 0e08000000000000010010000102030405060708090a0b0c0d0e0f
+      additionalProperties: false
       required:
         - accessType
         - operationalDataset
@@ -950,16 +1240,6 @@ components:
         accessType: Thread:TLV
         operationalDataset: 0e08000000000000010010000102030405060708090a0b0c0d0e0f
     AccessDetail:
-      type: object
-      properties:
-        accessType:
-          type: string
-          enum:
-            - Wi-Fi:WPA_PERSONAL
-            - Wi-Fi:WPA_ENTERPRISE
-            - Thread:STRUCTURED
-            - Thread:TLV
-          description: The type and variant of network access
       oneOf:
         - $ref: '#/components/schemas/WiFiWpaPersonalAccessDetail'
         - $ref: '#/components/schemas/WiFiWpaEnterpriseAccessDetail'
@@ -1009,54 +1289,79 @@ components:
           $ref: '#/components/schemas/Policies'
         accessDetails:
           type: array
-          description: A list of access details for the trust domain. Defines how devices gain admittance to the network via this trust domain.
+          description: |
+            A list of access configurations that define how end-user devices may join the
+            Trust Domain. Each entry represents one access type (e.g., Wi-Fi WPA Personal,
+            Wi-Fi WPA Enterprise, Thread Structured, Thread TLV).
+
+            **Multiplicity and Uniqueness**
+            - A Trust Domain MUST contain at least one accessDetail entry.
+            - Each `accessType` SHOULD appear at most once. If multiple entries of the same
+              `accessType` are provided, the API provider MAY reject the request.
+            - Order of entries has no semantic meaning.
+
+            **Creation and Update Semantics**
+            - On creation (POST), the full list of accessDetails MUST be provided.
+            - On update (PATCH), the list replaces the previous list entirely when included.
+              Partial merge semantics are not defined; clients MUST supply the complete
+              desired configuration for this field.
+            - To remove all access types, clients MAY provide an empty array, although the
+              API provider MAY reject configurations that result in no valid admittance
+              method for the Trust Domain.
+
+            **Validation Expectations**
+            - The API provider MUST validate that the requested access types and their
+              properties conform to the provider's advertised capabilities
+              (via GET /trust-domains/capabilities).
+            - Providers MAY enforce additional constraints (e.g., SSID uniqueness,
+              channel restrictions, Thread dataset rules) based on local policy.
+
+            **Deployment Behavior**
+            - All Network Access Devices configured with this Trust Domain MUST apply all
+              supplied accessDetails entries, unless the provider’s capabilities indicate
+              that certain access types are not supported on specific devices.
           items:
             $ref: '#/components/schemas/AccessDetail'
           minItems: 1
-    UUID:
-      type: string
-      format: uuid
-      pattern: ^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$
-      minLength: 36
-      maxLength: 36
-      description: |
-        A universally unique identifier (UUID) as defined by RFC 4122.
-        Must be a valid UUID format with proper version (1-5) and variant bits.
-        Only lowercase hexadecimal characters are accepted for consistency.
-      example: 550e8400-e29b-41d4-a716-446655440000
+    ResourceAudit:
+      type: object
+      properties:
+        createdAt:
+          allOf:
+            - $ref: '#/components/schemas/DateTime'
+            - description: |
+                The creation date and time of the trust domain.  It must follow [RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339#section-5.6)
+                and must have time zone. Recommended format is yyyy-MM-dd'T'HH:mm:ss.SSSZ (i.e. which allows
+                2023-07-03T14:27:08.312+02:00 or 2023-07-03T12:27:08.312Z).
+            - readOnly: true
+        createdBy:
+          type: string
+          maxLength: 100
+          description: The user who created the network
+          example: user-1
+          readOnly: true
+        modifiedAt:
+          allOf:
+            - $ref: '#/components/schemas/DateTime'
+            - description: |
+                The last update date and time of the trust domain.  It must follow [RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339#section-5.6)
+                and must have time zone. Recommended format is yyyy-MM-dd'T'HH:mm:ss.SSSZ (i.e. which allows
+                2023-07-03T14:27:08.312+02:00 or 2023-07-03T12:27:08.312Z).
+            - readOnly: true
+        modifiedBy:
+          type: string
+          maxLength: 100
+          description: The user who last updated the trust domain
+          example: user-2
+          readOnly: true
+      description: A generic schema for resources with unique identifiers and audit fields.
     TrustDomain:
       allOf:
+        - $ref: '#/components/schemas/ResourceIdentifier'
+          readOnly: true
         - $ref: '#/components/schemas/TrustDomainUpdate'
-        - type: object
-          properties:
-            id:
-              $ref: '#/components/schemas/UUID'
-            createdAt:
-              allOf:
-                - $ref: '#/components/schemas/DateTime'
-                - description: |
-                    The creation date and time of the trust domain.  It must follow [RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339#section-5.6)
-                    and must have time zone. Recommended format is yyyy-MM-dd'T'HH:mm:ss.SSSZ (i.e. which allows
-                    2023-07-03T14:27:08.312+02:00 or 2023-07-03T12:27:08.312Z).
-            createdBy:
-              type: string
-              maxLength: 100
-              description: The user who created the network
-              example: user-1
-            modifiedAt:
-              allOf:
-                - $ref: '#/components/schemas/DateTime'
-                - description: |
-                    The last update date and time of the trust domain.  It must follow [RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339#section-5.6)
-                    and must have time zone. Recommended format is yyyy-MM-dd'T'HH:mm:ss.SSSZ (i.e. which allows
-                    2023-07-03T14:27:08.312+02:00 or 2023-07-03T12:27:08.312Z).
-            modifiedBy:
-              type: string
-              maxLength: 100
-              description: The user who last updated the trust domain
-              example: user-2
-          required:
-            - id
+        - $ref: '#/components/schemas/ResourceAudit'
+          readOnly: true
       description: Represents a trust domain within the network access management system.
     TrustDomainCreate:
       allOf:
@@ -1066,37 +1371,529 @@ components:
         - name
         - enabled
         - accessDetails
+    PhoneNumber:
+      description: A public identifier addressing a telephone subscription. In mobile networks it corresponds to the MSISDN (Mobile Station International Subscriber Directory Number). In order to be globally unique it has to be formatted in international format, according to E.164 standard, prefixed with '+'.
+      type: string
+      pattern: ^\+[1-9][0-9]{4,14}$
+      example: '+123456789'
+    NetworkAccessIdentifier:
+      description: A public identifier addressing a subscription in a mobile network. In 3GPP terminology, it corresponds to the GPSI formatted with the External Identifier ({Local Identifier}@{Domain Identifier}). Unlike the telephone number, the network access identifier is not subjected to portability ruling in force, and is individually managed by each operator.
+      type: string
+      example: 123456789@example.com
+    SingleIpv4Addr:
+      description: A single IPv4 address with no subnet mask
+      type: string
+      format: ipv4
+      example: 84.125.93.10
+    Port:
+      description: TCP or UDP port number
+      type: integer
+      minimum: 0
+      maximum: 65535
+    DeviceIpv4Addr:
+      type: object
+      description: |
+        The device should be identified by either the public (observed) IP address and port as seen by the application server, or the private (local) and any public (observed) IP addresses in use by the device (this information can be obtained by various means, for example from some DNS servers).
+
+        If the allocated and observed IP addresses are the same (i.e. NAT is not in use) then  the same address should be specified for both publicAddress and privateAddress.
+
+        If NAT64 is in use, the device should be identified by its publicAddress and publicPort, or separately by its allocated IPv6 address (field ipv6Address of the Device object)
+
+        In all cases, publicAddress must be specified, along with at least one of either privateAddress or publicPort, dependent upon which is known. In general, mobile devices cannot be identified by their public IPv4 address alone.
+      properties:
+        publicAddress:
+          $ref: '#/components/schemas/SingleIpv4Addr'
+        privateAddress:
+          $ref: '#/components/schemas/SingleIpv4Addr'
+        publicPort:
+          $ref: '#/components/schemas/Port'
+      anyOf:
+        - required:
+            - publicAddress
+            - privateAddress
+        - required:
+            - publicAddress
+            - publicPort
+      example:
+        publicAddress: 84.125.93.10
+        publicPort: 59765
+    DeviceIpv6Address:
+      description: |
+        The device should be identified by the observed IPv6 address, or by any single IPv6 address from within the subnet allocated to the device (e.g. adding ::0 to the /64 prefix).
+      type: string
+      format: ipv6
+      example: 2001:db8:85a3:8d3:1319:8a2e:370:7344
+    Device:
+      description: |
+        End-user equipment able to connect to a mobile network. Examples of devices include smartphones or IoT sensors/actuators.
+            The developer can choose to provide the below specified device identifiers:
+            * `ipv4Address`
+            * `ipv6Address`
+            * `phoneNumber`
+            * `networkAccessIdentifier`
+            NOTE1: the network operator might support only a subset of these options. The API invoker can provide multiple identifiers to be compatible across different network operators. In this case the identifiers MUST belong to the same device.
+            NOTE2: as for this Commonalities release, we are enforcing that the networkAccessIdentifier is only part of the schema for future-proofing, and CAMARA does not currently allow its use. After the CAMARA meta-release work is concluded and the relevant issues are resolved, its use will need to be explicitly documented in the guidelines.
+      type: object
+      properties:
+        phoneNumber:
+          $ref: '#/components/schemas/PhoneNumber'
+        networkAccessIdentifier:
+          $ref: '#/components/schemas/NetworkAccessIdentifier'
+        ipv4Address:
+          $ref: '#/components/schemas/DeviceIpv4Addr'
+        ipv6Address:
+          $ref: '#/components/schemas/DeviceIpv6Address'
+      minProperties: 1
+    Latitude:
+      description: Latitude component of a location
+      type: number
+      format: double
+      minimum: -90
+      maximum: 90
+    Longitude:
+      description: Longitude component of location
+      type: number
+      format: double
+      minimum: -180
+      maximum: 180
+    Point:
+      type: object
+      description: Coordinates (latitude, longitude) defining a location in a map
+      required:
+        - latitude
+        - longitude
+      properties:
+        latitude:
+          $ref: '#/components/schemas/Latitude'
+        longitude:
+          $ref: '#/components/schemas/Longitude'
+      example:
+        latitude: 50.735851
+        longitude: 7.10066
+    PropertyAddress:
+      type: object
+      externalDocs:
+        description: TMF673 Geographic Address Management API User Guide v4.0.0
+        url: https://www.tmforum.org/resources/specification/tmf673-geographic-address-management-api-user-guide-v4-0-0/
+      properties:
+        id:
+          type: string
+          description: The unique identifier for the property address
+          minLength: 1
+          maxLength: 64
+          example: address-123
+        addressLine1:
+          type: string
+          maxLength: 128
+          description: The first line of the address
+          example: 123 Main St
+        addressLine2:
+          type: string
+          maxLength: 128
+          description: The second line of the address
+          example: Suite 456
+        streetNr:
+          type: string
+          maxLength: 64
+          description: The street number
+          example: '123'
+        streetNrSuffix:
+          type: string
+          maxLength: 64
+          description: The suffix for the street number
+          example: A
+        streetNrLast:
+          type: string
+          maxLength: 64
+          description: The last street number
+          example: '125'
+        streetNrLastSuffix:
+          type: string
+          maxLength: 64
+          description: The suffix for the last street number
+          example: B
+        streetName:
+          type: string
+          maxLength: 64
+          description: The name of the street
+          example: Main
+        subUnitType:
+          type: string
+          maxLength: 64
+          description: The type of sub-unit (e.g., Apartment, Suite)
+          example: Apartment
+        subUnitNr:
+          type: string
+          maxLength: 64
+          description: The number of the sub-unit
+          example: A12
+        levelType:
+          type: string
+          maxLength: 64
+          description: The type of level (e.g., Floor, Basement)
+          example: Floor
+        levelNr:
+          type: string
+          maxLength: 64
+          description: The number of the level
+          example: '3'
+        buildingName:
+          type: string
+          maxLength: 64
+          description: The name of the building
+          example: Example Building
+        privateStreetName:
+          type: string
+          maxLength: 64
+          description: The name of a private street
+          example: Private Rd
+        locality:
+          type: string
+          maxLength: 64
+          description: The locality (neighborhood, area)
+          example: Example Locality
+        city:
+          type: string
+          maxLength: 128
+          description: The city or town
+          example: Example State
+        stateOrProvince:
+          type: string
+          maxLength: 64
+          description: The state or province
+          example: EX
+        country:
+          type: string
+          maxLength: 64
+          description: The country
+          example: United States
+        postCode:
+          type: string
+          maxLength: 64
+          description: The postal code or ZIP code
+          example: '12345'
+        postCodeExtension:
+          type: string
+          maxLength: 64
+          description: The postal code extension
+          example: '6789'
+      example:
+        id: address-123
+        addressLine1: 123 Main St
+        addressLine2: Suite 456
+        streetNr: '123'
+        streetNrSuffix: A
+        streetNrLast: '125'
+        streetNrLastSuffix: B
+        streetName: Main
+        subUnitType: Apartment
+        subUnitNr: A12
+        levelType: Floor
+        levelNr: '3'
+        buildingName: Example Building
+        privateStreetName: Private Rd
+        locality: Example Locality
+        city: Example State
+        stateOrProvince: EX
+        country: United States
+        postCode: '12345'
+        postCodeExtension: '6789'
+    ServiceSite:
+      type: object
+      description: A Service Site represents a subscriber location associated with one or more Network Access Devices. Implementations MAY provide geographic coordinates, postal address data, or both, depending on local regulatory and operational requirements.
+      properties:
+        id:
+          $ref: '#/components/schemas/UUID'
+          readOnly: true
+        name:
+          type: string
+          maxLength: 64
+          example: Example Service Site 1
+        description:
+          type: string
+          maxLength: 64
+          example: This is the first example service site
+        location:
+          type: object
+          properties:
+            geographicPoint:
+              $ref: '#/components/schemas/Point'
+            propertyAddress:
+              $ref: '#/components/schemas/PropertyAddress'
+          example:
+            geographicPoint:
+              latitude: 50.735851
+              longitude: 7.10066
+            propertyAddress:
+              id: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+              addressLine1: 123 Main St
+              addressLine2: Suite 456
+              streetNr: '123'
+              streetNrSuffix: A
+              streetNrLast: '125'
+              streetNrLastSuffix: B
+              streetName: Main
+              subUnitType: Apartment
+              subUnitNr: A12
+              levelType: Floor
+              levelNr: '3'
+              buildingName: Sunset Towers
+              privateStreetName: Private Rd
+              locality: Example Locality
+              city: Example State
+              stateOrProvince: EX
+              country: United States
+              postCode: '12345'
+              postCodeExtension: '6789'
+      required:
+        - id
+      example:
+        id: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+        name: Example Service Site 1
+        description: This is the first example service site
+        location:
+          geographicPoint:
+            latitude: 50.735851
+            longitude: 7.10066
+          propertyAddress:
+            id: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+            addressLine1: 123 Main St
+            addressLine2: Suite 456
+            streetNr: '123'
+            streetNrSuffix: A
+            streetNrLast: '125'
+            streetNrLastSuffix: B
+            streetName: Main
+            subUnitType: Apartment
+            subUnitNr: A12
+            levelType: Floor
+            levelNr: '3'
+            buildingName: Sunset Towers
+            privateStreetName: Private Rd
+            locality: Example Locality
+            city: Example State
+            stateOrProvince: EX
+            country: United States
+            postCode: '12345'
+            postCodeExtension: '6789'
+    NetworkAccessDevice:
+      description: |
+        Represents a network access device managed within the network access management system.
+        This schema represents operator-supplied network access equipment (e.g., gateways, mesh Wi-Fi systems).
+        It extends the Commonalities Device model but MUST NOT be confused with end-user devices.
+        The identifiers and addressing fields reflect the operator-managed equipment, not client equipment.
+      allOf:
+        - $ref: '#/components/schemas/ResourceIdentifier'
+          readOnly: true
+        - $ref: '#/components/schemas/Device'
+        - type: object
+          properties:
+            name:
+              type: string
+              minLength: 1
+              maxLength: 100
+              description: The name of the device
+              example: Gateway-1
+            description:
+              type: string
+              minLength: 0
+              maxLength: 255
+              description: A description of the device
+              example: A Wi-Fi gateway device
+            hardwareAddress:
+              description: The hardware address of the device
+              oneOf:
+                - type: object
+                  properties:
+                    hardwareAddressType:
+                      type: string
+                      enum:
+                        - EUI-48
+                      example: EUI-48
+                    value:
+                      type: string
+                      pattern: ^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$
+                      example: 12:34:56:78:9A:BC
+                  required:
+                    - hardwareAddressType
+                    - value
+              discriminator:
+                propertyName: hardwareAddressType
+              example:
+                hardwareAddressType: EUI-48
+                value: 12:34:56:78:9A:BC
+            serviceSite:
+              $ref: '#/components/schemas/ServiceSite'
+            deviceStatus:
+              type: string
+              enum:
+                - connected
+                - disconnected
+                - unavailable
+              default: unavailable
+              description: The current status of the device
+              example: connected
+          required:
+            - id
+          example:
+            id: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+            deviceStatus: connected
+            name: Gateway-1
+            description: A Wi-Fi gateway device
+            hardwareAddress:
+              hardwareAddressType: EUI-48
+              value: 12:34:56:78:9A:BC
+            serviceSite:
+              id: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+              name: Example Service Site 1
+              description: This is the first example service site
+              location:
+                geographicPoint:
+                  latitude: 50.735851
+                  longitude: 7.10066
+                propertyAddress:
+                  id: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+                  addressLine1: 123 Main St
+                  addressLine2: Suite 456
+                  streetNr: '123'
+                  streetNrSuffix: A
+                  streetNrLast: '125'
+                  streetNrLastSuffix: B
+                  streetName: Main
+                  subUnitType: Apartment
+                  subUnitNr: A12
+                  levelType: Floor
+                  levelNr: '3'
+                  buildingName: Sunset Towers
+                  privateStreetName: Private Rd
+                  locality: Example Locality
+                  city: Example State
+                  stateOrProvince: EX
+                  country: United States
+                  postCode: '12345'
+                  postCodeExtension: '6789'
+    NetworkAccessDeviceList:
+      type: array
+      items:
+        $ref: '#/components/schemas/NetworkAccessDevice'
+      example:
+        - id: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+          deviceStatus: connected
+          name: Gateway-1
+          description: A Wi-Fi gateway device
+          hardwareAddress:
+            hardwareAddressType: EUI-48
+            value: 12:34:56:78:9A:BC
+          serviceSite:
+            id: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+            name: Example Service Site 1
+            description: This is the first example service site
+            location:
+              geographicPoint:
+                latitude: 50.735851
+                longitude: 7.10066
+              propertyAddress:
+                id: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+                addressLine1: 123 Main St
+                addressLine2: Suite 456
+                streetNr: '123'
+                streetNrSuffix: A
+                streetNrLast: '125'
+                streetNrLastSuffix: B
+                streetName: Main
+                subUnitType: Apartment
+                subUnitNr: A12
+                levelType: Floor
+                levelNr: '3'
+                buildingName: Sunset Towers
+                privateStreetName: Private Rd
+                locality: Example Locality
+                city: Example State
+                stateOrProvince: EX
+                country: United States
+                postCode: '12345'
+                postCodeExtension: '6789'
+        - id: 123e4567-e89b-12d3-a456-426614174000
+          deviceStatus: disconnected
+          name: Gateway-2
+          description: Another Wi-Fi gateway device
+          hardwareAddress:
+            hardwareAddressType: EUI-48
+            value: AB:CD:EF:12:34:56
+          serviceSite:
+            id: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+            name: Example Service Site 1
+            description: This is the first example service site
+            location:
+              geographicPoint:
+                latitude: 50.735851
+                longitude: 7.10066
+              propertyAddress:
+                id: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+                addressLine1: 123 Main St
+                addressLine2: Suite 456
+                streetNr: '123'
+                streetNrSuffix: A
+                streetNrLast: '125'
+                streetNrLastSuffix: B
+                streetName: Main
+                subUnitType: Apartment
+                subUnitNr: A12
+                levelType: Floor
+                levelNr: '3'
+                buildingName: Sunset Towers
+                privateStreetName: Private Rd
+                locality: Example Locality
+                city: Example State
+                stateOrProvince: EX
+                country: United States
+                postCode: '12345'
+                postCodeExtension: '6789'
+    RebootRequestUpdate:
+      type: object
+      properties:
+        message:
+          type: string
+          maxLength: 255
+          description: A message related to the reboot request
+          example: reboot to correct performance
+        atTime:
+          allOf:
+            - $ref: '#/components/schemas/DateTime'
+            - description: |
+                The date and time to reboot the device. Do not include 'atTime' to request immediate reboot.  It must
+                follow [RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339#section-5.6) and must have time zone.
+                Recommended format is yyyy-MM-dd'T'HH:mm:ss.SSSZ (i.e. which allows 2023-07-03T14:27:08.312+02:00 or
+                2023-07-03T12:27:08.312Z).
+    RebootRequestCreate:
+      description: Represents the creation of a reboot request, including target devices and optional scheduling. If devices is omitted, the provider MAY infer a default device. Inference rules vary by implementation. If inference is unsupported or ambiguous, creation MUST fail.
+      allOf:
+        - $ref: '#/components/schemas/RebootRequestUpdate'
+        - properties:
+            devices:
+              type: array
+              items:
+                $ref: '#/components/schemas/UUID'
+              description: List of devices to reboot. When undefined, the reboot targets the 'default' device (simple use case that wouldn't use locations or devices). Throws an error when creating if there is no 'default' device.
+              example:
+                - 934ee3f4-1234-5678-9abc-abcdef123456
+                - 454ee3f4-1234-5678-9abc-abcdef123456
+    RebootRequest:
+      allOf:
+        - $ref: '#/components/schemas/ResourceIdentifier'
+          readOnly: true
+        - $ref: '#/components/schemas/RebootRequestCreate'
+        - $ref: '#/components/schemas/ResourceAudit'
+          readOnly: true
+      required:
+        - devices
+      description: Represents a reboot request for one or more network access devices.
   headers:
     x-correlator:
       description: Correlation id for the different services
       schema:
         $ref: '#/components/schemas/XCorrelator'
   responses:
-    Generic401:
-      description: Unauthorized
-      headers:
-        x-correlator:
-          $ref: '#/components/headers/x-correlator'
-      content:
-        application/json:
-          schema:
-            allOf:
-              - $ref: '#/components/schemas/ErrorInfo'
-              - type: object
-                properties:
-                  status:
-                    enum:
-                      - 401
-                  code:
-                    enum:
-                      - UNAUTHENTICATED
-          examples:
-            GENERIC_401_UNAUTHENTICATED:
-              description: Request cannot be authenticated
-              value:
-                status: 401
-                code: UNAUTHENTICATED
-                message: Request not authenticated due to missing, invalid, or expired credentials.
     Generic403:
       description: Forbidden
       headers:
@@ -1116,6 +1913,7 @@ components:
                     enum:
                       - PERMISSION_DENIED
                       - INVALID_TOKEN_CONTEXT
+                      - '{{SPECIFIC_CODE}}'
           examples:
             GENERIC_403_PERMISSION_DENIED:
               description: Permission denied. OAuth2 token access does not have the required scope or when the user fails operational security
@@ -1129,6 +1927,12 @@ components:
                 status: 403
                 code: INVALID_TOKEN_CONTEXT
                 message: '{{field}} is not consistent with access token.'
+            GENERIC_403_{{SPECIFIC_CODE}}:
+              description: Indicate a Business Logic condition that forbids a process not attached to a specific field in the context of the API
+              value:
+                status: 403
+                code: '{{SPECIFIC_CODE}}'
+                message: '{ { SPECIFIC_CODE_MESSAGE } }'
     Generic500:
       description: Internal Server Error
       headers:
@@ -1198,6 +2002,7 @@ components:
                     enum:
                       - INVALID_ARGUMENT
                       - OUT_OF_RANGE
+                      - '{{SPECIFIC_CODE}}'
           examples:
             GENERIC_400_INVALID_ARGUMENT:
               description: Invalid Argument. Generic Syntax Exception
@@ -1211,6 +2016,12 @@ components:
                 status: 400
                 code: OUT_OF_RANGE
                 message: Client specified an invalid range.
+            GENERIC_400_{{SPECIFIC_CODE}}:
+              description: Specific Syntax Exception regarding a field that is relevant in the context of the API
+              value:
+                status: 400
+                code: '{{SPECIFIC_CODE}}'
+                message: '{ { SPECIFIC_CODE_MESSAGE } }'
     Generic409:
       description: Conflict
       headers:
@@ -1231,7 +2042,7 @@ components:
                       - ABORTED
                       - ALREADY_EXISTS
                       - CONFLICT
-                      - NETWORK_NOT_REMOVABLE
+                      - '{{SPECIFIC_CODE}}'
           examples:
             GENERIC_409_ABORTED:
               description: Concurreny of processes of the same nature/scope
@@ -1251,13 +2062,12 @@ components:
                 status: 409
                 code: CONFLICT
                 message: A specified resource duplicate entry found.
-            GENERIC_409_NETWORK_NOT_REMOVABLE:
-              description: The specified network cannot be removed
+            GENERIC_409_{{SPECIFIC_CODE}}:
+              description: Specific conflict situation that is relevant in the context of the API
               value:
                 status: 409
-                code: NETWORK_NOT_REMOVABLE
-                message: |
-                  The specified network cannot be removed: {{NetworkId}}: {{reason}}
+                code: '{{SPECIFIC_CODE}}'
+                message: '{ { SPECIFIC_CODE_MESSAGE } }'
     Generic404:
       description: Not found
       headers:
@@ -1277,9 +2087,7 @@ components:
                     enum:
                       - NOT_FOUND
                       - IDENTIFIER_NOT_FOUND
-                      - SERVICE_SITE_NOT_FOUND
-                      - DEVICE_NOT_FOUND
-                      - NETWORK_NOT_FOUND
+                      - '{{SPECIFIC_CODE}}'
           examples:
             GENERIC_404_NOT_FOUND:
               description: Resource is not found
@@ -1287,27 +2095,71 @@ components:
                 status: 404
                 code: NOT_FOUND
                 message: The specified resource is not found.
-            GENERIC_404_SERVICE_SITE_NOT_FOUND:
-              description: Service site identitier not found
+            GENERIC_404_IDENTIFIER_NOT_FOUND:
+              description: Some identifier cannot be matched to a device
               value:
                 status: 404
-                code: SERVICE_SITE_NOT_FOUND
-                message: |
-                  Service site identifier(s) not found: {{ServiceSiteId, ...}}.
-            GENERIC_404_DEVICE_NOT_FOUND:
-              description: Device identifier(s) not found
+                code: IDENTIFIER_NOT_FOUND
+                message: Device identifier not found.
+            GENERIC_404_{{SPECIFIC_CODE}}:
+              description: Specific situation to highlight the resource/concept not found
               value:
                 status: 404
-                code: DEVICE_NOT_FOUND
-                message: |
-                  Device identifier(s) not found: {{DeviceId, ...}}.
-            GENERIC_404_NETWORK_NOT_FOUND:
-              description: Network identitier(s) not found
+                code: '{{SPECIFIC_CODE}}'
+                message: '{ { SPECIFIC_CODE_MESSAGE } }'
+    Generic422:
+      description: Unprocessable Content
+      headers:
+        x-correlator:
+          $ref: '#/components/headers/x-correlator'
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/ErrorInfo'
+              - type: object
+                properties:
+                  status:
+                    enum:
+                      - 422
+                  code:
+                    enum:
+                      - SERVICE_NOT_APPLICABLE
+                      - MISSING_IDENTIFIER
+                      - UNSUPPORTED_IDENTIFIER
+                      - UNNECESSARY_IDENTIFIER
+                      - '{{SPECIFIC_CODE}}'
+          examples:
+            GENERIC_422_SERVICE_NOT_APPLICABLE:
+              description: Service not applicable for the provided identifier
               value:
-                status: 404
-                code: NETWORK_NOT_FOUND
-                message: |
-                  Network identitifer(s) not found: {{NetworkId, ...}}.
+                status: 422
+                code: SERVICE_NOT_APPLICABLE
+                message: The service is not available for the provided identifier.
+            GENERIC_422_MISSING_IDENTIFIER:
+              description: An identifier is not included in the request and the device or phone number identification cannot be derived from the 3-legged access token
+              value:
+                status: 422
+                code: MISSING_IDENTIFIER
+                message: The device cannot be identified.
+            GENERIC_422_UNSUPPORTED_IDENTIFIER:
+              description: None of the provided identifiers is supported by the implementation
+              value:
+                status: 422
+                code: UNSUPPORTED_IDENTIFIER
+                message: The identifier provided is not supported.
+            GENERIC_422_UNNECESSARY_IDENTIFIER:
+              description: An explicit identifier is provided when a device or phone number has already been identified from the access token
+              value:
+                status: 422
+                code: UNNECESSARY_IDENTIFIER
+                message: The device is already identified by the access token.
+            GENERIC_422_{{SPECIFIC_CODE}}:
+              description: Any semantic condition associated to business logic, specifically related to a field or data structure
+              value:
+                status: 422
+                code: '{{SPECIFIC_CODE}}'
+                message: '{ { SPECIFIC_CODE_MESSAGE } }'
   examples:
     TrustDomainCreateWpa2Personal:
       summary: Create a Trust Domain with WPA2-Personal Wi-Fi access.
@@ -1340,7 +2192,6 @@ components:
         enabled: true
         accessDetails:
           - accessType: Thread:STRUCTURED
-            mode: structured
             channel: 13
             extendedPanId: d63e8e3e495ebbc3
             networkKey: dfd34f0f05cad978ec4e32b0413038ff
@@ -1390,6 +2241,7 @@ components:
         enabled: true
         accessDetails:
           - accessType: Wi-Fi:WPA_PERSONAL
+            ssid: my-ssid
             securityMode:
               password: my-password
               securityModeType: WPA2-Personal
@@ -1417,7 +2269,6 @@ components:
               password: my-password
               securityModeType: WPA3-Personal
           - accessType: Thread:STRUCTURED
-            mode: structured
             channel: 13
             extendedPanId: d63e8e3e495ebbc3
             networkKey: dfd34f0f05cad978ec4e32b0413038ff
@@ -1427,6 +2278,18 @@ components:
         createdBy: user-1
         modifiedAt: '2025-10-21T14:27:08.312Z'
         modifiedBy: user-2
+    RebootRequestCreateImmediateDefaultDevice:
+      summary: Example of a Reboot Request for immediate reboot
+      value:
+        message: reboot to correct performance
+    RebootRequestCreateScheduledMultipleDevices:
+      summary: Example of a Reboot Request for scheduled reboot of multiple devices
+      value:
+        message: Scheduled reboot for maintenance
+        atTime: '2023-07-03T12:27:08.312Z'
+        devices:
+          - 934ee3f4-1234-5678-9abc-abcdef123456
+          - 454ee3f4-1234-5678-9abc-abcdef123456
   parameters:
     trustDomainId:
       name: trustDomainId
@@ -1434,4 +2297,18 @@ components:
       required: true
       schema:
         $ref: '#/components/schemas/UUID'
-      description: ID of the Trust Domain
+      description: ID of the Trust Domain. If the Trust Domain exists but the caller lacks permission to access it, the API returns 403.
+    networkAccessDeviceId:
+      name: networkAccessDeviceId
+      in: path
+      description: The unique identifier of the Network Access Device. If the device exists but the caller lacks permission to access it, the API returns 403.
+      required: true
+      schema:
+        $ref: '#/components/schemas/UUID'
+    rebootRequestId:
+      name: rebootRequestId
+      in: path
+      required: true
+      schema:
+        $ref: '#/components/schemas/UUID'
+      description: ID of the Reboot Request. If the Reboot Request exists but the caller lacks permission to access it, the API returns 403.

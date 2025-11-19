@@ -1,0 +1,108 @@
+# Local anchor definitions for external component examples. There isn't a native OpenAPI way to
+# cross-reference examples across files, so we define them here for reuse.
+_imported_examples:
+  uuid-example: &uuid-example-1 "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+  uuid-example-2: &uuid-example-2 "123e4567-e89b-12d3-a456-426614174000"
+  date-time: &date-time "2023-07-03T12:27:08.312Z"
+  device-uuid-1: &device-uuid-1 "934ee3f4-1234-5678-9abc-abcdef123456"
+  device-uuid-2: &device-uuid-2 "454ee3f4-1234-5678-9abc-abcdef123456"
+  device-id-list: &device-id-list
+    - *device-uuid-1
+    - *device-uuid-2
+
+components:
+
+  parameters:
+    rebootRequestId:
+      name: rebootRequestId
+      in: path
+      required: true
+      schema:
+        $ref: "../NAM_Common.yaml#/components/schemas/UUID"
+      description: ID of the Reboot Request. If the Reboot Request exists but the caller lacks permission to access it, the API returns 403.
+
+  schemas:
+    RebootRequestUpdate:
+      type: object
+      properties:
+        message:
+          type: string
+          maxLength: 255
+          description: A message related to the reboot request
+          example: &reboot-message "reboot to correct performance"
+        atTime:
+          allOf:
+            - $ref: "../NAM_Common.yaml#/components/schemas/DateTime"
+            - description: |
+                The date and time to reboot the device. Do not include 'atTime' to request immediate reboot.  It must
+                follow [RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339#section-5.6) and must have time zone.
+                Recommended format is yyyy-MM-dd'T'HH:mm:ss.SSSZ (i.e. which allows 2023-07-03T14:27:08.312+02:00 or
+                2023-07-03T12:27:08.312Z).
+
+    RebootRequestCreate:
+      description: Represents the creation of a reboot request, including target devices and optional scheduling. If devices is omitted, the provider MAY infer a default device. Inference rules vary by implementation. If inference is unsupported or ambiguous, creation MUST fail.
+      allOf:
+        - $ref: "#/components/schemas/RebootRequestUpdate"
+        - properties:
+            devices:
+              type: array
+              items:
+                $ref: "../NAM_Common.yaml#/components/schemas/UUID"
+              description: >-
+                List of devices to reboot. When undefined, the reboot targets the 'default' device (simple use case that
+                wouldn't use locations or devices). Throws an error when creating if there is no 'default' device.
+              example: *device-id-list
+
+    RebootRequest:
+      allOf:
+        - $ref: "../NAM_Common.yaml#/components/schemas/ResourceIdentifier"
+          readOnly: true
+        - $ref: "#/components/schemas/RebootRequestCreate"
+        - $ref: "../NAM_Common.yaml#/components/schemas/ResourceAudit"
+          readOnly: true
+      required:
+        - devices
+      description: Represents a reboot request for one or more network access devices.
+
+    RebootRequestList:
+      type: array
+      items:
+        $ref: "#/components/schemas/RebootRequest"
+
+  examples:
+    RebootRequestCreateImmediateDefaultDevice:
+      summary: Example of a Reboot Request for immediate reboot
+      value:
+        message: "reboot to correct performance"
+
+    RebootRequestCreateScheduledMultipleDevices:
+      summary: Example of a Reboot Request for scheduled reboot of multiple devices
+      value:
+        message: "Scheduled reboot for maintenance"
+        atTime: *date-time
+        devices: *device-id-list
+
+    RebootRequestResponseInferred:
+      summary: Response after inferred default device reboot request
+      value:
+        id: *uuid-example-1
+        message: "reboot to correct performance"
+        devices:
+          - *device-uuid-1
+        atTime: *date-time
+        createdAt: *date-time
+        createdBy: "user-1"
+        modifiedAt: *date-time
+        modifiedBy: "user-1"
+
+    RebootRequestResponseExplicit:
+      summary: Response after explicit multi-device reboot request
+      value:
+        id: *uuid-example-2
+        message: "scheduled maintenance reboot"
+        devices: *device-id-list
+        atTime: *date-time
+        createdAt: *date-time
+        createdBy: "ops-user"
+        modifiedAt: *date-time
+        modifiedBy: "ops-user"

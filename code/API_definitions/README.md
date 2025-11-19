@@ -10,20 +10,19 @@ The API definitions have been restructured from a monolithic approach to a modul
 
 ```
 API_definitions/
-├── README.md                                    # This file
-├── redocly.yaml                                 # Bundling configuration
-├── network-access-management.yaml               # The bundled API specification (generated)
-├── Templates/                                   # Pre-bundled template specifications
-│   ├── capabilities-template.yaml               # Network Access Device capabilities API template
-│   └── network-access-management-template.yaml  # Complete Network Access Management API template
-└── Domain/                                      # Reusable schema components
-    ├── AccessDetail.yaml                        # Network access detail schemas (Wi-Fi, Thread)
-    ├── Capabilities.yaml                        # Network Access Device capability schemas
-    ├── Common.yaml                              # Shared schemas (UUID, DateTime, etc.)
-    ├── Policy.yaml                              # Trust Domain policy schemas
-    └── TrustDomains/
-        └── TrustDomains.yaml                    # Trust Domain core schemas and examples
-        └── TrustDomainCapabilities.yaml          # Trust Domain capabilities schemas
+├── README.md                                    # This file (authoring & process docs)
+├── redocly.yaml                                 # Lint/bundle configuration (Redocly CLI)
+├── network-access-management.yaml               # Primary entrypoint spec (generated from template)
+├── Templates/                                   # Template specs used to produce bundled variants
+│   ├── network-access-management-template.yaml  # Source template assembled into the main NAM bundle
+└── Domain/                                      # Modular domain-focused component files
+  ├── NAM_Common.yaml                          # Shared primitives (UUID, DateTime, ResourceAudit, securitySchemes)
+  ├── CAMARA_common.yaml                       # Shared CAMARA-style error responses
+  ├── AccessDetail.yaml                        # Discriminated access detail variants (Wi-Fi, Thread)
+  ├── Policy.yaml                              # Trust Domain policy schemas (maxDevices, bandwidth, egress)
+  ├── NetworkAccessDevices/                    # Network Access Device resource schemas
+  ├── RebootRequests/                          # Reboot Request lifecycle schemas
+  └── TrustDomains/                            # Trust Domain & related capability schemas
 ```
 
 ## Architecture Rationale

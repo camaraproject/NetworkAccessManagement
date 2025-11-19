@@ -25,7 +25,6 @@ _imported_examples:
 
   thread-structured-example: &thread-structured-example
     accessType: "Thread:STRUCTURED"
-    mode: "structured"
     channel: 13
     extendedPanId: "d63e8e3e495ebbc3"
     networkKey: "dfd34f0f05cad978ec4e32b0413038ff"
@@ -56,37 +55,14 @@ _imported_examples:
 
 components:
 
-  securitySchemes:
-    openId:
-      type: openIdConnect
-      description:  |
-        OpenID Connect authentication with scope-based authorization.
-
-        **Resource Isolation:**
-        All scopes only grant access to Trust Domains created by the same API client.
-        API clients cannot access Trust Domains created by other API clients.
-
-        **Scope Inheritance:**
-        - `create` inherits `read`, `write`, and `delete`
-        - `delete` inherits `read` and `write`
-        - `write` inherits `read`
-        - `read` is the base permission level
-
-        **Available Scopes:**
-        - `network-access-management:trust-domains:read` - List and view Trust Domains created by this API client
-        - `network-access-management:trust-domains:write` - Modify existing Trust Domains created by this API client (inherits read)
-        - `network-access-management:trust-domains:delete` - Delete existing Trust Domains created by this API client (inherits read, write)
-        - `network-access-management:trust-domains:create` - Create new Trust Domains (inherits read, write, delete)
-      openIdConnectUrl: https://example.com/.well-known/openid-configuration
-
   parameters:
     trustDomainId:
       name: trustDomainId
       in: path
       required: true
       schema:
-        $ref: "../Common.yaml#/components/schemas/UUID"
-      description: ID of the Trust Domain
+        $ref: "../NAM_Common.yaml#/components/schemas/UUID"
+      description: ID of the Trust Domain. If the Trust Domain exists but the caller lacks permission to access it, the API returns 403.
 
   schemas:
 
@@ -107,7 +83,7 @@ components:
           description: Indicates whether the trust domain is currently enabled.
           example: true
         expiration:
-          $ref: "../Common.yaml#/components/schemas/DateTime"
+          $ref: "../NAM_Common.yaml#/components/schemas/DateTime"
           description: |
             The expiration date and time of the network.  It must follow [RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339#section-5.6)
             and must have time zone. Recommended format is yyyy-MM-dd'T'HH:mm:ss.SSSZ (i.e. which allows
@@ -118,7 +94,37 @@ components:
           $ref: "../Policy.yaml#/components/schemas/Policies"
         accessDetails:
           type: array
-          description: A list of access details for the trust domain. Defines how devices gain admittance to the network via this trust domain.
+          description: |
+            A list of access configurations that define how end-user devices may join the
+            Trust Domain. Each entry represents one access type (e.g., Wi-Fi WPA Personal,
+            Wi-Fi WPA Enterprise, Thread Structured, Thread TLV).
+
+            **Multiplicity and Uniqueness**
+            - A Trust Domain MUST contain at least one accessDetail entry.
+            - Each `accessType` SHOULD appear at most once. If multiple entries of the same
+              `accessType` are provided, the API provider MAY reject the request.
+            - Order of entries has no semantic meaning.
+
+            **Creation and Update Semantics**
+            - On creation (POST), the full list of accessDetails MUST be provided.
+            - On update (PATCH), the list replaces the previous list entirely when included.
+              Partial merge semantics are not defined; clients MUST supply the complete
+              desired configuration for this field.
+            - To remove all access types, clients MAY provide an empty array, although the
+              API provider MAY reject configurations that result in no valid admittance
+              method for the Trust Domain.
+
+            **Validation Expectations**
+            - The API provider MUST validate that the requested access types and their
+              properties conform to the provider's advertised capabilities
+              (via GET /trust-domains/capabilities).
+            - Providers MAY enforce additional constraints (e.g., SSID uniqueness,
+              channel restrictions, Thread dataset rules) based on local policy.
+
+            **Deployment Behavior**
+            - All Network Access Devices configured with this Trust Domain MUST apply all
+              supplied accessDetails entries, unless the provider’s capabilities indicate
+              that certain access types are not supported on specific devices.
           items:
             $ref: "../AccessDetail.yaml#/components/schemas/AccessDetail"
           minItems: 1
@@ -134,37 +140,11 @@ components:
 
     TrustDomain:
       allOf:
+        - $ref: "../NAM_Common.yaml#/components/schemas/ResourceIdentifier"
+          readOnly: true
         - $ref: "#/components/schemas/TrustDomainUpdate"
-        - type: object
-          properties:
-            id:
-              $ref: "../Common.yaml#/components/schemas/UUID"
-            createdAt:
-              allOf:
-                - $ref: "../Common.yaml#/components/schemas/DateTime"
-                - description: |
-                    The creation date and time of the trust domain.  It must follow [RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339#section-5.6)
-                    and must have time zone. Recommended format is yyyy-MM-dd'T'HH:mm:ss.SSSZ (i.e. which allows
-                    2023-07-03T14:27:08.312+02:00 or 2023-07-03T12:27:08.312Z).
-            createdBy:
-              type: string
-              maxLength: 100
-              description: The user who created the network
-              example: "user-1"
-            modifiedAt:
-              allOf:
-                - $ref: "../Common.yaml#/components/schemas/DateTime"
-                - description: |
-                    The last update date and time of the trust domain.  It must follow [RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339#section-5.6)
-                    and must have time zone. Recommended format is yyyy-MM-dd'T'HH:mm:ss.SSSZ (i.e. which allows
-                    2023-07-03T14:27:08.312+02:00 or 2023-07-03T12:27:08.312Z).
-            modifiedBy:
-              type: string
-              maxLength: 100
-              description: The user who last updated the trust domain
-              example: "user-2"
-          required:
-            - id
+        - $ref: "../NAM_Common.yaml#/components/schemas/ResourceAudit"
+          readOnly: true
       description: Represents a trust domain within the network access management system.
 
 
@@ -223,6 +203,7 @@ components:
         policies:
           <<: *max-bandwidth-policy-example
 
+    ## Example responses
     TrustDomainResponseBasic:
       summary: Basic Trust Domain Response
       description: Example of a created Trust Domain with minimal details.
@@ -232,7 +213,7 @@ components:
         description: "A basic trust domain example"
         enabled: true
         accessDetails:
-          - <<: *wifi-wpa2-personal-basic-example
+          - <<: *wifi-wpa2-personal-example
         createdAt: "2025-10-21T14:27:08.312Z"
         createdBy: "user-1"
         modifiedAt: "2025-10-21T14:27:08.312Z"

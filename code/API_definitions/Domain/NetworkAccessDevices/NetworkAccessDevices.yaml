@@ -1,0 +1,154 @@
+# Local anchor definitions for external component examples. There isn't a native OpenAPI way to
+# cross-reference examples across files, so we define them here for reuse.
+_imported_examples:
+  uuid-example: &uuid-example "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+  uuid-example-2: &uuid-example-2 "123e4567-e89b-12d3-a456-426614174000"
+  property-address-example: &property-address-example
+    id: *uuid-example
+    addressLine1: "123 Main St"
+    addressLine2: "Suite 456"
+    streetNr: "123"
+    streetNrSuffix: "A"
+    streetNrLast: "125"
+    streetNrLastSuffix: "B"
+    streetName: "Main"
+    subUnitType: "Apartment"
+    subUnitNr: "A12"
+    levelType: "Floor"
+    levelNr: "3"
+    buildingName: "Sunset Towers"
+    privateStreetName: "Private Rd"
+    locality: "Example Locality"
+    city: "Example State"
+    stateOrProvince: "EX"
+    country: "United States"
+    postCode: "12345"
+    postCodeExtension: "6789"
+
+
+components:
+  parameters:
+    networkAccessDeviceId:
+      name: networkAccessDeviceId
+      in: path
+      description: The unique identifier of the Network Access Device. If the device exists but the caller lacks permission to access it, the API returns 403.
+      required: true
+      schema:
+        $ref: "../NAM_Common.yaml#/components/schemas/UUID"
+  schemas:
+    ServiceSite:
+      type: object
+      description: A Service Site represents a subscriber location associated with one or more Network Access Devices. Implementations MAY provide geographic coordinates, postal address data, or both, depending on local regulatory and operational requirements.
+      properties:
+        id:
+          $ref: "../NAM_Common.yaml#/components/schemas/UUID"
+          readOnly: true
+        name:
+          type: string
+          maxLength: 64
+          example: &service-site-name "Example Service Site 1"
+        description:
+          type: string
+          maxLength: 64
+          example: &service-site-description "This is the first example service site"
+        location:
+          type: object
+          properties:
+            geographicPoint:
+              $ref: "../CAMARA_common.yaml#/components/schemas/Point"
+            propertyAddress:
+              $ref: "../NAM_Common.yaml#/components/schemas/PropertyAddress"
+          example: &service-site-location
+            geographicPoint:
+              latitude: 50.735851
+              longitude: 7.10066
+            propertyAddress: *property-address-example
+      required:
+        - id
+      example: &service-site
+        id: *uuid-example
+        name: *service-site-name
+        description: *service-site-description
+        location: *service-site-location
+
+    NetworkAccessDevice:
+      description: |
+        Represents a network access device managed within the network access management system.
+        This schema represents operator-supplied network access equipment (e.g., gateways, mesh Wi-Fi systems).
+        It extends the Commonalities Device model but MUST NOT be confused with end-user devices.
+        The identifiers and addressing fields reflect the operator-managed equipment, not client equipment.
+      allOf:
+        - $ref: "../NAM_Common.yaml#/components/schemas/ResourceIdentifier"
+          readOnly: true
+        - $ref: "../CAMARA_common.yaml#/components/schemas/Device"
+        - type: object
+          properties:
+            name:
+              type: string
+              minLength: 1
+              maxLength: 100
+              description: The name of the device
+              example: &device-name "Gateway-1"
+            description:
+              type: string
+              minLength: 0
+              maxLength: 255
+              description: A description of the device
+              example: &device-description "A Wi-Fi gateway device"
+            hardwareAddress:
+              description: The hardware address of the device
+              oneOf:
+                - type: object
+                  properties:
+                    hardwareAddressType:
+                      type: string
+                      enum: ["EUI-48"]
+                      example: &device-hardware-address-type "EUI-48"
+                    value:
+                      type: string
+                      pattern: "^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$"
+                      example: &device-hardware-address-value "12:34:56:78:9A:BC"
+                  required:
+                    - hardwareAddressType
+                    - value
+              discriminator:
+                propertyName: hardwareAddressType
+              example: &device-hardware-address
+                hardwareAddressType: *device-hardware-address-type
+                value: *device-hardware-address-value
+            serviceSite:
+              $ref: "#/components/schemas/ServiceSite"
+            deviceStatus:
+              type: string
+              enum:
+                - connected
+                - disconnected
+                - unavailable
+              default: unavailable
+              description: The current status of the device
+              example: &device-status "connected"
+          required:
+            - id
+          example: &device
+            id: *uuid-example
+            deviceStatus: *device-status
+            name: *device-name
+            description: *device-description
+            hardwareAddress: *device-hardware-address
+            serviceSite: *service-site
+
+    NetworkAccessDeviceList:
+      type: array
+      items:
+        $ref: "#/components/schemas/NetworkAccessDevice"
+      example: &device-list
+        - *device
+        - id: *uuid-example-2
+          deviceStatus: "disconnected"
+          name: "Gateway-2"
+          description: "Another Wi-Fi gateway device"
+          hardwareAddress: &device-hardware-address2
+            hardwareAddressType: "EUI-48"
+            value: "AB:CD:EF:12:34:56"
+          serviceSite: *service-site
+

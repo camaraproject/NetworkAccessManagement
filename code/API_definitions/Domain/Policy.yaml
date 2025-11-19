@@ -5,7 +5,7 @@ components:
 
     Policies:
       type: object
-      description: A set of policies governing Trust Domain behavior.
+      description: A set of policies governing Trust Domain behavior. Omission of a policy indicates no constraint for that category. Policies are applied independently unless otherwise specified by the implementation.
       properties:
         maxDevices:
           $ref: '#/components/schemas/MaxDevicesPolicy'

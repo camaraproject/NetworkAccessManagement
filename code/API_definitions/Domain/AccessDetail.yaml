@@ -9,7 +9,10 @@ components:
       properties:
         password:
           type: string
+          writeOnly: true
+          minLength: 8
           maxLength: 255
+          pattern: "^[\\x20-\\x7E]{8,63}$"
           description: The password for the WPA Personal Wi-Fi network
           example: &wpa-personal-password "my-password"
         securityModeType:
@@ -22,6 +25,7 @@ components:
             The security mode type for the WPA Personal Wi-Fi network.
             Leave blank to auto-select.
           example: &wpa-personal-security-mode-type "WPA3-Personal"
+      additionalProperties: false
       required:
         - password
       example: &wpa-personal
@@ -43,6 +47,7 @@ components:
             - WPA3-Enterprise
           description: The security mode type for the WPA Enterprise Wi-Fi network
           example: &wpa-enterprise-security-mode-type "WPA3-Enterprise"
+      additionalProperties: false
       required:
         - securityModeType
       example: &wpa-enterprise
@@ -62,13 +67,20 @@ components:
           type: string
           minLength: 2
           maxLength: 32
-          description: The SSID (network name) of the Wi-Fi network
+          pattern: "^(?! )[\\x20-\\x7E]{2,32}(?<! )$"
+          description: |
+            SSID (2-32 printable ASCII characters). No leading or trailing space.
+            Pattern enforces:
+            - Printable ASCII only (0x20-0x7E)
+            - First character not space
+            - Last character not space
           example: &wifi-ssid "my-ssid"
         securityMode:
           allOf:
             - $ref: "#/components/schemas/WpaPersonalDetail"
           description: WPA Personal security mode details
           example: *wpa-personal
+      additionalProperties: false
       required:
         - accessType
         - securityMode
@@ -89,13 +101,20 @@ components:
           type: string
           minLength: 2
           maxLength: 32
-          description: The SSID (network name) of the Wi-Fi network
+          pattern: "^(?! )[\\x20-\\x7E]{2,32}(?<! )$"
+          description: |
+            SSID (2-32 printable ASCII characters). No leading or trailing space.
+            Pattern enforces:
+            - Printable ASCII only (0x20-0x7E)
+            - First character not space
+            - Last character not space
           example: *wifi-ssid
         securityMode:
           allOf:
             - $ref: "#/components/schemas/WpaEnterpriseDetail"
           description: WPA Enterprise security mode details
           example: *wpa-enterprise
+      additionalProperties: false
       required:
         - accessType
         - securityMode
@@ -139,6 +158,7 @@ components:
           pattern: "^[0-9a-fA-F]{4}$"
           description: The PAN ID (4 hex digits)
           example: "d63e"
+      additionalProperties: false
       required:
         - accessType
         - channel
@@ -167,6 +187,7 @@ components:
           maxLength: 255
           description: The Thread network credentials (operational dataset) encoded as a TLV hex string
           example: "0e08000000000000010010000102030405060708090a0b0c0d0e0f"
+      additionalProperties: false
       required:
         - accessType
         - operationalDataset
@@ -176,16 +197,6 @@ components:
 
     # Single discriminated union with namespaced values
     AccessDetail:
-      type: object
-      properties:
-        accessType:
-          type: string
-          enum:
-            - "Wi-Fi:WPA_PERSONAL"
-            - "Wi-Fi:WPA_ENTERPRISE"
-            - "Thread:STRUCTURED"
-            - "Thread:TLV"
-          description: The type and variant of network access
       oneOf:
         - $ref: "#/components/schemas/WiFiWpaPersonalAccessDetail"
         - $ref: "#/components/schemas/WiFiWpaEnterpriseAccessDetail"
