@@ -65,6 +65,7 @@ components:
           description: Optional description of the service
           example: "Internet subscription for primary residence"
         serviceSite:
+          # Optional. Present for location-specific services (e.g., residential, office), absent for general services (e.g., public Wi-Fi)
           $ref: "./ServiceSites.yaml#/components/schemas/ServiceSite"
       required:
         - id

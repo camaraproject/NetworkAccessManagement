@@ -3,6 +3,7 @@
 # cross-reference examples across files, so we define them here for reuse.
 _imported_examples:
   uuid-example: &uuid-example "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+  service-uuid-example: &service-uuid-example "123e4567-e89b-12d3-a456-426614174000"
   wifi-wpa2-personal-basic-example: &wifi-wpa2-personal-basic-example
     accessType: "Wi-Fi:WPA_PERSONAL"
     securityMode:
@@ -123,7 +124,7 @@ components:
 
             **Deployment Behavior**
             - All Network Access Devices configured with this Trust Domain MUST apply all
-              supplied accessDetails entries, unless the provider’s capabilities indicate
+              supplied accessDetails entries, unless the provider's capabilities indicate
               that certain access types are not supported on specific devices.
           items:
             $ref: "../AccessDetail.yaml#/components/schemas/AccessDetail"
@@ -137,12 +138,21 @@ components:
         - name
         - enabled
         - accessDetails
+        - serviceId
+      properties:
+        serviceId:
+          allOf:
+            - $ref: "../Services/Services.yaml#/components/schemas/ServiceId"
+          description: |
+            A unique identifier that represents the service account to associate with the created Trust Domain.
+
+            Must be a valid UUID as defined by RFC 4122 (versions 1-5) using only lowercase hexadecimal characters.
 
     TrustDomain:
       allOf:
         - $ref: "../NAM_Common.yaml#/components/schemas/ResourceIdentifier"
           readOnly: true
-        - $ref: "#/components/schemas/TrustDomainUpdate"
+        - $ref: "#/components/schemas/TrustDomainCreate"
         - $ref: "../NAM_Common.yaml#/components/schemas/ResourceAudit"
           readOnly: true
       description: Represents a trust domain within the network access management system.
@@ -158,6 +168,7 @@ components:
         enabled: true
         accessDetails:
           - <<: *wifi-wpa2-personal-example
+        serviceId: *service-uuid-example
 
     TrustDomainCreateInferredSsid:
       summary: Create a Trust Domain with inferred SSID Wi-Fi access.
@@ -170,6 +181,7 @@ components:
             securityMode:
               password: "my-password"
               securityModeType: "WPA2-Personal"
+        serviceId: *service-uuid-example
 
     TrustDomainCreateEphemeral:
       summary: Create a Trust Domain with ephemeral access details.
@@ -182,6 +194,7 @@ components:
         expiration: "2024-12-31T23:59:59Z"
         policies:
           <<: *max-devices-policy-example
+        serviceId: *service-uuid-example
 
     TrustDomainCreateThreadStructured:
       summary: Create a Trust Domain with Thread structured access details.
@@ -191,6 +204,7 @@ components:
         enabled: true
         accessDetails:
           - <<: *thread-structured-example
+        serviceId: *service-uuid-example
 
     TrustDomainCreateQoSPolicies:
       summary: Create a Trust Domain with QoS policies.
@@ -202,6 +216,7 @@ components:
           - <<: *wifi-wpa3-personal-example
         policies:
           <<: *max-bandwidth-policy-example
+        serviceId: *service-uuid-example
 
     ## Example responses
     TrustDomainResponseBasic:
@@ -214,6 +229,7 @@ components:
         enabled: true
         accessDetails:
           - <<: *wifi-wpa2-personal-example
+        serviceId: *service-uuid-example
         createdAt: "2025-10-21T14:27:08.312Z"
         createdBy: "user-1"
         modifiedAt: "2025-10-21T14:27:08.312Z"
@@ -233,6 +249,7 @@ components:
         accessDetails:
           - <<: *wifi-wpa3-personal-example
           - <<: *thread-structured-example
+        serviceId: *service-uuid-example
         createdAt: "2025-10-21T14:27:08.312Z"
         createdBy: "user-1"
         modifiedAt: "2025-10-21T14:27:08.312Z"
