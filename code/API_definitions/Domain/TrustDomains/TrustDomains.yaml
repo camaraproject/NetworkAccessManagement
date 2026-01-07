@@ -141,12 +141,7 @@ components:
         - serviceId
       properties:
         serviceId:
-          allOf:
-            - $ref: "../Services/Services.yaml#/components/schemas/ServiceId"
-          description: |
-            A unique identifier that represents the service account to associate with the created Trust Domain.
-
-            Must be a valid UUID as defined by RFC 4122 (versions 1-5) using only lowercase hexadecimal characters.
+          $ref: "../Services/Services.yaml#/components/schemas/ServiceId"
 
     TrustDomain:
       allOf:

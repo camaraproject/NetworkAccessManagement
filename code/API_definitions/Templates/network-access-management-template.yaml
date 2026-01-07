@@ -244,7 +244,10 @@ paths:
           required: true
           schema:
             $ref: "../Domain/Services/Services.yaml#/components/schemas/ServiceId"
-          description: The ID of the service to retrieve
+          description: |
+            The ID of the service to retrieve.
+
+            Must be a valid UUID as defined by RFC 4122 (versions 1-5) using only lowercase hexadecimal characters.
       responses:
         "200":
           description: Information about the service
