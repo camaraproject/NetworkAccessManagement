@@ -53,6 +53,9 @@ _imported_examples:
       - "api.vendor.com"
       - "updates.vendor.com"
 
+  created-by-example: &created-by-example "550e8400-e29b-41d4-a716-446655440000"
+  modified-by-example: &modified-by-example "660e8400-e29b-41d4-a716-446655440000"
+  modified-by-example-2: &modified-by-example-2 "770e8400-e29b-41d4-a716-446655440000"
 
 components:
 
@@ -95,6 +98,7 @@ components:
           $ref: "../Policy.yaml#/components/schemas/Policies"
         accessDetails:
           type: array
+          # Each item grants access for a device to this Trust Domain, scoped by the associated AP/network access device or AP group.
           description: |
             A list of access configurations that define how end-user devices may join the
             Trust Domain. Each entry represents one access type (e.g., Wi-Fi WPA Personal,
@@ -226,9 +230,9 @@ components:
           - <<: *wifi-wpa2-personal-example
         serviceId: *service-uuid-example
         createdAt: "2025-10-21T14:27:08.312Z"
-        createdBy: "user-1"
+        createdBy: *created-by-example
         modifiedAt: "2025-10-21T14:27:08.312Z"
-        modifiedBy: "user-1"
+        modifiedBy: *modified-by-example
 
     TrustDomainResponseWiFiThread:
       summary: Created Trust Domain (Wi-Fi + Thread)
@@ -246,6 +250,6 @@ components:
           - <<: *thread-structured-example
         serviceId: *service-uuid-example
         createdAt: "2025-10-21T14:27:08.312Z"
-        createdBy: "user-1"
+        createdBy: *created-by-example
         modifiedAt: "2025-10-21T14:27:08.312Z"
-        modifiedBy: "user-2"
+        modifiedBy: *modified-by-example-2

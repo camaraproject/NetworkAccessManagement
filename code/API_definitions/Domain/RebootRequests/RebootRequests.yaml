@@ -9,7 +9,8 @@ _imported_examples:
   device-id-list: &device-id-list
     - *device-uuid-1
     - *device-uuid-2
-
+  created-by-example: &created-by-example "550e8400-e29b-41d4-a716-446655440000"
+  modified-by-example: &modified-by-example "660e8400-e29b-41d4-a716-446655440000"
 components:
 
   parameters:
@@ -91,9 +92,9 @@ components:
           - *device-uuid-1
         atTime: *date-time
         createdAt: *date-time
-        createdBy: "user-1"
+        createdBy: *created-by-example
         modifiedAt: *date-time
-        modifiedBy: "user-1"
+        modifiedBy: *modified-by-example
 
     RebootRequestResponseExplicit:
       summary: Response after explicit multi-device reboot request
@@ -103,6 +104,6 @@ components:
         devices: *device-id-list
         atTime: *date-time
         createdAt: *date-time
-        createdBy: "ops-user"
+        createdBy: *created-by-example
         modifiedAt: *date-time
-        modifiedBy: "ops-user"
+        modifiedBy: *modified-by-example
