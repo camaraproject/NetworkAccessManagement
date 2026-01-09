@@ -190,10 +190,11 @@ components:
                 2023-07-03T14:27:08.312+02:00 or 2023-07-03T12:27:08.312Z).
             - readOnly: true
         createdBy:
-          type: string
-          maxLength: 100
-          description: The user who created the network
-          example: "user-1"
+          allOf:
+            - $ref: "#/components/schemas/UUID"
+          description: |
+            The ID of the user or system that created this resource.
+          example: "550e8400-e29b-41d4-a716-446655440000"
           readOnly: true
         modifiedAt:
           allOf:
@@ -204,10 +205,11 @@ components:
                 2023-07-03T14:27:08.312+02:00 or 2023-07-03T12:27:08.312Z).
             - readOnly: true
         modifiedBy:
-          type: string
-          maxLength: 100
-          description: The user who last updated the trust domain
-          example: "user-2"
+          allOf:
+            - $ref: "#/components/schemas/UUID"
+          description: |
+            The ID of the user or system that modified this resource.
+          example: "660e8400-e29b-41d4-a716-446655440000"
           readOnly: true
       description: A generic schema for resources with unique identifiers and audit fields.
 

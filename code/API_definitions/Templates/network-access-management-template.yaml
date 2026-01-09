@@ -79,6 +79,7 @@ info:
     | **network-access-management:trust-domains** | Manage the caller's own Trust Domains (create, modify, delete, view). |
     | **network-access-management:trust-domains:read-all** | Read all Trust Domains belonging to the subscriber, including those created by other clients (requires subscriber consent). |
     | **network-access-management:reboot** | Create, list, and manage Reboot Requests for owned devices. |
+    | **network-access-management:services:read** | List services accessible to the authenticated identity |
 
     ## General Usage
     This API is intended for creating, modifying, or deleting Trust Domains using the `/trust-domains` endpoints
@@ -176,6 +177,8 @@ servers:
         description: API root, defined by the service provider, e.g. `api.example.com` or `api.example.com/somepath`
 
 tags:
+  - name: Services
+    description: Operations to list network services accessible to the authenticated identity
   - name: Trust Domains
     description: Operations to Create and Manage Trust Domains
   - name: Reboot Requests
@@ -183,6 +186,84 @@ tags:
       Operations to Create and Manage Reboot Requests for Network Access Devices
 
 paths:
+
+  /services:
+    get:
+      tags:
+        - Services
+      summary: Get all services accessible to the authenticated identity
+      security:
+        - openId:
+            - network-access-management:services:read
+      operationId: getServices
+      description: |
+        Returns all services accessible to the calling identity. Services represent
+        a logical commercial relationship between a subscriber and a network operator,
+        typically corresponding to a unique service account or subscription.
+
+        This endpoint supports workflows where an API Consumer (e.g., AirBnB, Amazon)
+        has received subscriber authorization and must enumerate services to link with
+        Network Client Devices or Trust Domains.
+
+      responses:
+        "200":
+          description: Contains all services associated with the identity
+          content:
+            application/json:
+              schema:
+                $ref: "../Domain/Services/Services.yaml#/components/schemas/ServiceList"
+        "401":
+          $ref: "../Domain/CAMARA_common.yaml#/components/responses/Generic401"
+        "403":
+          $ref: "../Domain/CAMARA_common.yaml#/components/responses/Generic403"
+        "500":
+          $ref: "../Domain/CAMARA_common.yaml#/components/responses/Generic500"
+
+
+  /services/{serviceId}:
+    get:
+      tags:
+        - Services
+      summary: Get a service by ID
+      security:
+        - openId:
+            - network-access-management:services:read
+      operationId: getService
+      description: |
+        Returns a specific service corresponding to the given `serviceId`.
+
+        This can be used to inspect service metadata prior to using it in other
+        API operations such as Trust Domain creation.
+
+        **Required Scopes:**
+        - `network-access-management:services:read`
+
+      parameters:
+        - name: serviceId
+          in: path
+          required: true
+          schema:
+            $ref: "../Domain/Services/Services.yaml#/components/schemas/ServiceId"
+          description: |
+            The ID of the service to retrieve.
+
+            Must be a valid UUID as defined by RFC 4122 (versions 1-5) using only lowercase hexadecimal characters.
+      responses:
+        "200":
+          description: Information about the service
+          content:
+            application/json:
+              schema:
+                $ref: "../Domain/Services/Services.yaml#/components/schemas/Service"
+        "401":
+          $ref: "../Domain/CAMARA_common.yaml#/components/responses/Generic401"
+        "403":
+          $ref: "../Domain/CAMARA_common.yaml#/components/responses/Generic403"
+        "404":
+          $ref: "../Domain/CAMARA_common.yaml#/components/responses/Generic404"
+        "500":
+          $ref: "../Domain/CAMARA_common.yaml#/components/responses/Generic500"
+
   /trust-domains/capabilities:
     get:
       tags:
