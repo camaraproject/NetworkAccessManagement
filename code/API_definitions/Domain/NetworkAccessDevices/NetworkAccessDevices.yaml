@@ -24,6 +24,11 @@ _imported_examples:
     country: "United States"
     postCode: "12345"
     postCodeExtension: "6789"
+  service-site-example: &service-site-example
+    id: "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+    name: "Primary Residence"
+    description: "123 Main Street"
+    location: *property-address-example
 
 
 components:
@@ -31,46 +36,14 @@ components:
     networkAccessDeviceId:
       name: networkAccessDeviceId
       in: path
-      description: The unique identifier of the Network Access Device. If the device exists but the caller lacks permission to access it, the API returns 403.
+      description: |
+        The unique identifier of the Network Access Device. If the device exists but the caller lacks permission to access it, the API returns 403.
+
+        Must be a valid UUID as defined by RFC 4122 (versions 1-5) using only lowercase hexadecimal characters.
       required: true
       schema:
         $ref: "../NAM_Common.yaml#/components/schemas/UUID"
   schemas:
-    ServiceSite:
-      type: object
-      description: A Service Site represents a subscriber location associated with one or more Network Access Devices. Implementations MAY provide geographic coordinates, postal address data, or both, depending on local regulatory and operational requirements.
-      properties:
-        id:
-          $ref: "../NAM_Common.yaml#/components/schemas/UUID"
-          readOnly: true
-        name:
-          type: string
-          maxLength: 64
-          example: &service-site-name "Example Service Site 1"
-        description:
-          type: string
-          maxLength: 64
-          example: &service-site-description "This is the first example service site"
-        location:
-          type: object
-          properties:
-            geographicPoint:
-              $ref: "../CAMARA_common.yaml#/components/schemas/Point"
-            propertyAddress:
-              $ref: "../NAM_Common.yaml#/components/schemas/PropertyAddress"
-          example: &service-site-location
-            geographicPoint:
-              latitude: 50.735851
-              longitude: 7.10066
-            propertyAddress: *property-address-example
-      required:
-        - id
-      example: &service-site
-        id: *uuid-example
-        name: *service-site-name
-        description: *service-site-description
-        location: *service-site-location
-
     NetworkAccessDevice:
       description: |
         Represents a network access device managed within the network access management system.
@@ -117,7 +90,7 @@ components:
                 hardwareAddressType: *device-hardware-address-type
                 value: *device-hardware-address-value
             serviceSite:
-              $ref: "#/components/schemas/ServiceSite"
+              $ref: "../Services/ServiceSites.yaml#/components/schemas/ServiceSite"
             deviceStatus:
               type: string
               enum:
@@ -135,7 +108,7 @@ components:
             name: *device-name
             description: *device-description
             hardwareAddress: *device-hardware-address
-            serviceSite: *service-site
+            serviceSite: *service-site-example
 
     NetworkAccessDeviceList:
       type: array
@@ -150,5 +123,5 @@ components:
           hardwareAddress: &device-hardware-address2
             hardwareAddressType: "EUI-48"
             value: "AB:CD:EF:12:34:56"
-          serviceSite: *service-site
+          serviceSite: *service-site-example
 
