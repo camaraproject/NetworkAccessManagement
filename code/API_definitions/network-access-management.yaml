@@ -176,6 +176,9 @@ tags:
   - name: Reboot Requests
     description: |
       Operations to Create and Manage Reboot Requests for Network Access Devices
+externalDocs:
+  description: Product documentation at CAMARA
+  url: https://github.com/camaraproject/NetworkAccessManagement
 paths:
   /trust-domains/capabilities:
     get:
