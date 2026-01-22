@@ -2119,7 +2119,6 @@ components:
                     enum:
                       - NOT_FOUND
                       - IDENTIFIER_NOT_FOUND
-                      - '{{SPECIFIC_CODE}}'
           examples:
             GENERIC_404_NOT_FOUND:
               description: Resource is not found
@@ -2133,12 +2132,6 @@ components:
                 status: 404
                 code: IDENTIFIER_NOT_FOUND
                 message: Device identifier not found.
-            GENERIC_404_{{SPECIFIC_CODE}}:
-              description: Specific situation to highlight the resource/concept not found
-              value:
-                status: 404
-                code: '{{SPECIFIC_CODE}}'
-                message: '{ { SPECIFIC_CODE_MESSAGE } }'
     Generic503:
       description: Service Unavailable
       headers:
@@ -2235,38 +2228,6 @@ components:
                 status: 409
                 code: CONFLICT
                 message: A specified resource duplicate entry found.
-    Generic404:
-      description: Not found
-      headers:
-        x-correlator:
-          $ref: '#/components/headers/x-correlator'
-      content:
-        application/json:
-          schema:
-            allOf:
-              - $ref: '#/components/schemas/ErrorInfo'
-              - type: object
-                properties:
-                  status:
-                    enum:
-                      - 404
-                  code:
-                    enum:
-                      - NOT_FOUND
-                      - IDENTIFIER_NOT_FOUND
-          examples:
-            GENERIC_404_NOT_FOUND:
-              description: Resource is not found
-              value:
-                status: 404
-                code: NOT_FOUND
-                message: The specified resource is not found.
-            GENERIC_404_IDENTIFIER_NOT_FOUND:
-              description: Some identifier cannot be matched to a device
-              value:
-                status: 404
-                code: IDENTIFIER_NOT_FOUND
-                message: Device identifier not found.
     Generic422:
       description: Unprocessable Content
       headers:
