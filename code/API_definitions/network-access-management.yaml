@@ -76,6 +76,7 @@ info:
     | **network-access-management:trust-domains** | Manage the caller's own Trust Domains (create, modify, delete, view). |
     | **network-access-management:trust-domains:read-all** | Read all Trust Domains belonging to the subscriber, including those created by other clients (requires subscriber consent). |
     | **network-access-management:reboot** | Create, list, and manage Reboot Requests for owned devices. |
+    | **network-access-management:services:read** | List services accessible to the authenticated identity |
 
     ## General Usage
     This API is intended for creating, modifying, or deleting Trust Domains using the `/trust-domains` endpoints
@@ -171,6 +172,8 @@ servers:
         default: http://localhost:9091
         description: API root, defined by the service provider, e.g. `api.example.com` or `api.example.com/somepath`
 tags:
+  - name: Services
+    description: Operations to list network services accessible to the authenticated identity
   - name: Trust Domains
     description: Operations to Create and Manage Trust Domains
   - name: Reboot Requests
@@ -180,6 +183,78 @@ externalDocs:
   description: Product documentation at CAMARA
   url: https://github.com/camaraproject/NetworkAccessManagement
 paths:
+  /services:
+    get:
+      tags:
+        - Services
+      summary: Get all services accessible to the authenticated identity
+      security:
+        - openId:
+            - network-access-management:services:read
+      operationId: getServices
+      description: |
+        Returns all services accessible to the calling identity. Services represent
+        a logical commercial relationship between a subscriber and a network operator,
+        typically corresponding to a unique service account or subscription.
+
+        This endpoint supports workflows where an API Consumer (e.g., AirBnB, Amazon)
+        has received subscriber authorization and must enumerate services to link with
+        Network Client Devices or Trust Domains.
+      responses:
+        '200':
+          description: Contains all services associated with the identity
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceList'
+        '401':
+          $ref: '#/components/responses/Generic401'
+        '403':
+          $ref: '#/components/responses/Generic403'
+        '500':
+          $ref: '#/components/responses/Generic500'
+  /services/{serviceId}:
+    get:
+      tags:
+        - Services
+      summary: Get a service by ID
+      security:
+        - openId:
+            - network-access-management:services:read
+      operationId: getService
+      description: |
+        Returns a specific service corresponding to the given `serviceId`.
+
+        This can be used to inspect service metadata prior to using it in other
+        API operations such as Trust Domain creation.
+
+        **Required Scopes:**
+        - `network-access-management:services:read`
+      parameters:
+        - name: serviceId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/ServiceId'
+          description: |
+            The ID of the service to retrieve.
+
+            Must be a valid UUID as defined by RFC 4122 (versions 1-5) using only lowercase hexadecimal characters.
+      responses:
+        '200':
+          description: Information about the service
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Service'
+        '401':
+          $ref: '#/components/responses/Generic401'
+        '403':
+          $ref: '#/components/responses/Generic403'
+        '404':
+          $ref: '#/components/responses/Generic404'
+        '500':
+          $ref: '#/components/responses/Generic500'
   /trust-domains/capabilities:
     get:
       tags:
@@ -651,6 +726,323 @@ components:
           access devices owned by or delegated to the calling API client.
       openIdConnectUrl: https://example.com/.well-known/openid-configuration
   schemas:
+    UUID:
+      type: string
+      format: uuid
+      pattern: ^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$
+      minLength: 36
+      maxLength: 36
+      description: |
+        A universally unique identifier (UUID) as defined by RFC 4122.
+        Must be a valid UUID format with proper version (1-5) and variant bits.
+        Only lowercase hexadecimal characters are accepted for consistency.
+      example: 550e8400-e29b-41d4-a716-446655440000
+    ServiceId:
+      allOf:
+        - $ref: '#/components/schemas/UUID'
+      description: |
+        A unique identifier that represents a service account associated with this resource.
+
+        Must be a valid UUID as defined by RFC 4122 (versions 1-5) using only lowercase hexadecimal characters.
+    Latitude:
+      description: Latitude component of a location
+      type: number
+      format: double
+      minimum: -90
+      maximum: 90
+    Longitude:
+      description: Longitude component of location
+      type: number
+      format: double
+      minimum: -180
+      maximum: 180
+    Point:
+      type: object
+      description: Coordinates (latitude, longitude) defining a location in a map
+      required:
+        - latitude
+        - longitude
+      properties:
+        latitude:
+          $ref: '#/components/schemas/Latitude'
+        longitude:
+          $ref: '#/components/schemas/Longitude'
+      example:
+        latitude: 50.735851
+        longitude: 7.10066
+    PropertyAddress:
+      type: object
+      externalDocs:
+        description: TMF673 Geographic Address Management API User Guide v4.0.0
+        url: https://www.tmforum.org/resources/specification/tmf673-geographic-address-management-api-user-guide-v4-0-0/
+      properties:
+        id:
+          type: string
+          description: The unique identifier for the property address
+          minLength: 1
+          maxLength: 64
+          example: address-123
+        addressLine1:
+          type: string
+          maxLength: 128
+          description: The first line of the address
+          example: 123 Main St
+        addressLine2:
+          type: string
+          maxLength: 128
+          description: The second line of the address
+          example: Suite 456
+        streetNr:
+          type: string
+          maxLength: 64
+          description: The street number
+          example: '123'
+        streetNrSuffix:
+          type: string
+          maxLength: 64
+          description: The suffix for the street number
+          example: A
+        streetNrLast:
+          type: string
+          maxLength: 64
+          description: The last street number
+          example: '125'
+        streetNrLastSuffix:
+          type: string
+          maxLength: 64
+          description: The suffix for the last street number
+          example: B
+        streetName:
+          type: string
+          maxLength: 64
+          description: The name of the street
+          example: Main
+        subUnitType:
+          type: string
+          maxLength: 64
+          description: The type of sub-unit (e.g., Apartment, Suite)
+          example: Apartment
+        subUnitNr:
+          type: string
+          maxLength: 64
+          description: The number of the sub-unit
+          example: A12
+        levelType:
+          type: string
+          maxLength: 64
+          description: The type of level (e.g., Floor, Basement)
+          example: Floor
+        levelNr:
+          type: string
+          maxLength: 64
+          description: The number of the level
+          example: '3'
+        buildingName:
+          type: string
+          maxLength: 64
+          description: The name of the building
+          example: Example Building
+        privateStreetName:
+          type: string
+          maxLength: 64
+          description: The name of a private street
+          example: Private Rd
+        locality:
+          type: string
+          maxLength: 64
+          description: The locality (neighborhood, area)
+          example: Example Locality
+        city:
+          type: string
+          maxLength: 128
+          description: The city or town
+          example: Example State
+        stateOrProvince:
+          type: string
+          maxLength: 64
+          description: The state or province
+          example: EX
+        country:
+          type: string
+          maxLength: 64
+          description: The country
+          example: United States
+        postCode:
+          type: string
+          maxLength: 64
+          description: The postal code or ZIP code
+          example: '12345'
+        postCodeExtension:
+          type: string
+          maxLength: 64
+          description: The postal code extension
+          example: '6789'
+      example:
+        id: address-123
+        addressLine1: 123 Main St
+        addressLine2: Suite 456
+        streetNr: '123'
+        streetNrSuffix: A
+        streetNrLast: '125'
+        streetNrLastSuffix: B
+        streetName: Main
+        subUnitType: Apartment
+        subUnitNr: A12
+        levelType: Floor
+        levelNr: '3'
+        buildingName: Example Building
+        privateStreetName: Private Rd
+        locality: Example Locality
+        city: Example State
+        stateOrProvince: EX
+        country: United States
+        postCode: '12345'
+        postCodeExtension: '6789'
+    ServiceSite:
+      type: object
+      description: A Service Site represents a subscriber location associated with one or more Network Access Devices. Implementations MAY provide geographic coordinates, postal address data, or both, depending on local regulatory and operational requirements.
+      properties:
+        id:
+          $ref: '#/components/schemas/UUID'
+          readOnly: true
+        name:
+          type: string
+          maxLength: 64
+          example: Example Service Site 1
+        description:
+          type: string
+          maxLength: 64
+          example: This is the first example service site
+        location:
+          type: object
+          properties:
+            geographicPoint:
+              $ref: '#/components/schemas/Point'
+            propertyAddress:
+              $ref: '#/components/schemas/PropertyAddress'
+          example:
+            geographicPoint:
+              latitude: 50.735851
+              longitude: 7.10066
+            propertyAddress:
+              id: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+              addressLine1: 123 Main St
+              addressLine2: Suite 456
+              streetNr: '123'
+              streetNrSuffix: A
+              streetNrLast: '125'
+              streetNrLastSuffix: B
+              streetName: Main
+              subUnitType: Apartment
+              subUnitNr: A12
+              levelType: Floor
+              levelNr: '3'
+              buildingName: Sunset Towers
+              privateStreetName: Private Rd
+              locality: Example Locality
+              city: Example State
+              stateOrProvince: EX
+              country: United States
+              postCode: '12345'
+              postCodeExtension: '6789'
+      required:
+        - id
+      example:
+        id: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+        name: Example Service Site 1
+        description: This is the first example service site
+        location:
+          geographicPoint:
+            latitude: 50.735851
+            longitude: 7.10066
+          propertyAddress:
+            id: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+            addressLine1: 123 Main St
+            addressLine2: Suite 456
+            streetNr: '123'
+            streetNrSuffix: A
+            streetNrLast: '125'
+            streetNrLastSuffix: B
+            streetName: Main
+            subUnitType: Apartment
+            subUnitNr: A12
+            levelType: Floor
+            levelNr: '3'
+            buildingName: Sunset Towers
+            privateStreetName: Private Rd
+            locality: Example Locality
+            city: Example State
+            stateOrProvince: EX
+            country: United States
+            postCode: '12345'
+            postCodeExtension: '6789'
+    Service:
+      type: object
+      description: |
+        A service represents a logical commercial subscription or account relationship
+        between a network operator and a subscriber. This may correspond to residential,
+        commercial, public Wi-Fi, or other service types.
+      properties:
+        id:
+          $ref: '#/components/schemas/ServiceId'
+        name:
+          type: string
+          maxLength: 64
+          description: Optional friendly name for the service
+          example: Main Home Internet
+        description:
+          type: string
+          maxLength: 255
+          description: Optional description of the service
+          example: Internet subscription for primary residence
+        serviceSite:
+          $ref: '#/components/schemas/ServiceSite'
+      required:
+        - id
+      example:
+        id: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+        name: Main Home Internet
+        description: Internet subscription for primary residence
+        serviceSite:
+          id: 123e4567-e89b-12d3-a456-426614174000
+          name: Primary Residence
+          description: 123 Main Street
+    ServiceList:
+      type: array
+      description: A list of services accessible to the calling identity
+      items:
+        $ref: '#/components/schemas/Service'
+      example:
+        - id: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+          name: Main Home Internet
+          description: Internet subscription for primary residence
+          serviceSite:
+            id: 123e4567-e89b-12d3-a456-426614174000
+            name: Primary Residence
+            description: 123 Main Street
+        - id: 123e4567-e89b-12d3-a456-426614174001
+          name: Vacation Home Internet
+          description: Internet subscription for vacation home
+    XCorrelator:
+      type: string
+      pattern: ^[a-zA-Z0-9-_:;.\/<>{}]{0,256}$
+      example: b4333c46-49c0-4f62-80d7-f0ef930f1c46
+    ErrorInfo:
+      type: object
+      required:
+        - status
+        - code
+        - message
+      properties:
+        status:
+          type: integer
+          description: HTTP response status code
+        code:
+          type: string
+          description: A human-readable code to describe the error
+        message:
+          type: string
+          description: A human-readable description of what the event represents
     PasswordConstraints:
       type: object
       properties:
@@ -921,37 +1313,6 @@ components:
       required:
         - supportedAccessTypes
       description: Describes the Trust Domain configuration capabilities supported by this API provider
-    XCorrelator:
-      type: string
-      pattern: ^[a-zA-Z0-9-_:;.\/<>{}]{0,256}$
-      example: b4333c46-49c0-4f62-80d7-f0ef930f1c46
-    ErrorInfo:
-      type: object
-      required:
-        - status
-        - code
-        - message
-      properties:
-        status:
-          type: integer
-          description: HTTP response status code
-        code:
-          type: string
-          description: A human-readable code to describe the error
-        message:
-          type: string
-          description: A human-readable description of what the event represents
-    UUID:
-      type: string
-      format: uuid
-      pattern: ^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$
-      minLength: 36
-      maxLength: 36
-      description: |
-        A universally unique identifier (UUID) as defined by RFC 4122.
-        Must be a valid UUID format with proper version (1-5) and variant bits.
-        Only lowercase hexadecimal characters are accepted for consistency.
-      example: 550e8400-e29b-41d4-a716-446655440000
     ResourceIdentifier:
       type: object
       properties:
@@ -1319,11 +1680,23 @@ components:
 
             **Deployment Behavior**
             - All Network Access Devices configured with this Trust Domain MUST apply all
-              supplied accessDetails entries, unless the provider’s capabilities indicate
+              supplied accessDetails entries, unless the provider's capabilities indicate
               that certain access types are not supported on specific devices.
           items:
             $ref: '#/components/schemas/AccessDetail'
           minItems: 1
+    TrustDomainCreate:
+      allOf:
+        - $ref: '#/components/schemas/TrustDomainUpdate'
+      description: Represents the creation of a new trust domain within the network access management system.
+      required:
+        - name
+        - enabled
+        - accessDetails
+        - serviceId
+      properties:
+        serviceId:
+          $ref: '#/components/schemas/ServiceId'
     ResourceAudit:
       type: object
       properties:
@@ -1336,10 +1709,11 @@ components:
                 2023-07-03T14:27:08.312+02:00 or 2023-07-03T12:27:08.312Z).
             - readOnly: true
         createdBy:
-          type: string
-          maxLength: 100
-          description: The user who created the network
-          example: user-1
+          allOf:
+            - $ref: '#/components/schemas/UUID'
+          description: |
+            The ID of the user or system that created this resource.
+          example: 550e8400-e29b-41d4-a716-446655440000
           readOnly: true
         modifiedAt:
           allOf:
@@ -1350,28 +1724,21 @@ components:
                 2023-07-03T14:27:08.312+02:00 or 2023-07-03T12:27:08.312Z).
             - readOnly: true
         modifiedBy:
-          type: string
-          maxLength: 100
-          description: The user who last updated the trust domain
-          example: user-2
+          allOf:
+            - $ref: '#/components/schemas/UUID'
+          description: |
+            The ID of the user or system that modified this resource.
+          example: 660e8400-e29b-41d4-a716-446655440000
           readOnly: true
       description: A generic schema for resources with unique identifiers and audit fields.
     TrustDomain:
       allOf:
         - $ref: '#/components/schemas/ResourceIdentifier'
           readOnly: true
-        - $ref: '#/components/schemas/TrustDomainUpdate'
+        - $ref: '#/components/schemas/TrustDomainCreate'
         - $ref: '#/components/schemas/ResourceAudit'
           readOnly: true
       description: Represents a trust domain within the network access management system.
-    TrustDomainCreate:
-      allOf:
-        - $ref: '#/components/schemas/TrustDomainUpdate'
-      description: Represents the creation of a new trust domain within the network access management system.
-      required:
-        - name
-        - enabled
-        - accessDetails
     PhoneNumber:
       description: A public identifier addressing a telephone subscription. In mobile networks it corresponds to the MSISDN (Mobile Station International Subscriber Directory Number). In order to be globally unique it has to be formatted in international format, according to E.164 standard, prefixed with '+'.
       type: string
@@ -1445,238 +1812,6 @@ components:
         ipv6Address:
           $ref: '#/components/schemas/DeviceIpv6Address'
       minProperties: 1
-    Latitude:
-      description: Latitude component of a location
-      type: number
-      format: double
-      minimum: -90
-      maximum: 90
-    Longitude:
-      description: Longitude component of location
-      type: number
-      format: double
-      minimum: -180
-      maximum: 180
-    Point:
-      type: object
-      description: Coordinates (latitude, longitude) defining a location in a map
-      required:
-        - latitude
-        - longitude
-      properties:
-        latitude:
-          $ref: '#/components/schemas/Latitude'
-        longitude:
-          $ref: '#/components/schemas/Longitude'
-      example:
-        latitude: 50.735851
-        longitude: 7.10066
-    PropertyAddress:
-      type: object
-      externalDocs:
-        description: TMF673 Geographic Address Management API User Guide v4.0.0
-        url: https://www.tmforum.org/resources/specification/tmf673-geographic-address-management-api-user-guide-v4-0-0/
-      properties:
-        id:
-          type: string
-          description: The unique identifier for the property address
-          minLength: 1
-          maxLength: 64
-          example: address-123
-        addressLine1:
-          type: string
-          maxLength: 128
-          description: The first line of the address
-          example: 123 Main St
-        addressLine2:
-          type: string
-          maxLength: 128
-          description: The second line of the address
-          example: Suite 456
-        streetNr:
-          type: string
-          maxLength: 64
-          description: The street number
-          example: '123'
-        streetNrSuffix:
-          type: string
-          maxLength: 64
-          description: The suffix for the street number
-          example: A
-        streetNrLast:
-          type: string
-          maxLength: 64
-          description: The last street number
-          example: '125'
-        streetNrLastSuffix:
-          type: string
-          maxLength: 64
-          description: The suffix for the last street number
-          example: B
-        streetName:
-          type: string
-          maxLength: 64
-          description: The name of the street
-          example: Main
-        subUnitType:
-          type: string
-          maxLength: 64
-          description: The type of sub-unit (e.g., Apartment, Suite)
-          example: Apartment
-        subUnitNr:
-          type: string
-          maxLength: 64
-          description: The number of the sub-unit
-          example: A12
-        levelType:
-          type: string
-          maxLength: 64
-          description: The type of level (e.g., Floor, Basement)
-          example: Floor
-        levelNr:
-          type: string
-          maxLength: 64
-          description: The number of the level
-          example: '3'
-        buildingName:
-          type: string
-          maxLength: 64
-          description: The name of the building
-          example: Example Building
-        privateStreetName:
-          type: string
-          maxLength: 64
-          description: The name of a private street
-          example: Private Rd
-        locality:
-          type: string
-          maxLength: 64
-          description: The locality (neighborhood, area)
-          example: Example Locality
-        city:
-          type: string
-          maxLength: 128
-          description: The city or town
-          example: Example State
-        stateOrProvince:
-          type: string
-          maxLength: 64
-          description: The state or province
-          example: EX
-        country:
-          type: string
-          maxLength: 64
-          description: The country
-          example: United States
-        postCode:
-          type: string
-          maxLength: 64
-          description: The postal code or ZIP code
-          example: '12345'
-        postCodeExtension:
-          type: string
-          maxLength: 64
-          description: The postal code extension
-          example: '6789'
-      example:
-        id: address-123
-        addressLine1: 123 Main St
-        addressLine2: Suite 456
-        streetNr: '123'
-        streetNrSuffix: A
-        streetNrLast: '125'
-        streetNrLastSuffix: B
-        streetName: Main
-        subUnitType: Apartment
-        subUnitNr: A12
-        levelType: Floor
-        levelNr: '3'
-        buildingName: Example Building
-        privateStreetName: Private Rd
-        locality: Example Locality
-        city: Example State
-        stateOrProvince: EX
-        country: United States
-        postCode: '12345'
-        postCodeExtension: '6789'
-    ServiceSite:
-      type: object
-      description: A Service Site represents a subscriber location associated with one or more Network Access Devices. Implementations MAY provide geographic coordinates, postal address data, or both, depending on local regulatory and operational requirements.
-      properties:
-        id:
-          $ref: '#/components/schemas/UUID'
-          readOnly: true
-        name:
-          type: string
-          maxLength: 64
-          example: Example Service Site 1
-        description:
-          type: string
-          maxLength: 64
-          example: This is the first example service site
-        location:
-          type: object
-          properties:
-            geographicPoint:
-              $ref: '#/components/schemas/Point'
-            propertyAddress:
-              $ref: '#/components/schemas/PropertyAddress'
-          example:
-            geographicPoint:
-              latitude: 50.735851
-              longitude: 7.10066
-            propertyAddress:
-              id: 3fa85f64-5717-4562-b3fc-2c963f66afa6
-              addressLine1: 123 Main St
-              addressLine2: Suite 456
-              streetNr: '123'
-              streetNrSuffix: A
-              streetNrLast: '125'
-              streetNrLastSuffix: B
-              streetName: Main
-              subUnitType: Apartment
-              subUnitNr: A12
-              levelType: Floor
-              levelNr: '3'
-              buildingName: Sunset Towers
-              privateStreetName: Private Rd
-              locality: Example Locality
-              city: Example State
-              stateOrProvince: EX
-              country: United States
-              postCode: '12345'
-              postCodeExtension: '6789'
-      required:
-        - id
-      example:
-        id: 3fa85f64-5717-4562-b3fc-2c963f66afa6
-        name: Example Service Site 1
-        description: This is the first example service site
-        location:
-          geographicPoint:
-            latitude: 50.735851
-            longitude: 7.10066
-          propertyAddress:
-            id: 3fa85f64-5717-4562-b3fc-2c963f66afa6
-            addressLine1: 123 Main St
-            addressLine2: Suite 456
-            streetNr: '123'
-            streetNrSuffix: A
-            streetNrLast: '125'
-            streetNrLastSuffix: B
-            streetName: Main
-            subUnitType: Apartment
-            subUnitNr: A12
-            levelType: Floor
-            levelNr: '3'
-            buildingName: Sunset Towers
-            privateStreetName: Private Rd
-            locality: Example Locality
-            city: Example State
-            stateOrProvince: EX
-            country: United States
-            postCode: '12345'
-            postCodeExtension: '6789'
     NetworkAccessDevice:
       description: |
         Represents a network access device managed within the network access management system.
@@ -1746,33 +1881,29 @@ components:
               value: 12:34:56:78:9A:BC
             serviceSite:
               id: 3fa85f64-5717-4562-b3fc-2c963f66afa6
-              name: Example Service Site 1
-              description: This is the first example service site
+              name: Primary Residence
+              description: 123 Main Street
               location:
-                geographicPoint:
-                  latitude: 50.735851
-                  longitude: 7.10066
-                propertyAddress:
-                  id: 3fa85f64-5717-4562-b3fc-2c963f66afa6
-                  addressLine1: 123 Main St
-                  addressLine2: Suite 456
-                  streetNr: '123'
-                  streetNrSuffix: A
-                  streetNrLast: '125'
-                  streetNrLastSuffix: B
-                  streetName: Main
-                  subUnitType: Apartment
-                  subUnitNr: A12
-                  levelType: Floor
-                  levelNr: '3'
-                  buildingName: Sunset Towers
-                  privateStreetName: Private Rd
-                  locality: Example Locality
-                  city: Example State
-                  stateOrProvince: EX
-                  country: United States
-                  postCode: '12345'
-                  postCodeExtension: '6789'
+                id: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+                addressLine1: 123 Main St
+                addressLine2: Suite 456
+                streetNr: '123'
+                streetNrSuffix: A
+                streetNrLast: '125'
+                streetNrLastSuffix: B
+                streetName: Main
+                subUnitType: Apartment
+                subUnitNr: A12
+                levelType: Floor
+                levelNr: '3'
+                buildingName: Sunset Towers
+                privateStreetName: Private Rd
+                locality: Example Locality
+                city: Example State
+                stateOrProvince: EX
+                country: United States
+                postCode: '12345'
+                postCodeExtension: '6789'
     NetworkAccessDeviceList:
       type: array
       items:
@@ -1787,33 +1918,29 @@ components:
             value: 12:34:56:78:9A:BC
           serviceSite:
             id: 3fa85f64-5717-4562-b3fc-2c963f66afa6
-            name: Example Service Site 1
-            description: This is the first example service site
+            name: Primary Residence
+            description: 123 Main Street
             location:
-              geographicPoint:
-                latitude: 50.735851
-                longitude: 7.10066
-              propertyAddress:
-                id: 3fa85f64-5717-4562-b3fc-2c963f66afa6
-                addressLine1: 123 Main St
-                addressLine2: Suite 456
-                streetNr: '123'
-                streetNrSuffix: A
-                streetNrLast: '125'
-                streetNrLastSuffix: B
-                streetName: Main
-                subUnitType: Apartment
-                subUnitNr: A12
-                levelType: Floor
-                levelNr: '3'
-                buildingName: Sunset Towers
-                privateStreetName: Private Rd
-                locality: Example Locality
-                city: Example State
-                stateOrProvince: EX
-                country: United States
-                postCode: '12345'
-                postCodeExtension: '6789'
+              id: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+              addressLine1: 123 Main St
+              addressLine2: Suite 456
+              streetNr: '123'
+              streetNrSuffix: A
+              streetNrLast: '125'
+              streetNrLastSuffix: B
+              streetName: Main
+              subUnitType: Apartment
+              subUnitNr: A12
+              levelType: Floor
+              levelNr: '3'
+              buildingName: Sunset Towers
+              privateStreetName: Private Rd
+              locality: Example Locality
+              city: Example State
+              stateOrProvince: EX
+              country: United States
+              postCode: '12345'
+              postCodeExtension: '6789'
         - id: 123e4567-e89b-12d3-a456-426614174000
           deviceStatus: disconnected
           name: Gateway-2
@@ -1823,33 +1950,29 @@ components:
             value: AB:CD:EF:12:34:56
           serviceSite:
             id: 3fa85f64-5717-4562-b3fc-2c963f66afa6
-            name: Example Service Site 1
-            description: This is the first example service site
+            name: Primary Residence
+            description: 123 Main Street
             location:
-              geographicPoint:
-                latitude: 50.735851
-                longitude: 7.10066
-              propertyAddress:
-                id: 3fa85f64-5717-4562-b3fc-2c963f66afa6
-                addressLine1: 123 Main St
-                addressLine2: Suite 456
-                streetNr: '123'
-                streetNrSuffix: A
-                streetNrLast: '125'
-                streetNrLastSuffix: B
-                streetName: Main
-                subUnitType: Apartment
-                subUnitNr: A12
-                levelType: Floor
-                levelNr: '3'
-                buildingName: Sunset Towers
-                privateStreetName: Private Rd
-                locality: Example Locality
-                city: Example State
-                stateOrProvince: EX
-                country: United States
-                postCode: '12345'
-                postCodeExtension: '6789'
+              id: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+              addressLine1: 123 Main St
+              addressLine2: Suite 456
+              streetNr: '123'
+              streetNrSuffix: A
+              streetNrLast: '125'
+              streetNrLastSuffix: B
+              streetName: Main
+              subUnitType: Apartment
+              subUnitNr: A12
+              levelType: Floor
+              levelNr: '3'
+              buildingName: Sunset Towers
+              privateStreetName: Private Rd
+              locality: Example Locality
+              city: Example State
+              stateOrProvince: EX
+              country: United States
+              postCode: '12345'
+              postCodeExtension: '6789'
     RebootRequestUpdate:
       type: object
       properties:
@@ -1895,6 +2018,31 @@ components:
       schema:
         $ref: '#/components/schemas/XCorrelator'
   responses:
+    Generic401:
+      description: Unauthorized
+      headers:
+        x-correlator:
+          $ref: '#/components/headers/x-correlator'
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/ErrorInfo'
+              - type: object
+                properties:
+                  status:
+                    enum:
+                      - 401
+                  code:
+                    enum:
+                      - UNAUTHENTICATED
+          examples:
+            GENERIC_401_UNAUTHENTICATED:
+              description: Request cannot be authenticated and a new authentication is required
+              value:
+                status: 401
+                code: UNAUTHENTICATED
+                message: Request not authenticated due to missing, invalid, or expired credentials. A new authentication is required.
     Generic403:
       description: Forbidden
       headers:
@@ -1952,6 +2100,45 @@ components:
                 status: 500
                 code: INTERNAL
                 message: Unknown server error. Typically a server bug.
+    Generic404:
+      description: Not found
+      headers:
+        x-correlator:
+          $ref: '#/components/headers/x-correlator'
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/ErrorInfo'
+              - type: object
+                properties:
+                  status:
+                    enum:
+                      - 404
+                  code:
+                    enum:
+                      - NOT_FOUND
+                      - IDENTIFIER_NOT_FOUND
+                      - '{{SPECIFIC_CODE}}'
+          examples:
+            GENERIC_404_NOT_FOUND:
+              description: Resource is not found
+              value:
+                status: 404
+                code: NOT_FOUND
+                message: The specified resource is not found.
+            GENERIC_404_IDENTIFIER_NOT_FOUND:
+              description: Some identifier cannot be matched to a device
+              value:
+                status: 404
+                code: IDENTIFIER_NOT_FOUND
+                message: Device identifier not found.
+            GENERIC_404_{{SPECIFIC_CODE}}:
+              description: Specific situation to highlight the resource/concept not found
+              value:
+                status: 404
+                code: '{{SPECIFIC_CODE}}'
+                message: '{ { SPECIFIC_CODE_MESSAGE } }'
     Generic503:
       description: Service Unavailable
       headers:
@@ -2139,6 +2326,7 @@ components:
             securityMode:
               password: my-password
               securityModeType: WPA2-Personal
+        serviceId: 123e4567-e89b-12d3-a456-426614174000
     TrustDomainCreateInferredSsid:
       summary: Create a Trust Domain with inferred SSID Wi-Fi access.
       value:
@@ -2150,6 +2338,7 @@ components:
             securityMode:
               password: my-password
               securityModeType: WPA2-Personal
+        serviceId: 123e4567-e89b-12d3-a456-426614174000
     TrustDomainCreateThreadStructured:
       summary: Create a Trust Domain with Thread structured access details.
       value:
@@ -2163,6 +2352,7 @@ components:
             networkKey: dfd34f0f05cad978ec4e32b0413038ff
             networkName: Spec-Thread-B3AF
             panId: d63e
+        serviceId: 123e4567-e89b-12d3-a456-426614174000
     TrustDomainCreateEphemeral:
       summary: Create a Trust Domain with ephemeral access details.
       value:
@@ -2178,6 +2368,7 @@ components:
         expiration: '2024-12-31T23:59:59Z'
         policies:
           maxDevices: 10
+        serviceId: 123e4567-e89b-12d3-a456-426614174000
     TrustDomainCreateQoSPolicies:
       summary: Create a Trust Domain with QoS policies.
       value:
@@ -2197,6 +2388,7 @@ components:
           maxDomainUpstreamRate:
             value: 500000
             unit: Kbps
+        serviceId: 123e4567-e89b-12d3-a456-426614174000
     TrustDomainResponseBasic:
       summary: Basic Trust Domain Response
       description: Example of a created Trust Domain with minimal details.
@@ -2211,10 +2403,11 @@ components:
             securityMode:
               password: my-password
               securityModeType: WPA2-Personal
+        serviceId: 123e4567-e89b-12d3-a456-426614174000
         createdAt: '2025-10-21T14:27:08.312Z'
-        createdBy: user-1
+        createdBy: 550e8400-e29b-41d4-a716-446655440000
         modifiedAt: '2025-10-21T14:27:08.312Z'
-        modifiedBy: user-1
+        modifiedBy: 660e8400-e29b-41d4-a716-446655440000
     TrustDomainResponseWiFiThread:
       summary: Created Trust Domain (Wi-Fi + Thread)
       description: Example of a created Trust Domain including Wi-Fi and Thread access details and populated policies.
@@ -2240,10 +2433,11 @@ components:
             networkKey: dfd34f0f05cad978ec4e32b0413038ff
             networkName: Spec-Thread-B3AF
             panId: d63e
+        serviceId: 123e4567-e89b-12d3-a456-426614174000
         createdAt: '2025-10-21T14:27:08.312Z'
-        createdBy: user-1
+        createdBy: 550e8400-e29b-41d4-a716-446655440000
         modifiedAt: '2025-10-21T14:27:08.312Z'
-        modifiedBy: user-2
+        modifiedBy: 770e8400-e29b-41d4-a716-446655440000
     RebootRequestCreateImmediateDefaultDevice:
       summary: Example of a Reboot Request for immediate reboot
       value:
@@ -2267,7 +2461,10 @@ components:
     networkAccessDeviceId:
       name: networkAccessDeviceId
       in: path
-      description: The unique identifier of the Network Access Device. If the device exists but the caller lacks permission to access it, the API returns 403.
+      description: |
+        The unique identifier of the Network Access Device. If the device exists but the caller lacks permission to access it, the API returns 403.
+
+        Must be a valid UUID as defined by RFC 4122 (versions 1-5) using only lowercase hexadecimal characters.
       required: true
       schema:
         $ref: '#/components/schemas/UUID'
