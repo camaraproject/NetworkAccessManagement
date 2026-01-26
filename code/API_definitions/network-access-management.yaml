@@ -4,10 +4,8 @@ info:
   license:
     name: Apache 2.0
     url: https://www.apache.org/licenses/LICENSE-2.0.html
-  version: 0.1.0-alpha.1
-  x-camara-commonalities: 0.6.0
-  contact:
-    email: sp-nam@lists.camaraproject.org
+  version: wip
+  x-camara-commonalities: 0.6
   description: |
     Service enabling API for managing network operator supplied network access devices. This API's initial focus is on
     managing **Trust Domains** and device reboot requests.
@@ -168,7 +166,7 @@ info:
 
     As a specific rule, error `501 - NOT_IMPLEMENTED` can be only a possible error response if it is explicitly documented in the API.
 servers:
-  - url: '{apiRoot}/network-access-management/v0'
+  - url: '{apiRoot}/network-access-management/vwip'
     variables:
       apiRoot:
         default: http://localhost:9091
@@ -181,6 +179,9 @@ tags:
   - name: Reboot Requests
     description: |
       Operations to Create and Manage Reboot Requests for Network Access Devices
+externalDocs:
+  description: Product documentation at CAMARA
+  url: https://github.com/camaraproject/NetworkAccessManagement
 paths:
   /services:
     get:
@@ -2061,7 +2062,6 @@ components:
                     enum:
                       - PERMISSION_DENIED
                       - INVALID_TOKEN_CONTEXT
-                      - '{{SPECIFIC_CODE}}'
           examples:
             GENERIC_403_PERMISSION_DENIED:
               description: Permission denied. OAuth2 token access does not have the required scope or when the user fails operational security
@@ -2075,12 +2075,6 @@ components:
                 status: 403
                 code: INVALID_TOKEN_CONTEXT
                 message: '{{field}} is not consistent with access token.'
-            GENERIC_403_{{SPECIFIC_CODE}}:
-              description: Indicate a Business Logic condition that forbids a process not attached to a specific field in the context of the API
-              value:
-                status: 403
-                code: '{{SPECIFIC_CODE}}'
-                message: '{ { SPECIFIC_CODE_MESSAGE } }'
     Generic500:
       description: Internal Server Error
       headers:
@@ -2125,7 +2119,6 @@ components:
                     enum:
                       - NOT_FOUND
                       - IDENTIFIER_NOT_FOUND
-                      - '{{SPECIFIC_CODE}}'
           examples:
             GENERIC_404_NOT_FOUND:
               description: Resource is not found
@@ -2139,12 +2132,6 @@ components:
                 status: 404
                 code: IDENTIFIER_NOT_FOUND
                 message: Device identifier not found.
-            GENERIC_404_{{SPECIFIC_CODE}}:
-              description: Specific situation to highlight the resource/concept not found
-              value:
-                status: 404
-                code: '{{SPECIFIC_CODE}}'
-                message: '{ { SPECIFIC_CODE_MESSAGE } }'
     Generic503:
       description: Service Unavailable
       headers:
@@ -2189,7 +2176,6 @@ components:
                     enum:
                       - INVALID_ARGUMENT
                       - OUT_OF_RANGE
-                      - '{{SPECIFIC_CODE}}'
           examples:
             GENERIC_400_INVALID_ARGUMENT:
               description: Invalid Argument. Generic Syntax Exception
@@ -2203,12 +2189,6 @@ components:
                 status: 400
                 code: OUT_OF_RANGE
                 message: Client specified an invalid range.
-            GENERIC_400_{{SPECIFIC_CODE}}:
-              description: Specific Syntax Exception regarding a field that is relevant in the context of the API
-              value:
-                status: 400
-                code: '{{SPECIFIC_CODE}}'
-                message: '{ { SPECIFIC_CODE_MESSAGE } }'
     Generic409:
       description: Conflict
       headers:
@@ -2229,7 +2209,6 @@ components:
                       - ABORTED
                       - ALREADY_EXISTS
                       - CONFLICT
-                      - '{{SPECIFIC_CODE}}'
           examples:
             GENERIC_409_ABORTED:
               description: Concurreny of processes of the same nature/scope
@@ -2249,12 +2228,6 @@ components:
                 status: 409
                 code: CONFLICT
                 message: A specified resource duplicate entry found.
-            GENERIC_409_{{SPECIFIC_CODE}}:
-              description: Specific conflict situation that is relevant in the context of the API
-              value:
-                status: 409
-                code: '{{SPECIFIC_CODE}}'
-                message: '{ { SPECIFIC_CODE_MESSAGE } }'
     Generic422:
       description: Unprocessable Content
       headers:
@@ -2276,7 +2249,6 @@ components:
                       - MISSING_IDENTIFIER
                       - UNSUPPORTED_IDENTIFIER
                       - UNNECESSARY_IDENTIFIER
-                      - '{{SPECIFIC_CODE}}'
           examples:
             GENERIC_422_SERVICE_NOT_APPLICABLE:
               description: Service not applicable for the provided identifier
@@ -2302,12 +2274,6 @@ components:
                 status: 422
                 code: UNNECESSARY_IDENTIFIER
                 message: The device is already identified by the access token.
-            GENERIC_422_{{SPECIFIC_CODE}}:
-              description: Any semantic condition associated to business logic, specifically related to a field or data structure
-              value:
-                status: 422
-                code: '{{SPECIFIC_CODE}}'
-                message: '{ { SPECIFIC_CODE_MESSAGE } }'
   examples:
     TrustDomainCreateWpa2Personal:
       summary: Create a Trust Domain with WPA2-Personal Wi-Fi access.

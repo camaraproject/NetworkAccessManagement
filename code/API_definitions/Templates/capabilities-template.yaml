@@ -4,14 +4,14 @@ info:
   license:
     name: Apache 2.0
     url: https://www.apache.org/licenses/LICENSE-2.0.html
-  version: 0.1.0
+  version: wip
   description: |
     API to retrieve capability information about operator-supplied or client devices.
     Currently only operator device (CPE) capabilities are implemented.
     Support for client devices is reserved for future use.
 
 servers:
-  - url: "{apiRoot}/network-access-management/v0"
+  - url: "{apiRoot}/network-access-management/vwip"
     variables:
       apiRoot:
         default: http://localhost:9091
@@ -33,7 +33,7 @@ paths:
             - network-access-management:device:read
       operationId: getDeviceCapabilities
       parameters:
-        - $ref: "../Domain/Common.yaml#/components/parameters/deviceIdParam"
+        - $ref: "../Domain/Capabilities.yaml#/components/parameters/deviceId"
       responses:
         "200":
           description: Capabilities supported by the device
