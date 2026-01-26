@@ -5,10 +5,8 @@ info:
   license:
     name: Apache 2.0
     url: https://www.apache.org/licenses/LICENSE-2.0.html
-  version: 0.1.0-alpha.1
-  x-camara-commonalities: 0.6.0
-  contact:
-    email: sp-nam@lists.camaraproject.org
+  version: wip
+  x-camara-commonalities: 0.6
   description: |
     Service enabling API for managing network operator supplied network access devices. This API's initial focus is on
     managing **Trust Domains** and device reboot requests.
@@ -169,8 +167,12 @@ info:
 
     As a specific rule, error `501 - NOT_IMPLEMENTED` can be only a possible error response if it is explicitly documented in the API.
 
+externalDocs:
+  description: Product documentation at CAMARA
+  url: https://github.com/camaraproject/NetworkAccessManagement
+
 servers:
-  - url: "{apiRoot}/network-access-management/v0"
+  - url: "{apiRoot}/network-access-management/vwip"
     variables:
       apiRoot:
         default: http://localhost:9091

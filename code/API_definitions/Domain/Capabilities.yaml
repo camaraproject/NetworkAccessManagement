@@ -1,8 +1,20 @@
 components:
+  parameters:
+    deviceId:
+      name: deviceId
+      in: path
+      description: |
+        The unique identifier of a Device. If the device exists but the caller lacks permission to access it, the API returns 403.
+
+        Must be a valid UUID as defined by RFC 4122 (versions 1-5) using only lowercase hexadecimal characters.
+      required: true
+      schema:
+        $ref: "./NAM_Common.yaml#/components/schemas/UUID"
+
   schemas:
     title: Operator Device Capabilities
     DeviceId:
-      $ref: "./Common.yaml#/components/schemas/DeviceId"
+      $ref: "./NAM_Common.yaml#/components/schemas/DeviceId"
 
     DeviceCapabilities:
       oneOf:
