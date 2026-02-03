@@ -4,7 +4,7 @@ components:
   securitySchemes: # Using this over CAMARA_common.yaml in order to add description
     openId:
       type: openIdConnect
-      description:  |
+      description: |
         OpenID Connect authentication with scope-based authorization.
 
         **Resource Isolation:**

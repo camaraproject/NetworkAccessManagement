@@ -430,7 +430,7 @@ paths:
         - Trust Domains
       summary: Update a specific Trust Domain
       security:
-        -  openId:
+        - openId:
             - network-access-management:trust-domains
       operationId: updateTrustDomain
       description: |
@@ -463,10 +463,10 @@ paths:
 
     delete:
       tags:
-        -  Trust Domains
+        - Trust Domains
       summary: Delete a specific Trust Domain
       security:
-        -  openId:
+        - openId:
             - network-access-management:trust-domains
       operationId: deleteTrustDomain
       description: |
@@ -487,7 +487,7 @@ paths:
   /network-access-devices:
     get:
       tags:
-        -  Reboot Requests
+        - Reboot Requests
       summary: Get all Network Access Devices associated with the service owner
       security:
         - openId:
@@ -516,7 +516,7 @@ paths:
   /network-access-devices/{networkAccessDeviceId}:
     get:
       tags:
-        -  Reboot Requests
+        - Reboot Requests
       summary: Get a specific Network Access Device
       security:
         - openId:
@@ -620,7 +620,7 @@ paths:
 
     get:
       tags:
-        -  Reboot Requests
+        - Reboot Requests
       summary: Get all Reboot Requests created by the calling API client
       security:
         - openId:
@@ -650,7 +650,7 @@ paths:
 
     get:
       tags:
-        -  Reboot Requests
+        - Reboot Requests
       summary: Get a specific Reboot Request
       security:
         - openId:
@@ -676,7 +676,7 @@ paths:
 
     patch:
       tags:
-        -  Reboot Requests
+        - Reboot Requests
       summary: Update an existing Reboot Request
       security:
         - openId:
@@ -712,7 +712,7 @@ paths:
 
     delete:
       tags:
-        -  Reboot Requests
+        - Reboot Requests
       summary: Delete an existing Reboot Request
       security:
         - openId:

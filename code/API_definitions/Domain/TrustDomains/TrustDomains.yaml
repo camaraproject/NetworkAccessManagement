@@ -1,4 +1,3 @@
-
 # Local anchor definitions for external component examples. There isn't a native OpenAPI way to
 # cross-reference examples across files, so we define them here for reuse.
 _imported_examples:

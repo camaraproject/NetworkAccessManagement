@@ -124,4 +124,3 @@ components:
             hardwareAddressType: "EUI-48"
             value: "AB:CD:EF:12:34:56"
           serviceSite: *service-site-example
-
