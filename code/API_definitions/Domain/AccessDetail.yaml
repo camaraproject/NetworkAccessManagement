@@ -1,0 +1,225 @@
+# This file defines the AccessDetail schema model for different network access types.
+# It includes Wi-Fi and Thread access details with various security modes.
+
+components:
+  schemas:
+    # Base security mode schemas (unchanged)
+    WpaPersonalDetail:
+      type: object
+      description: WPA Personal security mode configuration for Wi-Fi networks.
+      properties:
+        password:
+          type: string
+          writeOnly: true
+          minLength: 8
+          maxLength: 255
+          pattern: "^[\\x20-\\x7E]{8,63}$"
+          description: The password for the WPA Personal Wi-Fi network
+          example: &wpa-personal-password "my-password"
+        securityModeType:
+          type: string
+          enum:
+            - WPA2-Personal
+            - WPA2-WPA3-Personal
+            - WPA3-Personal
+          description: |
+            The security mode type for the WPA Personal Wi-Fi network.
+            Leave blank to auto-select.
+          example: &wpa-personal-security-mode-type "WPA3-Personal"
+      additionalProperties: false
+      required:
+        - password
+      example: &wpa-personal
+        password: *wpa-personal-password
+        securityModeType: *wpa-personal-security-mode-type
+
+    WpaEnterpriseDetail:
+      type: object
+      description: WPA Enterprise security mode configuration for Wi-Fi networks.
+      properties:
+        authServer:
+          type: string
+          maxLength: 255
+          description: The authentication server for the WPA Enterprise Wi-Fi network
+          example: &wpa-enterprise-auth-server "1.2.3.4"
+        securityModeType:
+          type: string
+          enum:
+            - WPA2-Enterprise
+            - WPA3-Enterprise
+          description: The security mode type for the WPA Enterprise Wi-Fi network
+          example: &wpa-enterprise-security-mode-type "WPA3-Enterprise"
+      additionalProperties: false
+      required:
+        - securityModeType
+      example: &wpa-enterprise
+        authServer: *wpa-enterprise-auth-server
+        securityModeType: *wpa-enterprise-security-mode-type
+
+    # Flattened concrete implementations for Wi-Fi
+    WiFiWpaPersonalAccessDetail:
+      type: object
+      description: Complete access details for Wi-Fi networks using WPA Personal security mode.
+      properties:
+        accessType:
+          type: string
+          description: The type of network access.
+          enum:
+            - "Wi-Fi:WPA_PERSONAL"
+          example: "Wi-Fi:WPA_PERSONAL"
+        ssid:
+          type: string
+          minLength: 2
+          maxLength: 32
+          pattern: "^(?! )[\\x20-\\x7E]{2,32}(?<! )$"
+          description: |
+            SSID (2-32 printable ASCII characters). No leading or trailing space.
+            Pattern enforces:
+            - Printable ASCII only (0x20-0x7E)
+            - First character not space
+            - Last character not space
+          example: &wifi-ssid "my-ssid"
+        securityMode:
+          allOf:
+            - $ref: "#/components/schemas/WpaPersonalDetail"
+          description: WPA Personal security mode details
+          example: *wpa-personal
+      additionalProperties: false
+      required:
+        - accessType
+        - securityMode
+      example: &wifi-wpa-personal-access-detail
+        accessType: "Wi-Fi:WPA_PERSONAL"
+        ssid: *wifi-ssid
+        securityMode: *wpa-personal
+
+    WiFiWpaEnterpriseAccessDetail:
+      type: object
+      description: Complete access details for Wi-Fi networks using WPA Enterprise security mode.
+      properties:
+        accessType:
+          type: string
+          description: The type of network access.
+          enum:
+            - "Wi-Fi:WPA_ENTERPRISE"
+          example: "Wi-Fi:WPA_ENTERPRISE"
+        ssid:
+          type: string
+          minLength: 2
+          maxLength: 32
+          pattern: "^(?! )[\\x20-\\x7E]{2,32}(?<! )$"
+          description: |
+            SSID (2-32 printable ASCII characters). No leading or trailing space.
+            Pattern enforces:
+            - Printable ASCII only (0x20-0x7E)
+            - First character not space
+            - Last character not space
+          example: *wifi-ssid
+        securityMode:
+          allOf:
+            - $ref: "#/components/schemas/WpaEnterpriseDetail"
+          description: WPA Enterprise security mode details
+          example: *wpa-enterprise
+      additionalProperties: false
+      required:
+        - accessType
+        - securityMode
+      example: &wifi-wpa-enterprise-access-detail
+        accessType: "Wi-Fi:WPA_ENTERPRISE"
+        ssid: *wifi-ssid
+        securityMode: *wpa-enterprise
+
+    ThreadStructuredAccessDetail:
+      type: object
+      description: Complete access details for Thread networks using structured (individual parameter) format.
+      properties:
+        accessType:
+          type: string
+          description: The type of network access.
+          enum:
+            - "Thread:STRUCTURED"
+          example: "Thread:STRUCTURED"
+        channel:
+          type: integer
+          minimum: 11
+          maximum: 26
+          description: The Thread channel (IEEE 802.15.4 channel number)
+          example: 13
+        extendedPanId:
+          type: string
+          pattern: "^[0-9a-fA-F]{16}$"
+          description: The Extended PAN ID (16 hex digits)
+          example: "d63e8e3e495ebbc3"
+        networkKey:
+          type: string
+          pattern: "^[0-9a-fA-F]{32}$"
+          description: The Thread Network Key (32 hex digits)
+          example: "dfd34f0f05cad978ec4e32b0413038ff"
+        networkName:
+          type: string
+          minLength: 1
+          maxLength: 16
+          description: The Thread Network Name (1-16 ASCII characters)
+          example: "Spec-Thread-B3AF"
+        panId:
+          type: string
+          pattern: "^[0-9a-fA-F]{4}$"
+          description: The PAN ID (4 hex digits)
+          example: "d63e"
+      additionalProperties: false
+      required:
+        - accessType
+        - channel
+        - extendedPanId
+        - networkKey
+        - networkName
+        - panId
+      example: &thread-structured-access-detail
+        accessType: "Thread:STRUCTURED"
+        channel: 13
+        extendedPanId: "d63e8e3e495ebbc3"
+        networkKey: "dfd34f0f05cad978ec4e32b0413038ff"
+        networkName: "Spec-Thread-B3AF"
+        panId: "d63e"
+
+    ThreadTlvAccessDetail:
+      type: object
+      description: Complete access details for Thread networks using TLV (Type-Length-Value) encoded operational dataset format.
+      properties:
+        accessType:
+          type: string
+          description: The type of network access.
+          enum:
+            - "Thread:TLV"
+          example: "Thread:TLV"
+        operationalDataset:
+          type: string
+          maxLength: 255
+          description: The Thread network credentials (operational dataset) encoded as a TLV hex string
+          example: "0e08000000000000010010000102030405060708090a0b0c0d0e0f"
+      additionalProperties: false
+      required:
+        - accessType
+        - operationalDataset
+      example: &thread-tlv-access-detail
+        accessType: "Thread:TLV"
+        operationalDataset: "0e08000000000000010010000102030405060708090a0b0c0d0e0f"
+
+    # Single discriminated union with namespaced values
+    AccessDetail:
+      oneOf:
+        - $ref: "#/components/schemas/WiFiWpaPersonalAccessDetail"
+        - $ref: "#/components/schemas/WiFiWpaEnterpriseAccessDetail"
+        - $ref: "#/components/schemas/ThreadStructuredAccessDetail"
+        - $ref: "#/components/schemas/ThreadTlvAccessDetail"
+      discriminator:
+        propertyName: accessType
+        mapping:
+          "Wi-Fi:WPA_PERSONAL": "#/components/schemas/WiFiWpaPersonalAccessDetail"
+          "Wi-Fi:WPA_ENTERPRISE": "#/components/schemas/WiFiWpaEnterpriseAccessDetail"
+          "Thread:STRUCTURED": "#/components/schemas/ThreadStructuredAccessDetail"
+          "Thread:TLV": "#/components/schemas/ThreadTlvAccessDetail"
+      required:
+        - accessType
+      description: Network access details for different network types and variants
+      example: *wifi-wpa-personal-access-detail

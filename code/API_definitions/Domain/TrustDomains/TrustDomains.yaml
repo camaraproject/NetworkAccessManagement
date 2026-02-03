@@ -1,0 +1,265 @@
+# Local anchor definitions for external component examples. There isn't a native OpenAPI way to
+# cross-reference examples across files, so we define them here for reuse.
+_imported_examples:
+  uuid-example: &uuid-example "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+  service-uuid-example: &service-uuid-example "123e4567-e89b-12d3-a456-426614174000"
+  wifi-wpa2-personal-basic-example: &wifi-wpa2-personal-basic-example
+    accessType: "Wi-Fi:WPA_PERSONAL"
+    securityMode:
+      password: "my-password"
+      securityModeType: "WPA2-Personal"
+
+  wifi-wpa2-personal-example: &wifi-wpa2-personal-example
+    accessType: "Wi-Fi:WPA_PERSONAL"
+    ssid: "my-ssid"
+    securityMode:
+      password: "my-password"
+      securityModeType: "WPA2-Personal"
+
+  wifi-wpa3-personal-example: &wifi-wpa3-personal-example
+    accessType: "Wi-Fi:WPA_PERSONAL"
+    ssid: "my-ssid"
+    securityMode:
+      password: "my-password"
+      securityModeType: "WPA3-Personal"
+
+  thread-structured-example: &thread-structured-example
+    accessType: "Thread:STRUCTURED"
+    channel: 13
+    extendedPanId: "d63e8e3e495ebbc3"
+    networkKey: "dfd34f0f05cad978ec4e32b0413038ff"
+    networkName: "Spec-Thread-B3AF"
+    panId: "d63e"
+
+  thread-tlv-example: &thread-tlv-example
+    accessType: "Thread:TLV"
+    mode: tlv
+    operationalDataset: "0e08000000000000010010000102030405060708090a0b0c0d0e0f"
+
+  max-devices-policy-example: &max-devices-policy-example
+    maxDevices: 10
+
+  max-bandwidth-policy-example: &max-bandwidth-policy-example
+    maxDomainDownstreamRate:
+      value: 1000000
+      unit: Kbps
+    maxDomainUpstreamRate:
+      value: 500000
+      unit: Kbps
+
+  egress-allowed-list-policy-example: &egress-allowed-list-policy-example
+    egressAllowedList:
+      - "api.vendor.com"
+      - "updates.vendor.com"
+
+  created-by-example: &created-by-example "550e8400-e29b-41d4-a716-446655440000"
+  modified-by-example: &modified-by-example "660e8400-e29b-41d4-a716-446655440000"
+  modified-by-example-2: &modified-by-example-2 "770e8400-e29b-41d4-a716-446655440000"
+
+components:
+
+  parameters:
+    trustDomainId:
+      name: trustDomainId
+      in: path
+      required: true
+      schema:
+        $ref: "../NAM_Common.yaml#/components/schemas/UUID"
+      description: ID of the Trust Domain. If the Trust Domain exists but the caller lacks permission to access it, the API returns 403.
+
+  schemas:
+
+    TrustDomainUpdate:
+      type: object
+      description: Represents the updatable fields of a trust domain within the network access management system.
+      properties:
+        name:
+          type: string
+          description: Human-readable name for the trust domain.
+          example: "Primary WiFi Network"
+        description:
+          type: string
+          description: Detailed description of the trust domain.
+          example: "Primary home WiFi Network for all devices"
+        enabled:
+          type: boolean
+          description: Indicates whether the trust domain is currently enabled.
+          example: true
+        expiration:
+          allOf:
+            - $ref: "../NAM_Common.yaml#/components/schemas/DateTime"
+            - description: |
+                The expiration date and time of the network.  It must follow [RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339#section-5.6)
+                and must have time zone. Recommended format is yyyy-MM-dd'T'HH:mm:ss.SSSZ (i.e. which allows
+                2023-07-03T14:27:08.312+02:00 or 2023-07-03T12:27:08.312Z).
+
+                If omitted, the trust domain will not automatically expire.
+        policies:
+          $ref: "../Policy.yaml#/components/schemas/Policies"
+        accessDetails:
+          type: array
+          # Each item grants access for a device to this Trust Domain, scoped by the associated AP/network access device or AP group.
+          description: |
+            A list of access configurations that define how end-user devices may join the
+            Trust Domain. Each entry represents one access type (e.g., Wi-Fi WPA Personal,
+            Wi-Fi WPA Enterprise, Thread Structured, Thread TLV).
+
+            **Multiplicity and Uniqueness**
+            - A Trust Domain MUST contain at least one accessDetail entry.
+            - Each `accessType` SHOULD appear at most once. If multiple entries of the same
+              `accessType` are provided, the API provider MAY reject the request.
+            - Order of entries has no semantic meaning.
+
+            **Creation and Update Semantics**
+            - On creation (POST), the full list of accessDetails MUST be provided.
+            - On update (PATCH), the list replaces the previous list entirely when included.
+              Partial merge semantics are not defined; clients MUST supply the complete
+              desired configuration for this field.
+            - To remove all access types, clients MAY provide an empty array, although the
+              API provider MAY reject configurations that result in no valid admittance
+              method for the Trust Domain.
+
+            **Validation Expectations**
+            - The API provider MUST validate that the requested access types and their
+              properties conform to the provider's advertised capabilities
+              (via GET /trust-domains/capabilities).
+            - Providers MAY enforce additional constraints (e.g., SSID uniqueness,
+              channel restrictions, Thread dataset rules) based on local policy.
+
+            **Deployment Behavior**
+            - All Network Access Devices configured with this Trust Domain MUST apply all
+              supplied accessDetails entries, unless the provider's capabilities indicate
+              that certain access types are not supported on specific devices.
+          items:
+            $ref: "../AccessDetail.yaml#/components/schemas/AccessDetail"
+          minItems: 1
+
+    TrustDomainCreate:
+      allOf:
+        - $ref: "#/components/schemas/TrustDomainUpdate"
+      description: Represents the creation of a new trust domain within the network access management system.
+      required:
+        - name
+        - enabled
+        - accessDetails
+        - serviceId
+      properties:
+        serviceId:
+          $ref: "../Services/Services.yaml#/components/schemas/ServiceId"
+
+    TrustDomain:
+      allOf:
+        - $ref: "../NAM_Common.yaml#/components/schemas/ResourceIdentifier"
+        - $ref: "#/components/schemas/TrustDomainCreate"
+        - $ref: "../NAM_Common.yaml#/components/schemas/ResourceAudit"
+        - type: object
+          properties:
+            id:
+              readOnly: true
+            createdAt:
+              readOnly: true
+            createdBy:
+              readOnly: true
+            modifiedAt:
+              readOnly: true
+            modifiedBy:
+              readOnly: true
+      description: Represents a trust domain within the network access management system.
+
+
+  examples:
+
+    TrustDomainCreateWpa2Personal:
+      summary: Create a Trust Domain with WPA2-Personal Wi-Fi access.
+      value:
+        name: "Primary WiFi Network"
+        description: "Request defines a Trust Domain with WPA2-Personal Wi-Fi access. The request specifies an SSID, implying the SSID is created on the network infrastructure."
+        enabled: true
+        accessDetails:
+          - <<: *wifi-wpa2-personal-example
+        serviceId: *service-uuid-example
+
+    TrustDomainCreateInferredSsid:
+      summary: Create a Trust Domain with inferred SSID Wi-Fi access.
+      value:
+        name: "Inferred SSID Network"
+        description: "Request defines a Trust Domain with inferred SSID Wi-Fi access. The request omits the SSID, implying the Trust Domain is applied to an existing SSID on the network infrastructure."
+        enabled: true
+        accessDetails:
+          - accessType: "Wi-Fi:WPA_PERSONAL"
+            securityMode:
+              password: "my-password"
+              securityModeType: "WPA2-Personal"
+        serviceId: *service-uuid-example
+
+    TrustDomainCreateEphemeral:
+      summary: Create a Trust Domain with ephemeral access details.
+      value:
+        name: "Ephemeral Network"
+        description: "Request defines a Trust Domain with ephemeral access details."
+        enabled: true
+        accessDetails:
+          - <<: *wifi-wpa3-personal-example
+        expiration: "2024-12-31T23:59:59Z"
+        policies:
+          <<: *max-devices-policy-example
+        serviceId: *service-uuid-example
+
+    TrustDomainCreateThreadStructured:
+      summary: Create a Trust Domain with Thread structured access details.
+      value:
+        name: "Thread Structured Network"
+        description: "Request defines a Trust Domain with Thread structured access details."
+        enabled: true
+        accessDetails:
+          - <<: *thread-structured-example
+        serviceId: *service-uuid-example
+
+    TrustDomainCreateQoSPolicies:
+      summary: Create a Trust Domain with QoS policies.
+      value:
+        name: "QoS Policy Network"
+        description: "Request defines a Trust Domain with QoS policies."
+        enabled: true
+        accessDetails:
+          - <<: *wifi-wpa3-personal-example
+        policies:
+          <<: *max-bandwidth-policy-example
+        serviceId: *service-uuid-example
+
+    ## Example responses
+    TrustDomainResponseBasic:
+      summary: Basic Trust Domain Response
+      description: Example of a created Trust Domain with minimal details.
+      value:
+        id: *uuid-example
+        name: "Basic Trust Domain"
+        description: "A basic trust domain example"
+        enabled: true
+        accessDetails:
+          - <<: *wifi-wpa2-personal-example
+        serviceId: *service-uuid-example
+        createdAt: "2025-10-21T14:27:08.312Z"
+        createdBy: *created-by-example
+        modifiedAt: "2025-10-21T14:27:08.312Z"
+        modifiedBy: *modified-by-example
+
+    TrustDomainResponseWiFiThread:
+      summary: Created Trust Domain (Wi-Fi + Thread)
+      description: Example of a created Trust Domain including Wi-Fi and Thread access details and populated policies.
+      value:
+        id: *uuid-example
+        name: "Primary WiFi Network"
+        description: "Primary home Wi-Fi Network for all devices"
+        enabled: true
+        expiration: "2025-10-21T14:27:08.312Z"
+        policies:
+          <<: *egress-allowed-list-policy-example
+        accessDetails:
+          - <<: *wifi-wpa3-personal-example
+          - <<: *thread-structured-example
+        serviceId: *service-uuid-example
+        createdAt: "2025-10-21T14:27:08.312Z"
+        createdBy: *created-by-example
+        modifiedAt: "2025-10-21T14:27:08.312Z"
+        modifiedBy: *modified-by-example-2
