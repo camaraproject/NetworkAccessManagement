@@ -36,14 +36,17 @@ components:
           readOnly: true
         name:
           type: string
+          description: The name of the service site.
           maxLength: 64
           example: &service-site-name "Example Service Site 1"
         description:
           type: string
+          description: A textual description of the service site.
           maxLength: 64
           example: &service-site-description "This is the first example service site"
         location:
           type: object
+          description: Geographic location information for the service site, including coordinates and/or property address.
           properties:
             geographicPoint:
               $ref: "../CAMARA_common.yaml#/components/schemas/Point"

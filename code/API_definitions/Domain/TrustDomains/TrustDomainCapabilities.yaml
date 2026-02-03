@@ -64,6 +64,7 @@ components:
       properties:
         accessType:
           type: string
+          description: The type of network access.
           enum:
             - "Wi-Fi:WPA_PERSONAL"
           example: "Wi-Fi:WPA_PERSONAL"
@@ -79,6 +80,7 @@ components:
       properties:
         accessType:
           type: string
+          description: The type of network access.
           enum:
             - "Wi-Fi:WPA_ENTERPRISE"
           example: "Wi-Fi:WPA_ENTERPRISE"
@@ -94,6 +96,7 @@ components:
       properties:
         accessType:
           type: string
+          description: The type of network access.
           enum:
             - "Thread:STRUCTURED"
           example: "Thread:STRUCTURED"
@@ -109,6 +112,7 @@ components:
       properties:
         accessType:
           type: string
+          description: The type of network access.
           enum:
             - "Thread:TLV"
           example: "Thread:TLV"

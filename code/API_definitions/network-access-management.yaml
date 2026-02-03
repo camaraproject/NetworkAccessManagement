@@ -772,6 +772,7 @@ components:
         longitude: 7.10066
     PropertyAddress:
       type: object
+      description: Represents a physical property address following TMF673 Geographic Address Management API specification.
       externalDocs:
         description: TMF673 Geographic Address Management API User Guide v4.0.0
         url: https://www.tmforum.org/resources/specification/tmf673-geographic-address-management-api-user-guide-v4-0-0/
@@ -907,14 +908,17 @@ components:
           readOnly: true
         name:
           type: string
+          description: The name of the service site.
           maxLength: 64
           example: Example Service Site 1
         description:
           type: string
+          description: A textual description of the service site.
           maxLength: 64
           example: This is the first example service site
         location:
           type: object
+          description: Geographic location information for the service site, including coordinates and/or property address.
           properties:
             geographicPoint:
               $ref: '#/components/schemas/Point'
@@ -1097,6 +1101,7 @@ components:
       properties:
         accessType:
           type: string
+          description: The type of network access.
           enum:
             - Wi-Fi:WPA_PERSONAL
           example: Wi-Fi:WPA_PERSONAL
@@ -1111,6 +1116,7 @@ components:
       properties:
         accessType:
           type: string
+          description: The type of network access.
           enum:
             - Wi-Fi:WPA_ENTERPRISE
           example: Wi-Fi:WPA_ENTERPRISE
@@ -1174,6 +1180,7 @@ components:
       properties:
         accessType:
           type: string
+          description: The type of network access.
           enum:
             - Thread:STRUCTURED
           example: Thread:STRUCTURED
@@ -1188,6 +1195,7 @@ components:
       properties:
         accessType:
           type: string
+          description: The type of network access.
           enum:
             - Thread:TLV
           example: Thread:TLV
@@ -1411,6 +1419,7 @@ components:
           - updates.vendor.com
     WpaPersonalDetail:
       type: object
+      description: WPA Personal security mode configuration for Wi-Fi networks.
       properties:
         password:
           type: string
@@ -1438,9 +1447,11 @@ components:
         securityModeType: WPA3-Personal
     WiFiWpaPersonalAccessDetail:
       type: object
+      description: Complete access details for Wi-Fi networks using WPA Personal security mode.
       properties:
         accessType:
           type: string
+          description: The type of network access.
           enum:
             - Wi-Fi:WPA_PERSONAL
           example: Wi-Fi:WPA_PERSONAL
@@ -1475,6 +1486,7 @@ components:
           securityModeType: WPA3-Personal
     WpaEnterpriseDetail:
       type: object
+      description: WPA Enterprise security mode configuration for Wi-Fi networks.
       properties:
         authServer:
           type: string
@@ -1496,9 +1508,11 @@ components:
         securityModeType: WPA3-Enterprise
     WiFiWpaEnterpriseAccessDetail:
       type: object
+      description: Complete access details for Wi-Fi networks using WPA Enterprise security mode.
       properties:
         accessType:
           type: string
+          description: The type of network access.
           enum:
             - Wi-Fi:WPA_ENTERPRISE
           example: Wi-Fi:WPA_ENTERPRISE
@@ -1533,9 +1547,11 @@ components:
           securityModeType: WPA3-Enterprise
     ThreadStructuredAccessDetail:
       type: object
+      description: Complete access details for Thread networks using structured (individual parameter) format.
       properties:
         accessType:
           type: string
+          description: The type of network access.
           enum:
             - Thread:STRUCTURED
           example: Thread:STRUCTURED
@@ -1583,9 +1599,11 @@ components:
         panId: d63e
     ThreadTlvAccessDetail:
       type: object
+      description: Complete access details for Thread networks using TLV (Type-Length-Value) encoded operational dataset format.
       properties:
         accessType:
           type: string
+          description: The type of network access.
           enum:
             - Thread:TLV
           example: Thread:TLV
@@ -1906,6 +1924,7 @@ components:
                 postCodeExtension: '6789'
     NetworkAccessDeviceList:
       type: array
+      description: A list of network access devices.
       items:
         $ref: '#/components/schemas/NetworkAccessDevice'
       example:
@@ -1975,6 +1994,7 @@ components:
               postCodeExtension: '6789'
     RebootRequestUpdate:
       type: object
+      description: Represents updatable fields for a reboot request, including optional message and scheduling information.
       properties:
         message:
           type: string

@@ -6,6 +6,7 @@ components:
     # Base security mode schemas (unchanged)
     WpaPersonalDetail:
       type: object
+      description: WPA Personal security mode configuration for Wi-Fi networks.
       properties:
         password:
           type: string
@@ -34,6 +35,7 @@ components:
 
     WpaEnterpriseDetail:
       type: object
+      description: WPA Enterprise security mode configuration for Wi-Fi networks.
       properties:
         authServer:
           type: string
@@ -57,9 +59,11 @@ components:
     # Flattened concrete implementations for Wi-Fi
     WiFiWpaPersonalAccessDetail:
       type: object
+      description: Complete access details for Wi-Fi networks using WPA Personal security mode.
       properties:
         accessType:
           type: string
+          description: The type of network access.
           enum:
             - "Wi-Fi:WPA_PERSONAL"
           example: "Wi-Fi:WPA_PERSONAL"
@@ -91,9 +95,11 @@ components:
 
     WiFiWpaEnterpriseAccessDetail:
       type: object
+      description: Complete access details for Wi-Fi networks using WPA Enterprise security mode.
       properties:
         accessType:
           type: string
+          description: The type of network access.
           enum:
             - "Wi-Fi:WPA_ENTERPRISE"
           example: "Wi-Fi:WPA_ENTERPRISE"
@@ -125,9 +131,11 @@ components:
 
     ThreadStructuredAccessDetail:
       type: object
+      description: Complete access details for Thread networks using structured (individual parameter) format.
       properties:
         accessType:
           type: string
+          description: The type of network access.
           enum:
             - "Thread:STRUCTURED"
           example: "Thread:STRUCTURED"
@@ -176,9 +184,11 @@ components:
 
     ThreadTlvAccessDetail:
       type: object
+      description: Complete access details for Thread networks using TLV (Type-Length-Value) encoded operational dataset format.
       properties:
         accessType:
           type: string
+          description: The type of network access.
           enum:
             - "Thread:TLV"
           example: "Thread:TLV"

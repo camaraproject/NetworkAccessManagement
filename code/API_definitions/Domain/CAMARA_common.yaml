@@ -245,7 +245,7 @@ components:
   responses:
     #######################################################
     #######################################################
-# ERROR RESPONSE SCHEMA TEMPLATE
+    # ERROR RESPONSE SCHEMA TEMPLATE
 #   - Objective: Make normative error `status` and `code` values
 #   - Schema Template rationale:
 #     - The `allOf` in content.application/json.schema allows a combination of both the generic ErrorInfo schema and the specific schema for this error response,

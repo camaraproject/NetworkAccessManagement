@@ -25,6 +25,7 @@ components:
   schemas:
     RebootRequestUpdate:
       type: object
+      description: Represents updatable fields for a reboot request, including optional message and scheduling information.
       properties:
         message:
           type: string

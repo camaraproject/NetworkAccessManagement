@@ -41,6 +41,7 @@ components:
 
     PropertyAddress:
       type: object
+      description: Represents a physical property address following TMF673 Geographic Address Management API specification.
       externalDocs:
         description: TMF673 Geographic Address Management API User Guide v4.0.0
         url: https://www.tmforum.org/resources/specification/tmf673-geographic-address-management-api-user-guide-v4-0-0/

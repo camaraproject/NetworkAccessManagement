@@ -112,6 +112,7 @@ components:
 
     NetworkAccessDeviceList:
       type: array
+      description: A list of network access devices.
       items:
         $ref: "#/components/schemas/NetworkAccessDevice"
       example: &device-list
