@@ -58,10 +58,20 @@ components:
     RebootRequest:
       allOf:
         - $ref: "../NAM_Common.yaml#/components/schemas/ResourceIdentifier"
-          readOnly: true
         - $ref: "#/components/schemas/RebootRequestCreate"
         - $ref: "../NAM_Common.yaml#/components/schemas/ResourceAudit"
-          readOnly: true
+        - type: object
+          properties:
+            id:
+              readOnly: true
+            createdAt:
+              readOnly: true
+            createdBy:
+              readOnly: true
+            modifiedAt:
+              readOnly: true
+            modifiedBy:
+              readOnly: true
       required:
         - devices
       description: Represents a reboot request for one or more network access devices.

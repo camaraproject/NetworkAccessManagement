@@ -173,7 +173,8 @@ components:
       type: object
       properties:
         id:
-          $ref: "#/components/schemas/UUID"
+          allOf:
+            - $ref: "#/components/schemas/UUID"
           readOnly: true
       required:
         - id

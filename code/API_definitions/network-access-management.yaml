@@ -904,7 +904,8 @@ components:
       description: A Service Site represents a subscriber location associated with one or more Network Access Devices. Implementations MAY provide geographic coordinates, postal address data, or both, depending on local regulatory and operational requirements.
       properties:
         id:
-          $ref: '#/components/schemas/UUID'
+          allOf:
+            - $ref: '#/components/schemas/UUID'
           readOnly: true
         name:
           type: string
@@ -1325,7 +1326,8 @@ components:
       type: object
       properties:
         id:
-          $ref: '#/components/schemas/UUID'
+          allOf:
+            - $ref: '#/components/schemas/UUID'
           readOnly: true
       required:
         - id
@@ -1658,13 +1660,14 @@ components:
           description: Indicates whether the trust domain is currently enabled.
           example: true
         expiration:
-          $ref: '#/components/schemas/DateTime'
-          description: |
-            The expiration date and time of the network.  It must follow [RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339#section-5.6)
-            and must have time zone. Recommended format is yyyy-MM-dd'T'HH:mm:ss.SSSZ (i.e. which allows
-            2023-07-03T14:27:08.312+02:00 or 2023-07-03T12:27:08.312Z).
+          allOf:
+            - $ref: '#/components/schemas/DateTime'
+            - description: |
+                The expiration date and time of the network.  It must follow [RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339#section-5.6)
+                and must have time zone. Recommended format is yyyy-MM-dd'T'HH:mm:ss.SSSZ (i.e. which allows
+                2023-07-03T14:27:08.312+02:00 or 2023-07-03T12:27:08.312Z).
 
-            If omitted, the trust domain will not automatically expire.
+                If omitted, the trust domain will not automatically expire.
         policies:
           $ref: '#/components/schemas/Policies'
         accessDetails:
@@ -1752,10 +1755,20 @@ components:
     TrustDomain:
       allOf:
         - $ref: '#/components/schemas/ResourceIdentifier'
-          readOnly: true
         - $ref: '#/components/schemas/TrustDomainCreate'
         - $ref: '#/components/schemas/ResourceAudit'
-          readOnly: true
+        - type: object
+          properties:
+            id:
+              readOnly: true
+            createdAt:
+              readOnly: true
+            createdBy:
+              readOnly: true
+            modifiedAt:
+              readOnly: true
+            modifiedBy:
+              readOnly: true
       description: Represents a trust domain within the network access management system.
     PhoneNumber:
       description: A public identifier addressing a telephone subscription. In mobile networks it corresponds to the MSISDN (Mobile Station International Subscriber Directory Number). In order to be globally unique it has to be formatted in international format, according to E.164 standard, prefixed with '+'.
@@ -1838,10 +1851,11 @@ components:
         The identifiers and addressing fields reflect the operator-managed equipment, not client equipment.
       allOf:
         - $ref: '#/components/schemas/ResourceIdentifier'
-          readOnly: true
         - $ref: '#/components/schemas/Device'
         - type: object
           properties:
+            id:
+              readOnly: true
             name:
               type: string
               minLength: 1
@@ -2025,10 +2039,20 @@ components:
     RebootRequest:
       allOf:
         - $ref: '#/components/schemas/ResourceIdentifier'
-          readOnly: true
         - $ref: '#/components/schemas/RebootRequestCreate'
         - $ref: '#/components/schemas/ResourceAudit'
-          readOnly: true
+        - type: object
+          properties:
+            id:
+              readOnly: true
+            createdAt:
+              readOnly: true
+            createdBy:
+              readOnly: true
+            modifiedAt:
+              readOnly: true
+            modifiedBy:
+              readOnly: true
       required:
         - devices
       description: Represents a reboot request for one or more network access devices.

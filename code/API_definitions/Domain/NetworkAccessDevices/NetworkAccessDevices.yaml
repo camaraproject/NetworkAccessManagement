@@ -52,10 +52,11 @@ components:
         The identifiers and addressing fields reflect the operator-managed equipment, not client equipment.
       allOf:
         - $ref: "../NAM_Common.yaml#/components/schemas/ResourceIdentifier"
-          readOnly: true
         - $ref: "../CAMARA_common.yaml#/components/schemas/Device"
         - type: object
           properties:
+            id:
+              readOnly: true
             name:
               type: string
               minLength: 1

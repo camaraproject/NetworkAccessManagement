@@ -86,13 +86,14 @@ components:
           description: Indicates whether the trust domain is currently enabled.
           example: true
         expiration:
-          $ref: "../NAM_Common.yaml#/components/schemas/DateTime"
-          description: |
-            The expiration date and time of the network.  It must follow [RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339#section-5.6)
-            and must have time zone. Recommended format is yyyy-MM-dd'T'HH:mm:ss.SSSZ (i.e. which allows
-            2023-07-03T14:27:08.312+02:00 or 2023-07-03T12:27:08.312Z).
+          allOf:
+            - $ref: "../NAM_Common.yaml#/components/schemas/DateTime"
+            - description: |
+                The expiration date and time of the network.  It must follow [RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339#section-5.6)
+                and must have time zone. Recommended format is yyyy-MM-dd'T'HH:mm:ss.SSSZ (i.e. which allows
+                2023-07-03T14:27:08.312+02:00 or 2023-07-03T12:27:08.312Z).
 
-            If omitted, the trust domain will not automatically expire.
+                If omitted, the trust domain will not automatically expire.
         policies:
           $ref: "../Policy.yaml#/components/schemas/Policies"
         accessDetails:
@@ -149,10 +150,20 @@ components:
     TrustDomain:
       allOf:
         - $ref: "../NAM_Common.yaml#/components/schemas/ResourceIdentifier"
-          readOnly: true
         - $ref: "#/components/schemas/TrustDomainCreate"
         - $ref: "../NAM_Common.yaml#/components/schemas/ResourceAudit"
-          readOnly: true
+        - type: object
+          properties:
+            id:
+              readOnly: true
+            createdAt:
+              readOnly: true
+            createdBy:
+              readOnly: true
+            modifiedAt:
+              readOnly: true
+            modifiedBy:
+              readOnly: true
       description: Represents a trust domain within the network access management system.
 
 

@@ -32,7 +32,8 @@ components:
       description: A Service Site represents a subscriber location associated with one or more Network Access Devices. Implementations MAY provide geographic coordinates, postal address data, or both, depending on local regulatory and operational requirements.
       properties:
         id:
-          $ref: "../NAM_Common.yaml#/components/schemas/UUID"
+          allOf:
+            - $ref: "../NAM_Common.yaml#/components/schemas/UUID"
           readOnly: true
         name:
           type: string
