@@ -20,12 +20,13 @@ Sandbox API Repository to describe, develop, document, and test the NetworkAcces
 * Describe, develop, document, and test the APIs (with 1-2 Telcos)  
 * Started: May 2024
 
+<!-- CAMARA:RELEASE-INFO:START -->
+<!-- The following section is automatically maintained by the CAMARA project-administration tooling: https://github.com/camaraproject/project-administration -->
+
 ## Release Information
-<!-- Use/uncomment one or multiple the following options -->
-The sub project has no (pre)releases yet, work in progress is within the main branch
-<!-- Pre-releases of this sub project are available in https://github.com/camaraproject/§repo_name§/releases -->
-<!-- The latest public release is available here: https://github.com/camaraproject/§repo_name§/releases/latest -->
-<!-- For changes see [CHANGELOG.md](https://github.com/camaraproject/§repo_name§/blob/main/CHANGELOG.md) -->
+
+The repository has no (pre)releases yet, work in progress is within the main branch.
+<!-- CAMARA:RELEASE-INFO:END -->
 
 ## Contributing
 * Meetings
