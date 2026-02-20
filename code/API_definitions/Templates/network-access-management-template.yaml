@@ -5,7 +5,7 @@ info:
   license:
     name: Apache 2.0
     url: https://www.apache.org/licenses/LICENSE-2.0.html
-  version: wip
+  version: 0.1.0-alpha.1
   x-camara-commonalities: 0.6
   description: |
     Service enabling API for managing network operator supplied network access devices. This API's initial focus is on
@@ -172,7 +172,7 @@ externalDocs:
   url: https://github.com/camaraproject/NetworkAccessManagement
 
 servers:
-  - url: "{apiRoot}/network-access-management/vwip"
+  - url: "{apiRoot}/network-access-management/v0.1alpha1"
     variables:
       apiRoot:
         default: http://localhost:9091
