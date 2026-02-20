@@ -11,7 +11,7 @@
 
 Sandbox API Repository to describe, develop, document, and test the NetworkAccessManagement Service API(s). The repository does not yet belong to a CAMARA Sub Project.
 
-* API Repository [wiki page](https://lf-camaraproject.atlassian.net/wiki/x/jzPe)
+* API Repository [wiki page](https://lf-camaraproject.atlassian.net/wiki/x/5wCzHQ)
 
 ## Scope
 * Service APIs for “Network Access Management” of Home Devices (see APIBacklog.md)  
