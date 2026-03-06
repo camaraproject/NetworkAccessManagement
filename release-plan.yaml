@@ -1,0 +1,43 @@
+# CAMARA Release Plan
+# This file declares release intentions for this repository.
+# It replaces manual wiki tracking with automated tooling.
+#
+# Update this file; CI validates it; releases are generated from this plan.
+# Docs: https://github.com/camaraproject/ReleaseManagement/tree/main/documentation
+
+repository:
+  # How this repository participates in CAMARA releases
+  # Options: independent (default) | meta-release
+  release_track: independent
+
+  # Uncomment and set when planning a meta-release participation:
+  # meta_release: Sync26
+
+  # Release tag -- first release for a repository is r1.1
+  # - New release cycle (increment first number, reset second to 1)
+  # - Progression in same cycle (increment second number)
+  target_release_tag: r1.1
+
+  # Release type being prepared (must be set before release can be triggered)
+  # Options: none | pre-release-alpha | pre-release-rc | public-release | maintenance-release
+  target_release_type: none
+
+# Dependencies on Commonalities and ICM releases
+# Update per ReleaseManagement requirements for each release cycle
+dependencies:
+  commonalities_release: r3.4
+  identity_consent_management_release: r3.3
+
+# APIs in this repository
+# Replace the placeholder below when planning a release:
+# - api_name: kebab-case identifier (used as filename in code/API_definitions/)
+# - target_api_status: draft | alpha | rc | public (draft allows no file yet)
+apis:
+  - api_name: placeholder-entry
+    target_api_version: 0.1.0
+    target_api_status: draft
+    main_contacts:
+      - caubut-charter
+      - mayur007
+      - clundie-CL
+      - benhepworth
