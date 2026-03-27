@@ -13,16 +13,19 @@ API_definitions/
 ├── README.md                                    # This file (authoring & process docs)
 ├── redocly.yaml                                 # Lint/bundle configuration (Redocly CLI)
 ├── network-access-management.yaml               # Primary entrypoint spec (generated from template)
-├── Templates/                                   # Template specs used to produce bundled variants
-│   ├── network-access-management-template.yaml  # Source template assembled into the main NAM bundle
-└── Domain/                                      # Modular domain-focused component files
-  ├── NAM_Common.yaml                          # Shared primitives (UUID, DateTime, ResourceAudit, securitySchemes)
-  ├── CAMARA_common.yaml                       # Shared CAMARA-style error responses
-  ├── AccessDetail.yaml                        # Discriminated access detail variants (Wi-Fi, Thread)
-  ├── Policy.yaml                              # Trust Domain policy schemas (maxDevices, bandwidth, egress)
-  ├── NetworkAccessDevices/                    # Network Access Device resource schemas
-  ├── RebootRequests/                          # Reboot Request lifecycle schemas
-  └── TrustDomains/                            # Trust Domain & related capability schemas
+├── network-access-management-template.yaml      # Source template assembled into the main NAM bundle
+├── common/
+│   └── CAMARA_common.yaml                       # Shared CAMARA-style error responses
+└── modules/                                     # Modular domain-focused component files
+    ├── NAM_Common.yaml                          # Shared primitives (UUID, DateTime, ResourceAudit, securitySchemes)
+    ├── AccessDetail.yaml                        # Discriminated access detail variants (Wi-Fi, Thread)
+    ├── Capabilities.yaml                        # Device capability schemas
+    ├── Policy.yaml                              # Trust Domain policy schemas (maxDevices, bandwidth, egress)
+    ├── capabilities-template.yaml               # Device capabilities API template
+    ├── NetworkAccessDevices/                     # Network Access Device resource schemas
+    ├── RebootRequests/                           # Reboot Request lifecycle schemas
+    ├── Services/                                # Service and ServiceSite schemas
+    └── TrustDomains/                            # Trust Domain & related capability schemas
 ```
 
 ## Architecture Rationale
@@ -71,7 +74,7 @@ The `redocly.yaml` configuration file defines how to bundle the modular componen
 ```bash
 cd code/API_definitions
 # Generate the complete Network Access Management API specification
-redocly bundle Templates/network-access-management-template.yaml --output network-access-management-bundled.yaml
+redocly bundle network-access-management-template.yaml --output network-access-management-bundled.yaml
 
 # Validate the bundled specification
 redocly lint network-access-management-bundled.yaml
@@ -117,17 +120,22 @@ Key bundling features:
 
 - **`network-access-management.yaml`** - Complete bundled Network Access Management API specification (generated from template)
 
-### Template Files
+### Other Template Files
 
-- **`Templates/capabilities.yaml`** - Device capabilities API template
-- **`Templates/network-access-management.yaml`** - Complete Network Access Management API template (alternative source)
+- **`modules/capabilities-template.yaml`** - Device capabilities API template
 
 ### Component Files
 
-- **`Domain/Common.yaml`** - Shared fundamental types (UUID, DateTime, Error schemas)
-- **`Domain/Policy.yaml`** - Trust Domain policy schemas (maxDevices, bandwidth limits, egress rules)
-- **`Domain/AccessDetail.yaml`** - Network access configuration schemas (Wi-Fi, Thread, security modes)
-- **`Domain/TrustDomains/TrustDomains.yaml`** - Core Trust Domain schemas and examples
+- **`common/CAMARA_common.yaml`** - Shared CAMARA-style error responses and common schemas
+- **`modules/NAM_Common.yaml`** - Shared fundamental types (UUID, DateTime, ResourceAudit, securitySchemes)
+- **`modules/Policy.yaml`** - Trust Domain policy schemas (maxDevices, bandwidth limits, egress rules)
+- **`modules/AccessDetail.yaml`** - Network access configuration schemas (Wi-Fi, Thread, security modes)
+- **`modules/Capabilities.yaml`** - Device capability schemas
+- **`modules/TrustDomains/TrustDomains.yaml`** - Core Trust Domain schemas and examples
+- **`modules/NetworkAccessDevices/NetworkAccessDevices.yaml`** - Network Access Device resource schemas
+- **`modules/RebootRequests/RebootRequests.yaml`** - Reboot Request lifecycle schemas
+- **`modules/Services/Services.yaml`** - Service schemas
+- **`modules/Services/ServiceSites.yaml`** - Service Site schemas
 
 ## Best Practices
 
@@ -154,7 +162,7 @@ TrustDomainExample:
   value:
     name: "My Network"
     accessDetails:
-      - $ref: "../AccessDetail.yaml#/components/examples/WiFiExample/value"  # Invalid!
+      - $ref: "modules/AccessDetail.yaml#/components/examples/WiFiExample/value"  # Invalid!
 ```
 
 #### The Solutions
@@ -196,7 +204,7 @@ components:
 ```yaml
 # ✅ Reference complete examples at component level (not within values)
 WiFiAccessExample:
-  $ref: "../AccessDetail.yaml#/components/examples/WiFiAccessDetailWPA2Personal"
+  $ref: "modules/AccessDetail.yaml#/components/examples/WiFiAccessDetailWPA2Personal"
 
 # But you still can't compose these inside other example values
 ```

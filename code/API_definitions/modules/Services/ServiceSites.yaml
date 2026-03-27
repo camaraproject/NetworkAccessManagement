@@ -50,7 +50,7 @@ components:
           description: Geographic location information for the service site, including coordinates and/or property address.
           properties:
             geographicPoint:
-              $ref: "../CAMARA_common.yaml#/components/schemas/Point"
+              $ref: "../../common/CAMARA_common.yaml#/components/schemas/Point"
             propertyAddress:
               $ref: "../NAM_Common.yaml#/components/schemas/PropertyAddress"
           example: &service-site-location
