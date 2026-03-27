@@ -12,8 +12,7 @@ The API definitions have been restructured from a monolithic approach to a modul
 API_definitions/
 ├── README.md                                    # This file (authoring & process docs)
 ├── redocly.yaml                                 # Lint/bundle configuration (Redocly CLI)
-├── network-access-management.yaml               # Primary entrypoint spec (generated from template)
-├── network-access-management-template.yaml      # Source template assembled into the main NAM bundle
+├── network-access-management.yaml               # Source API spec with $ref references (committed on main)
 ├── common/
 │   └── CAMARA_common.yaml                       # Shared CAMARA-style error responses
 └── modules/                                     # Modular domain-focused component files
@@ -21,7 +20,6 @@ API_definitions/
     ├── AccessDetail.yaml                        # Discriminated access detail variants (Wi-Fi, Thread)
     ├── Capabilities.yaml                        # Device capability schemas
     ├── Policy.yaml                              # Trust Domain policy schemas (maxDevices, bandwidth, egress)
-    ├── capabilities-template.yaml               # Device capabilities API template
     ├── NetworkAccessDevices/                     # Network Access Device resource schemas
     ├── RebootRequests/                           # Reboot Request lifecycle schemas
     ├── Services/                                # Service and ServiceSite schemas
@@ -57,7 +55,15 @@ API_definitions/
 | `AccessDetail.yaml` | Network access configurations | Medium - Network-related APIs |
 | `TrustDomains.yaml` | Core Trust Domain schemas | Low - Trust Domain specific |
 
-## Bundling Process
+## Bundling and Validation
+
+### Key Constraint: Bundled Files Are Not Committed on Main
+
+Per the [CAMARA Consumption and Bundling Design](https://github.com/camaraproject/Commonalities/blob/main/documentation/Commonalities-Consumption-and-Bundling-Design.md), **bundled (standalone) API definitions are never committed on `main`**. The committed `network-access-management.yaml` retains its `$ref` references to `common/` and `modules/`. Bundled standalone OAS files are produced only on release branches/tags and for local validation.
+
+This avoids merge conflicts in the large bundled output and keeps `main` as the single source of truth for modular schema authoring.
+
+Bundled output files (`*-bundled.yaml`) are listed in `.gitignore`.
 
 ### Prerequisites
 
@@ -66,43 +72,34 @@ Install Redocly CLI:
 npm install -g @redocly/cli
 ```
 
-### Creating Bundled Specifications
+### Linting
 
-The `redocly.yaml` configuration file defines how to bundle the modular components into complete API specifications.
-
-#### Bundle Network Access Management API
+Validate the spec and all referenced modules resolve correctly:
 ```bash
 cd code/API_definitions
-# Generate the complete Network Access Management API specification
-redocly bundle network-access-management-template.yaml --output network-access-management-bundled.yaml
-
-# Validate the bundled specification
-redocly lint network-access-management-bundled.yaml
+redocly lint network-access-management.yaml
 ```
 
-#### Overwrite Official OpenAPI Specification
+### Local Bundling (for Validation or Tooling)
 
-Once you've created and validated a bundled specification, you can deploy it as the official API specification:
-
-**Manual Deployment:**
+To produce a fully resolved, standalone OAS file locally:
 ```bash
-# After bundling and validation, overwrite the official specification
-cp network-access-management-bundled.yaml network-access-management.yaml
-
-# Commit the updated official specification
-git add network-access-management.yaml
-git commit -m "Update official API specification from template"
+cd code/API_definitions
+redocly bundle network-access-management.yaml --output network-access-management-bundled.yaml
 ```
 
-**Automated Deployment:**
-You can automate the bundling and deployment process using a script or CI/CD pipeline to ensure the official specification is always up-to-date with the latest templates.
+The bundled file is useful for:
+- Importing into API tools (Swagger UI, Postman, etc.)
+- Validating the fully resolved spec with external validators
+- Generating SDKs or documentation locally
+
+**Do not commit `*-bundled.yaml` files to `main`.** They are git-ignored.
 
 ### Bundling Configuration
 
 The `redocly.yaml` file contains:
 - **Linting rules** - Ensures consistency and quality
-- **Bundling options** - Controls how references are resolved
-- **Validation settings** - Catches errors early in development
+- **File resolution** - Allows `.yaml` and `.yml` extensions
 
 Key bundling features:
 - Resolves all `$ref` references to external files
@@ -112,17 +109,9 @@ Key bundling features:
 
 ## File Purposes
 
-### Source Template Files
+### API Specification
 
-- **`network-access-management-template.yaml`** - Main Network Access Management API template (source for bundling)
-
-### Generated API Files
-
-- **`network-access-management.yaml`** - Complete bundled Network Access Management API specification (generated from template)
-
-### Other Template Files
-
-- **`modules/capabilities-template.yaml`** - Device capabilities API template
+- **`network-access-management.yaml`** - Source API specification with `$ref` references to `common/` and `modules/`. This is the file committed on `main`. Bundling resolves these refs into a standalone OAS file for release branches and local tooling.
 
 ### Component Files
 
