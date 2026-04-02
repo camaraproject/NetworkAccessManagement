@@ -24,6 +24,8 @@ components:
         - `network-access-management:trust-domains:read-all` — Read-only access to all Trust Domains
           associated with the same subscriber, including those created by other API clients.
           Intended for use cases involving federated discovery or configuration replication.
+        - `network-access-management:devices` — Register, manage, and deregister subscriber/IoT devices
+          within Trust Domains created by the calling API client.
         - `network-access-management:reboot` — Create, list, and manage Reboot Requests for network
           access devices owned by or delegated to the calling API client.
       openIdConnectUrl: https://example.com/.well-known/openid-configuration
