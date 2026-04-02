@@ -709,8 +709,6 @@ paths:
             application/json:
               schema:
                 $ref: "modules/NetworkAccessDevices/NetworkAccessDevices.yaml#/components/schemas/NetworkAccessDeviceList"
-        "400":
-          $ref: "common/CAMARA_common.yaml#/components/responses/Generic400"
         "401":
           $ref: "common/CAMARA_common.yaml#/components/responses/Generic401"
         "403":
@@ -742,8 +740,6 @@ paths:
             application/json:
               schema:
                 $ref: "modules/NetworkAccessDevices/NetworkAccessDevices.yaml#/components/schemas/NetworkAccessDevice"
-        "400":
-          $ref: "common/CAMARA_common.yaml#/components/responses/Generic400"
         "401":
           $ref: "common/CAMARA_common.yaml#/components/responses/Generic401"
         "403":
@@ -852,8 +848,6 @@ paths:
                 type: array
                 items:
                   $ref: 'modules/RebootRequests/RebootRequests.yaml#/components/schemas/RebootRequest'
-        '400':
-          $ref: 'common/CAMARA_common.yaml#/components/responses/Generic400'
         '401':
           $ref: 'common/CAMARA_common.yaml#/components/responses/Generic401'
         '403':
@@ -884,8 +878,6 @@ paths:
             application/json:
               schema:
                 $ref: 'modules/RebootRequests/RebootRequests.yaml#/components/schemas/RebootRequest'
-        '400':
-          $ref: 'common/CAMARA_common.yaml#/components/responses/Generic400'
         '401':
           $ref: 'common/CAMARA_common.yaml#/components/responses/Generic401'
         '403':
@@ -950,8 +942,6 @@ paths:
       responses:
         '204':
           description: Reboot Request deleted successfully
-        '400':
-          $ref: 'common/CAMARA_common.yaml#/components/responses/Generic400'
         '401':
           $ref: 'common/CAMARA_common.yaml#/components/responses/Generic401'
         '403':
