@@ -99,7 +99,10 @@ components:
       type: object
       description: |
         Matter commissioning configuration as defined by the Connectivity Standards
-        Alliance Matter specification.
+        Alliance (CSA) Matter specification (Section 5.1.3 - Onboarding Payload).
+      externalDocs:
+        description: Matter Specification - Connectivity Standards Alliance
+        url: https://csa-iot.org/developer-resource/specifications-download-request/
       required:
         - setupPayload
       properties:
@@ -107,8 +110,18 @@ components:
           type: string
           maxLength: 2048
           description: |
-            A Matter setup payload, either as a Manual Pairing Code or QR Code
-            payload, used to commission the device.
+            A Matter onboarding payload used to commission the device. Accepts either format:
+
+            - **QR Code Payload**: Prefixed with `MT:`, followed by a base-38 encoded string
+              (characters `0-9`, `A-Z`, `-.`) encoding the device's vendor ID, product ID,
+              discriminator, setup passcode, and discovery capabilities.
+              Example: `MT:Y3.13OTB00KA0648G00`
+
+            - **Manual Pairing Code**: A numeric string (typically 11 or 21 digits) encoding
+              a subset of the same commissioning data for manual entry.
+              Example: `34970112332`
+
+            See Matter Core Specification Section 5.1.3 for payload structure details.
           example: "MT:Y3.13OTB00KA0648G00"
 
     BootstrappingInfo:
