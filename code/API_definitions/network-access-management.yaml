@@ -76,6 +76,7 @@ info:
     |-------|-------------|
     | **network-access-management:trust-domains** | Manage the caller's own Trust Domains (create, modify, delete, view). |
     | **network-access-management:trust-domains:read-all** | Read all Trust Domains belonging to the subscriber, including those created by other clients (requires subscriber consent). |
+    | **network-access-management:devices** | Register, manage, and deregister subscriber/IoT devices within Trust Domains created by the calling API client. |
     | **network-access-management:reboot** | Create, list, and manage Reboot Requests for owned devices. |
     | **network-access-management:services:read** | List services accessible to the authenticated identity |
 
@@ -183,6 +184,10 @@ tags:
     description: Operations to list network services accessible to the authenticated identity
   - name: Trust Domains
     description: Operations to Create and Manage Trust Domains
+  - name: Trust Domain Devices
+    description: |
+      Operations to register and manage subscriber/IoT devices within Trust Domains.
+      These devices are distinct from Network Access Devices (operator-supplied equipment).
   - name: Reboot Requests
     description: |
       Operations to Create and Manage Reboot Requests for Network Access Devices
@@ -220,6 +225,8 @@ paths:
           $ref: "common/CAMARA_common.yaml#/components/responses/Generic403"
         "500":
           $ref: "common/CAMARA_common.yaml#/components/responses/Generic500"
+        "503":
+          $ref: "common/CAMARA_common.yaml#/components/responses/Generic503"
 
 
   /services/{serviceId}:
@@ -265,6 +272,8 @@ paths:
           $ref: "common/CAMARA_common.yaml#/components/responses/Generic404"
         "500":
           $ref: "common/CAMARA_common.yaml#/components/responses/Generic500"
+        "503":
+          $ref: "common/CAMARA_common.yaml#/components/responses/Generic503"
 
   /trust-domains/capabilities:
     get:
@@ -295,6 +304,8 @@ paths:
             application/json:
               schema:
                 $ref: "modules/TrustDomains/TrustDomainCapabilities.yaml#/components/schemas/TrustDomainCapabilities"
+        "401":
+          $ref: "common/CAMARA_common.yaml#/components/responses/Generic401"
         "403":
           $ref: "common/CAMARA_common.yaml#/components/responses/Generic403"
         "500":
@@ -346,12 +357,16 @@ paths:
                   $ref: 'modules/TrustDomains/TrustDomains.yaml#/components/examples/TrustDomainResponseWiFiThread'
         '400':
           $ref: 'common/CAMARA_common.yaml#/components/responses/Generic400'
+        '401':
+          $ref: 'common/CAMARA_common.yaml#/components/responses/Generic401'
         '403':
           $ref: 'common/CAMARA_common.yaml#/components/responses/Generic403'
         '409':
           $ref: 'common/CAMARA_common.yaml#/components/responses/Generic409'
         '500':
           $ref: 'common/CAMARA_common.yaml#/components/responses/Generic500'
+        '503':
+          $ref: 'common/CAMARA_common.yaml#/components/responses/Generic503'
 
     get:
       tags:
@@ -379,6 +394,8 @@ paths:
                 type: array
                 items:
                   $ref: "modules/TrustDomains/TrustDomains.yaml#/components/schemas/TrustDomain"
+        "401":
+          $ref: "common/CAMARA_common.yaml#/components/responses/Generic401"
         "403":
           $ref: "common/CAMARA_common.yaml#/components/responses/Generic403"
         "500":
@@ -416,6 +433,8 @@ paths:
               examples:
                 TrustDomainResponseBasic:
                   $ref: 'modules/TrustDomains/TrustDomains.yaml#/components/examples/TrustDomainResponseBasic'
+        "401":
+          $ref: "common/CAMARA_common.yaml#/components/responses/Generic401"
         "403":
           $ref: "common/CAMARA_common.yaml#/components/responses/Generic403"
         "404":
@@ -452,6 +471,8 @@ paths:
 
         "400":
           $ref: "common/CAMARA_common.yaml#/components/responses/Generic400"
+        "401":
+          $ref: "common/CAMARA_common.yaml#/components/responses/Generic401"
         "403":
           $ref: "common/CAMARA_common.yaml#/components/responses/Generic403"
         "404":
@@ -475,6 +496,8 @@ paths:
       responses:
         "204":
           description: Trust Domain deleted successfully
+        "401":
+          $ref: "common/CAMARA_common.yaml#/components/responses/Generic401"
         "403":
           $ref: "common/CAMARA_common.yaml#/components/responses/Generic403"
         "404":
@@ -483,6 +506,190 @@ paths:
           $ref: "common/CAMARA_common.yaml#/components/responses/Generic500"
         "503":
           $ref: "common/CAMARA_common.yaml#/components/responses/Generic503"
+
+  /trust-domains/{trustDomainId}/devices:
+    parameters:
+      - $ref: 'modules/TrustDomains/TrustDomains.yaml#/components/parameters/trustDomainId'
+
+    post:
+      tags:
+        - Trust Domain Devices
+      summary: Register a new device to a Trust Domain
+      security:
+        - openId:
+            - network-access-management:devices
+      description: |
+        Registers a new subscriber or IoT device to the specified Trust Domain.
+        The device will be provisioned for network access according to the Trust Domain's
+        access configuration and the device's bootstrapping and credential settings.
+      operationId: createTrustDomainDevice
+      requestBody:
+        description: Details of the device to register
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: 'modules/TrustDomainDevices/TrustDomainDevices.yaml#/components/schemas/TrustDomainDeviceCreate'
+            examples:
+              TrustDomainDeviceCreateIoT:
+                $ref: 'modules/TrustDomainDevices/TrustDomainDevices.yaml#/components/examples/TrustDomainDeviceCreateIoT'
+              TrustDomainDeviceCreateMinimal:
+                $ref: 'modules/TrustDomainDevices/TrustDomainDevices.yaml#/components/examples/TrustDomainDeviceCreateMinimal'
+              TrustDomainDeviceCreateMatter:
+                $ref: 'modules/TrustDomainDevices/TrustDomainDevices.yaml#/components/examples/TrustDomainDeviceCreateMatter'
+      responses:
+        '201':
+          description: Device registered successfully
+          content:
+            application/json:
+              schema:
+                $ref: 'modules/TrustDomainDevices/TrustDomainDevices.yaml#/components/schemas/TrustDomainDevice'
+              examples:
+                TrustDomainDeviceResponseBasic:
+                  $ref: 'modules/TrustDomainDevices/TrustDomainDevices.yaml#/components/examples/TrustDomainDeviceResponseBasic'
+        '400':
+          $ref: 'common/CAMARA_common.yaml#/components/responses/Generic400'
+        '401':
+          $ref: 'common/CAMARA_common.yaml#/components/responses/Generic401'
+        '403':
+          $ref: 'common/CAMARA_common.yaml#/components/responses/Generic403'
+        '404':
+          $ref: 'common/CAMARA_common.yaml#/components/responses/Generic404'
+        '409':
+          $ref: 'common/CAMARA_common.yaml#/components/responses/Generic409'
+        '500':
+          $ref: 'common/CAMARA_common.yaml#/components/responses/Generic500'
+        '503':
+          $ref: 'common/CAMARA_common.yaml#/components/responses/Generic503'
+
+    get:
+      tags:
+        - Trust Domain Devices
+      summary: List all devices registered to a Trust Domain
+      security:
+        - openId:
+            - network-access-management:devices
+      operationId: getTrustDomainDevices
+      description: |
+        Retrieves all devices registered to the specified Trust Domain that the caller is authorized to view.
+      responses:
+        '200':
+          description: Contains the list of registered devices
+          content:
+            application/json:
+              schema:
+                $ref: 'modules/TrustDomainDevices/TrustDomainDevices.yaml#/components/schemas/TrustDomainDeviceList'
+              examples:
+                TrustDomainDeviceListResponse:
+                  $ref: 'modules/TrustDomainDevices/TrustDomainDevices.yaml#/components/examples/TrustDomainDeviceListResponse'
+        '401':
+          $ref: 'common/CAMARA_common.yaml#/components/responses/Generic401'
+        '403':
+          $ref: 'common/CAMARA_common.yaml#/components/responses/Generic403'
+        '404':
+          $ref: 'common/CAMARA_common.yaml#/components/responses/Generic404'
+        '500':
+          $ref: 'common/CAMARA_common.yaml#/components/responses/Generic500'
+        '503':
+          $ref: 'common/CAMARA_common.yaml#/components/responses/Generic503'
+
+  /trust-domains/{trustDomainId}/devices/{deviceId}:
+    parameters:
+      - $ref: 'modules/TrustDomains/TrustDomains.yaml#/components/parameters/trustDomainId'
+      - $ref: 'modules/TrustDomainDevices/TrustDomainDevices.yaml#/components/parameters/deviceId'
+
+    get:
+      tags:
+        - Trust Domain Devices
+      summary: Get a specific device in a Trust Domain
+      security:
+        - openId:
+            - network-access-management:devices
+      operationId: getTrustDomainDevice
+      description: |
+        Retrieves the device identified by the given ID within the specified Trust Domain.
+      responses:
+        '200':
+          description: Contains information about the specified device
+          content:
+            application/json:
+              schema:
+                $ref: 'modules/TrustDomainDevices/TrustDomainDevices.yaml#/components/schemas/TrustDomainDevice'
+              examples:
+                TrustDomainDeviceResponseConnected:
+                  $ref: 'modules/TrustDomainDevices/TrustDomainDevices.yaml#/components/examples/TrustDomainDeviceResponseConnected'
+        '401':
+          $ref: 'common/CAMARA_common.yaml#/components/responses/Generic401'
+        '403':
+          $ref: 'common/CAMARA_common.yaml#/components/responses/Generic403'
+        '404':
+          $ref: 'common/CAMARA_common.yaml#/components/responses/Generic404'
+        '500':
+          $ref: 'common/CAMARA_common.yaml#/components/responses/Generic500'
+        '503':
+          $ref: 'common/CAMARA_common.yaml#/components/responses/Generic503'
+
+    patch:
+      tags:
+        - Trust Domain Devices
+      summary: Update a device in a Trust Domain
+      security:
+        - openId:
+            - network-access-management:devices
+      operationId: updateTrustDomainDevice
+      description: |
+        Updates the device identified by the given ID within the specified Trust Domain.
+        Only the fields included in the request body will be updated. The `bootstrappingInfo`
+        and `deviceCredential` fields use full replacement semantics when included.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: 'modules/TrustDomainDevices/TrustDomainDevices.yaml#/components/schemas/TrustDomainDeviceUpdate'
+        required: true
+      responses:
+        '200':
+          description: Device updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: 'modules/TrustDomainDevices/TrustDomainDevices.yaml#/components/schemas/TrustDomainDevice'
+        '400':
+          $ref: 'common/CAMARA_common.yaml#/components/responses/Generic400'
+        '401':
+          $ref: 'common/CAMARA_common.yaml#/components/responses/Generic401'
+        '403':
+          $ref: 'common/CAMARA_common.yaml#/components/responses/Generic403'
+        '404':
+          $ref: 'common/CAMARA_common.yaml#/components/responses/Generic404'
+        '500':
+          $ref: 'common/CAMARA_common.yaml#/components/responses/Generic500'
+        '503':
+          $ref: 'common/CAMARA_common.yaml#/components/responses/Generic503'
+
+    delete:
+      tags:
+        - Trust Domain Devices
+      summary: Remove a device from a Trust Domain
+      security:
+        - openId:
+            - network-access-management:devices
+      operationId: deleteTrustDomainDevice
+      description: |
+        Deregisters and removes the device identified by the given ID from the specified Trust Domain.
+      responses:
+        '204':
+          description: Device removed successfully
+        '401':
+          $ref: 'common/CAMARA_common.yaml#/components/responses/Generic401'
+        '403':
+          $ref: 'common/CAMARA_common.yaml#/components/responses/Generic403'
+        '404':
+          $ref: 'common/CAMARA_common.yaml#/components/responses/Generic404'
+        '500':
+          $ref: 'common/CAMARA_common.yaml#/components/responses/Generic500'
+        '503':
+          $ref: 'common/CAMARA_common.yaml#/components/responses/Generic503'
 
   /network-access-devices:
     get:
@@ -502,8 +709,8 @@ paths:
             application/json:
               schema:
                 $ref: "modules/NetworkAccessDevices/NetworkAccessDevices.yaml#/components/schemas/NetworkAccessDeviceList"
-        "400":
-          $ref: "common/CAMARA_common.yaml#/components/responses/Generic400"
+        "401":
+          $ref: "common/CAMARA_common.yaml#/components/responses/Generic401"
         "403":
           $ref: "common/CAMARA_common.yaml#/components/responses/Generic403"
         "404":
@@ -533,8 +740,8 @@ paths:
             application/json:
               schema:
                 $ref: "modules/NetworkAccessDevices/NetworkAccessDevices.yaml#/components/schemas/NetworkAccessDevice"
-        "400":
-          $ref: "common/CAMARA_common.yaml#/components/responses/Generic400"
+        "401":
+          $ref: "common/CAMARA_common.yaml#/components/responses/Generic401"
         "403":
           $ref: "common/CAMARA_common.yaml#/components/responses/Generic403"
         "404":
@@ -607,6 +814,8 @@ paths:
                 $ref: 'modules/RebootRequests/RebootRequests.yaml#/components/schemas/RebootRequest'
         '400':
           $ref: 'common/CAMARA_common.yaml#/components/responses/Generic400'
+        '401':
+          $ref: 'common/CAMARA_common.yaml#/components/responses/Generic401'
         '403':
           $ref: 'common/CAMARA_common.yaml#/components/responses/Generic403'
         '404':
@@ -617,6 +826,8 @@ paths:
           $ref: 'common/CAMARA_common.yaml#/components/responses/Generic422'
         '500':
           $ref: 'common/CAMARA_common.yaml#/components/responses/Generic500'
+        '503':
+          $ref: 'common/CAMARA_common.yaml#/components/responses/Generic503'
 
     get:
       tags:
@@ -637,12 +848,14 @@ paths:
                 type: array
                 items:
                   $ref: 'modules/RebootRequests/RebootRequests.yaml#/components/schemas/RebootRequest'
-        '400':
-          $ref: 'common/CAMARA_common.yaml#/components/responses/Generic400'
+        '401':
+          $ref: 'common/CAMARA_common.yaml#/components/responses/Generic401'
         '403':
           $ref: 'common/CAMARA_common.yaml#/components/responses/Generic403'
         '500':
           $ref: 'common/CAMARA_common.yaml#/components/responses/Generic500'
+        '503':
+          $ref: 'common/CAMARA_common.yaml#/components/responses/Generic503'
 
   /reboot-requests/{rebootRequestId}:
     parameters:
@@ -665,14 +878,16 @@ paths:
             application/json:
               schema:
                 $ref: 'modules/RebootRequests/RebootRequests.yaml#/components/schemas/RebootRequest'
-        '400':
-          $ref: 'common/CAMARA_common.yaml#/components/responses/Generic400'
+        '401':
+          $ref: 'common/CAMARA_common.yaml#/components/responses/Generic401'
         '403':
           $ref: 'common/CAMARA_common.yaml#/components/responses/Generic403'
         '404':
           $ref: 'common/CAMARA_common.yaml#/components/responses/Generic404'
         '500':
           $ref: 'common/CAMARA_common.yaml#/components/responses/Generic500'
+        '503':
+          $ref: 'common/CAMARA_common.yaml#/components/responses/Generic503'
 
     patch:
       tags:
@@ -699,6 +914,8 @@ paths:
                 $ref: 'modules/RebootRequests/RebootRequests.yaml#/components/schemas/RebootRequest'
         '400':
           $ref: 'common/CAMARA_common.yaml#/components/responses/Generic400'
+        '401':
+          $ref: 'common/CAMARA_common.yaml#/components/responses/Generic401'
         '403':
           $ref: 'common/CAMARA_common.yaml#/components/responses/Generic403'
         '404':
@@ -709,6 +926,8 @@ paths:
           $ref: 'common/CAMARA_common.yaml#/components/responses/Generic422'
         '500':
           $ref: 'common/CAMARA_common.yaml#/components/responses/Generic500'
+        '503':
+          $ref: 'common/CAMARA_common.yaml#/components/responses/Generic503'
 
     delete:
       tags:
@@ -723,14 +942,16 @@ paths:
       responses:
         '204':
           description: Reboot Request deleted successfully
-        '400':
-          $ref: 'common/CAMARA_common.yaml#/components/responses/Generic400'
+        '401':
+          $ref: 'common/CAMARA_common.yaml#/components/responses/Generic401'
         '403':
           $ref: 'common/CAMARA_common.yaml#/components/responses/Generic403'
         '404':
           $ref: 'common/CAMARA_common.yaml#/components/responses/Generic404'
         '500':
           $ref: 'common/CAMARA_common.yaml#/components/responses/Generic500'
+        '503':
+          $ref: 'common/CAMARA_common.yaml#/components/responses/Generic503'
 
 components:
   securitySchemes:
