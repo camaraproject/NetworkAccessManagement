@@ -1,4 +1,4 @@
-@basic_tier
+  @basic_tier @network_access_management_getRebootRequest_01_get_by_id_success
 Feature: CAMARA Network Access Management API, vwip - Operation getRebootRequest
   # Operation: GET /reboot-requests/{rebootRequestId}
   # Required scope: network-access-management:reboot
@@ -10,7 +10,6 @@ Feature: CAMARA Network Access Management API, vwip - Operation getRebootRequest
   # Full-tier (rainy-day) scenarios are tracked as a follow-up workstream
   # against the public-release readiness gate; see issue #52.
 
-  @network_access_management_getRebootRequest_01_get_by_id_success
   Scenario: Retrieve a Reboot Request by its id
     Given an environment at "apiRoot"
     And the resource "/network-access-management/vwip/reboot-requests/{rebootRequestId}"

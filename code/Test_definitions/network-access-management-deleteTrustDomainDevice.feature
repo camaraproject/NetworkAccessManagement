@@ -1,4 +1,4 @@
-@basic_tier
+  @basic_tier
 Feature: CAMARA Network Access Management API, vwip - Operation deleteTrustDomainDevice
   # Operation: DELETE /trust-domains/{trustDomainId}/devices/{deviceId}
   # Required scope: network-access-management:devices

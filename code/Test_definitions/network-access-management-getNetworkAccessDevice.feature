@@ -1,4 +1,4 @@
-@basic_tier
+  @basic_tier @network_access_management_getNetworkAccessDevice_01_get_by_id_success
 Feature: CAMARA Network Access Management API, vwip - Operation getNetworkAccessDevice
   # Operation: GET /network-access-devices/{networkAccessDeviceId}
   # Required scope: network-access-management:reboot
@@ -10,7 +10,6 @@ Feature: CAMARA Network Access Management API, vwip - Operation getNetworkAccess
   # Full-tier (rainy-day) scenarios are tracked as a follow-up workstream
   # against the public-release readiness gate; see issue #52.
 
-  @network_access_management_getNetworkAccessDevice_01_get_by_id_success
   Scenario: Retrieve a Network Access Device by its id
     Given an environment at "apiRoot"
     And the resource "/network-access-management/vwip/network-access-devices/{networkAccessDeviceId}"

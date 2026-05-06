@@ -1,4 +1,4 @@
-@basic_tier
+  @basic_tier
 Feature: CAMARA Network Access Management API, vwip - Operation updateTrustDomainDevice
   # Operation: PATCH /trust-domains/{trustDomainId}/devices/{deviceId}
   # Required scope: network-access-management:devices

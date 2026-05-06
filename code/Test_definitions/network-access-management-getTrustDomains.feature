@@ -1,4 +1,4 @@
-@basic_tier
+  @basic_tier
 Feature: CAMARA Network Access Management API, vwip - Operation getTrustDomains
   # Operation: GET /trust-domains
   # Required scope: network-access-management:trust-domains

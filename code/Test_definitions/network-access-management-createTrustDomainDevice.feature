@@ -1,4 +1,4 @@
-@basic_tier
+  @basic_tier
 Feature: CAMARA Network Access Management API, vwip - Operation createTrustDomainDevice
   # Operation: POST /trust-domains/{trustDomainId}/devices
   # Required scope: network-access-management:devices

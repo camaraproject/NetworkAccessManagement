@@ -1,4 +1,4 @@
-@basic_tier
+  @basic_tier
 Feature: CAMARA Network Access Management API, vwip - Operation updateRebootRequest
   # Operation: PATCH /reboot-requests/{rebootRequestId}
   # Required scope: network-access-management:reboot

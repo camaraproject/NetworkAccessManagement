@@ -1,4 +1,4 @@
-@basic_tier
+  @basic_tier @network_access_management_getTrustDomainDevice_01_get_by_id_success
 Feature: CAMARA Network Access Management API, vwip - Operation getTrustDomainDevice
   # Operation: GET /trust-domains/{trustDomainId}/devices/{deviceId}
   # Required scope: network-access-management:devices
@@ -10,7 +10,6 @@ Feature: CAMARA Network Access Management API, vwip - Operation getTrustDomainDe
   # Full-tier (rainy-day) scenarios are tracked as a follow-up workstream
   # against the public-release readiness gate; see issue #52.
 
-  @network_access_management_getTrustDomainDevice_01_get_by_id_success
   Scenario: Retrieve a single device registered to a Trust Domain by its deviceId
     Given an environment at "apiRoot"
     And the resource "/network-access-management/vwip/trust-domains/{trustDomainId}/devices/{deviceId}"
