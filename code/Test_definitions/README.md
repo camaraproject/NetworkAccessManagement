@@ -36,15 +36,16 @@ Per the CAMARA API Testing Guidelines:
   validation, optional-field combinations, and CRUD state coherence
   (GET-after-POST agreement).
 
-The current pilot file (`network-access-management-createTrustDomain.feature`)
-is authored at the full tier as the canonical exemplar. Subsequent files in
-this directory will be added at basic tier first, then expanded.
+`network-access-management-createTrustDomain.feature` is authored at the
+**full tier** as the canonical exemplar. The other 19 operations are
+authored at the **basic tier** only — happy-path scenarios sufficient for
+the release-candidate gate. Their full-tier rainy-day matrices are tracked
+as a follow-up workstream against the public-release readiness gate; see
+[issue #52](https://github.com/camaraproject/NetworkAccessManagement/issues/52).
 
 ## File inventory
 
-The full target inventory is one `.feature` per operationId (20 files
-total). At present, only the pilot is committed; the rest are tracked in
-[issue #52](https://github.com/camaraproject/NetworkAccessManagement/issues/52).
+One `.feature` file per operationId, 20 files total, all committed.
 
 | Tag group | Operations |
 |---|---|
@@ -54,7 +55,8 @@ total). At present, only the pilot is committed; the rest are tracked in
 | Network Access Devices | `getNetworkAccessDevices`, `getNetworkAccessDevice` |
 | Reboot Requests | `createRebootRequest`, `getRebootRequests`, `getRebootRequest`, `updateRebootRequest`, `deleteRebootRequest` |
 
-`*` = pilot, full-tier exemplar already committed.
+`*` = full-tier exemplar; the remaining 19 are basic-tier only pending the
+follow-up rainy-day matrices.
 
 ## Executing the tests
 
