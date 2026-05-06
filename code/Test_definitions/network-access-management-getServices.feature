@@ -10,6 +10,7 @@ Feature: CAMARA Network Access Management API, vwip - Operation getServices
   # Full-tier (rainy-day) scenarios are tracked as a follow-up workstream
   # against the public-release readiness gate; see issue #52.
 
+  @basic_tier @network_access_management_getServices_01_list_success
   Scenario: List all Services accessible to the authenticated identity
     Given an environment at "apiRoot"
     And the resource "/network-access-management/vwip/services"
