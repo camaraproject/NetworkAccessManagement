@@ -1,3 +1,4 @@
+@basic_tier
 Feature: CAMARA Network Access Management API, vwip - Operation getNetworkAccessDevice
   # Operation: GET /network-access-devices/{networkAccessDeviceId}
   # Required scope: network-access-management:reboot
@@ -9,16 +10,14 @@ Feature: CAMARA Network Access Management API, vwip - Operation getNetworkAccess
   # Full-tier (rainy-day) scenarios are tracked as a follow-up workstream
   # against the public-release readiness gate; see issue #52.
 
-  Background: Common getNetworkAccessDevice setup
+  @network_access_management_getNetworkAccessDevice_01_get_by_id_success
+  Scenario: Retrieve a Network Access Device by its id
     Given an environment at "apiRoot"
     And the resource "/network-access-management/vwip/network-access-devices/{networkAccessDeviceId}"
     And the header "Authorization" is set to a valid access token
     And the access token has the scope "network-access-management:reboot"
     And the header "x-correlator" complies with the schema at "#/components/schemas/XCorrelator"
-
-  @network_access_management_getNetworkAccessDevice_01_get_by_id_success @basic_tier
-  Scenario: Retrieve a Network Access Device by its id
-    Given the path parameter "networkAccessDeviceId" is set to the id of a Network Access Device associated with the subscriber
+    And the path parameter "networkAccessDeviceId" is set to the id of a Network Access Device associated with the subscriber
     When the request "getNetworkAccessDevice" is sent
     Then the response status code is 200
     And the response header "Content-Type" is "application/json"

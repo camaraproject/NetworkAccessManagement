@@ -1,3 +1,4 @@
+@basic_tier
 Feature: CAMARA Network Access Management API, vwip - Operation getTrustDomainDevice
   # Operation: GET /trust-domains/{trustDomainId}/devices/{deviceId}
   # Required scope: network-access-management:devices
@@ -9,16 +10,14 @@ Feature: CAMARA Network Access Management API, vwip - Operation getTrustDomainDe
   # Full-tier (rainy-day) scenarios are tracked as a follow-up workstream
   # against the public-release readiness gate; see issue #52.
 
-  Background: Common getTrustDomainDevice setup
+  @network_access_management_getTrustDomainDevice_01_get_by_id_success
+  Scenario: Retrieve a single device registered to a Trust Domain by its deviceId
     Given an environment at "apiRoot"
     And the resource "/network-access-management/vwip/trust-domains/{trustDomainId}/devices/{deviceId}"
     And the header "Authorization" is set to a valid access token
     And the access token has the scope "network-access-management:devices"
     And the header "x-correlator" complies with the schema at "#/components/schemas/XCorrelator"
-
-  @network_access_management_getTrustDomainDevice_01_get_by_id_success @basic_tier
-  Scenario: Retrieve a single device registered to a Trust Domain by its deviceId
-    Given the path parameter "trustDomainId" is set to the id of a Trust Domain created by the calling API client
+    And the path parameter "trustDomainId" is set to the id of a Trust Domain created by the calling API client
     And the path parameter "deviceId" is set to the id of a device registered to that Trust Domain
     When the request "getTrustDomainDevice" is sent
     Then the response status code is 200

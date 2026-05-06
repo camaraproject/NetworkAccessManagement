@@ -1,3 +1,4 @@
+@basic_tier
 Feature: CAMARA Network Access Management API, vwip - Operation getTrustDomainCapabilities
   # Operation: GET /trust-domains/capabilities
   # Required scope: network-access-management:trust-domains
@@ -9,15 +10,13 @@ Feature: CAMARA Network Access Management API, vwip - Operation getTrustDomainCa
   # Full-tier (rainy-day) scenarios are tracked as a follow-up workstream
   # against the public-release readiness gate; see issue #52.
 
-  Background: Common getTrustDomainCapabilities setup
+  @network_access_management_getTrustDomainCapabilities_01_get_capabilities_success
+  Scenario: Retrieve the Trust Domain capabilities advertised by the API provider
     Given an environment at "apiRoot"
     And the resource "/network-access-management/vwip/trust-domains/capabilities"
     And the header "Authorization" is set to a valid access token
     And the access token has the scope "network-access-management:trust-domains"
     And the header "x-correlator" complies with the schema at "#/components/schemas/XCorrelator"
-
-  @network_access_management_getTrustDomainCapabilities_01_get_capabilities_success @basic_tier
-  Scenario: Retrieve the Trust Domain capabilities advertised by the API provider
     When the request "getTrustDomainCapabilities" is sent
     Then the response status code is 200
     And the response header "Content-Type" is "application/json"

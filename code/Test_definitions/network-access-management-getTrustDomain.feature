@@ -1,3 +1,4 @@
+@basic_tier
 Feature: CAMARA Network Access Management API, vwip - Operation getTrustDomain
   # Operation: GET /trust-domains/{trustDomainId}
   # Required scope: network-access-management:trust-domains
@@ -16,7 +17,7 @@ Feature: CAMARA Network Access Management API, vwip - Operation getTrustDomain
     And the header "Authorization" is set to a valid access token
     And the header "x-correlator" complies with the schema at "#/components/schemas/XCorrelator"
 
-  @network_access_management_getTrustDomain_01_caller_owned_success @basic_tier
+  @network_access_management_getTrustDomain_01_caller_owned_success
   Scenario: Retrieve a Trust Domain owned by the calling API client
     Given the access token has the scope "network-access-management:trust-domains"
     And the path parameter "trustDomainId" is set to the id of a Trust Domain created by the calling API client
@@ -27,7 +28,7 @@ Feature: CAMARA Network Access Management API, vwip - Operation getTrustDomain
     And the response body complies with the OAS schema at "/components/schemas/TrustDomain"
     And the response property "$.id" equals the path parameter "trustDomainId"
 
-  @network_access_management_getTrustDomain_02_read_all_success @basic_tier
+  @network_access_management_getTrustDomain_02_read_all_success
   Scenario: Retrieve a Trust Domain via the read-all scope
     Given the access token has the scope "network-access-management:trust-domains:read-all"
     And the path parameter "trustDomainId" is set to the id of a Trust Domain associated with the subscriber but created by a different API client

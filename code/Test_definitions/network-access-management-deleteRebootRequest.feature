@@ -1,3 +1,4 @@
+@basic_tier
 Feature: CAMARA Network Access Management API, vwip - Operation deleteRebootRequest
   # Operation: DELETE /reboot-requests/{rebootRequestId}
   # Required scope: network-access-management:reboot
@@ -16,7 +17,7 @@ Feature: CAMARA Network Access Management API, vwip - Operation deleteRebootRequ
     And the access token has the scope "network-access-management:reboot"
     And the header "x-correlator" complies with the schema at "#/components/schemas/XCorrelator"
 
-  @network_access_management_deleteRebootRequest_01_delete_success @basic_tier
+  @network_access_management_deleteRebootRequest_01_delete_success
   Scenario: Delete (cancel) a pending Reboot Request
     Given the path parameter "rebootRequestId" is set to the id of a pending Reboot Request created by the calling API client
     When the request "deleteRebootRequest" is sent
@@ -24,7 +25,7 @@ Feature: CAMARA Network Access Management API, vwip - Operation deleteRebootRequ
     And the response header "x-correlator" has the same value as the request header "x-correlator"
     And the response body is empty
 
-  @network_access_management_deleteRebootRequest_02_state_coherence_after_delete @basic_tier
+  @network_access_management_deleteRebootRequest_02_state_coherence_after_delete
   Scenario: After successful deletion, GET on the same id returns 404
     Given the path parameter "rebootRequestId" is set to the id of a pending Reboot Request created by the calling API client
     And the request "deleteRebootRequest" has been sent and returned 204

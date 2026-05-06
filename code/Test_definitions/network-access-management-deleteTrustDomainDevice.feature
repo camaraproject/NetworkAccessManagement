@@ -1,3 +1,4 @@
+@basic_tier
 Feature: CAMARA Network Access Management API, vwip - Operation deleteTrustDomainDevice
   # Operation: DELETE /trust-domains/{trustDomainId}/devices/{deviceId}
   # Required scope: network-access-management:devices
@@ -16,7 +17,7 @@ Feature: CAMARA Network Access Management API, vwip - Operation deleteTrustDomai
     And the access token has the scope "network-access-management:devices"
     And the header "x-correlator" complies with the schema at "#/components/schemas/XCorrelator"
 
-  @network_access_management_deleteTrustDomainDevice_01_delete_success @basic_tier
+  @network_access_management_deleteTrustDomainDevice_01_delete_success
   Scenario: Deregister a device from a Trust Domain
     Given the path parameter "trustDomainId" is set to the id of a Trust Domain created by the calling API client
     And the path parameter "deviceId" is set to the id of a device registered to that Trust Domain
@@ -25,7 +26,7 @@ Feature: CAMARA Network Access Management API, vwip - Operation deleteTrustDomai
     And the response header "x-correlator" has the same value as the request header "x-correlator"
     And the response body is empty
 
-  @network_access_management_deleteTrustDomainDevice_02_state_coherence_after_delete @basic_tier
+  @network_access_management_deleteTrustDomainDevice_02_state_coherence_after_delete
   Scenario: After successful deregistration, GET on the same deviceId returns 404
     Given the path parameter "trustDomainId" is set to the id of a Trust Domain created by the calling API client
     And the path parameter "deviceId" is set to the id of a device registered to that Trust Domain

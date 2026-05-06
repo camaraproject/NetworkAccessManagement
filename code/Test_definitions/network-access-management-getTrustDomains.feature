@@ -1,3 +1,4 @@
+@basic_tier
 Feature: CAMARA Network Access Management API, vwip - Operation getTrustDomains
   # Operation: GET /trust-domains
   # Required scope: network-access-management:trust-domains
@@ -16,7 +17,7 @@ Feature: CAMARA Network Access Management API, vwip - Operation getTrustDomains
     And the header "Authorization" is set to a valid access token
     And the header "x-correlator" complies with the schema at "#/components/schemas/XCorrelator"
 
-  @network_access_management_getTrustDomains_01_caller_owned_success @basic_tier
+  @network_access_management_getTrustDomains_01_caller_owned_success
   Scenario: List Trust Domains owned by the calling API client
     Given the access token has the scope "network-access-management:trust-domains"
     And at least one Trust Domain exists for the calling API client
@@ -28,7 +29,7 @@ Feature: CAMARA Network Access Management API, vwip - Operation getTrustDomains
     And every element of the response body complies with the schema at "/components/schemas/TrustDomain"
     And every element of the response body has a "createdBy" property identifying the calling API client
 
-  @network_access_management_getTrustDomains_02_read_all_success @basic_tier
+  @network_access_management_getTrustDomains_02_read_all_success
   Scenario: List all Trust Domains visible to the subscriber via the read-all scope
     Given the access token has the scope "network-access-management:trust-domains:read-all"
     And at least one Trust Domain exists for the subscriber, created by another API client

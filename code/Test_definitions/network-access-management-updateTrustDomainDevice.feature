@@ -1,3 +1,4 @@
+@basic_tier
 Feature: CAMARA Network Access Management API, vwip - Operation updateTrustDomainDevice
   # Operation: PATCH /trust-domains/{trustDomainId}/devices/{deviceId}
   # Required scope: network-access-management:devices
@@ -20,7 +21,7 @@ Feature: CAMARA Network Access Management API, vwip - Operation updateTrustDomai
     And the path parameter "trustDomainId" is set to the id of a Trust Domain created by the calling API client
     And the path parameter "deviceId" is set to the id of a device registered to that Trust Domain
 
-  @network_access_management_updateTrustDomainDevice_01_rename_success @basic_tier
+  @network_access_management_updateTrustDomainDevice_01_rename_success
   Scenario: Update the deviceName of a registered device
     Given the request body property "$.deviceName" is set to "Living Room Thermostat"
     When the request "updateTrustDomainDevice" is sent
@@ -31,7 +32,7 @@ Feature: CAMARA Network Access Management API, vwip - Operation updateTrustDomai
     And the response property "$.id" equals the path parameter "deviceId"
     And the response property "$.deviceName" is "Living Room Thermostat"
 
-  @network_access_management_updateTrustDomainDevice_02_replace_credential_success @basic_tier
+  @network_access_management_updateTrustDomainDevice_02_replace_credential_success
   Scenario: Replace the deviceCredential on a registered device (full-replacement semantics)
     Given the request body property "$.deviceCredential" is set to a valid DeviceCredential with credentialAction "GENERATE"
     When the request "updateTrustDomainDevice" is sent

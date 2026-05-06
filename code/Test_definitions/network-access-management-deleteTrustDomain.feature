@@ -1,3 +1,4 @@
+@basic_tier
 Feature: CAMARA Network Access Management API, vwip - Operation deleteTrustDomain
   # Operation: DELETE /trust-domains/{trustDomainId}
   # Required scope: network-access-management:trust-domains
@@ -16,7 +17,7 @@ Feature: CAMARA Network Access Management API, vwip - Operation deleteTrustDomai
     And the access token has the scope "network-access-management:trust-domains"
     And the header "x-correlator" complies with the schema at "#/components/schemas/XCorrelator"
 
-  @network_access_management_deleteTrustDomain_01_delete_success @basic_tier
+  @network_access_management_deleteTrustDomain_01_delete_success
   Scenario: Delete a Trust Domain owned by the calling API client
     Given the path parameter "trustDomainId" is set to the id of a Trust Domain created by the calling API client
     When the request "deleteTrustDomain" is sent
@@ -24,7 +25,7 @@ Feature: CAMARA Network Access Management API, vwip - Operation deleteTrustDomai
     And the response header "x-correlator" has the same value as the request header "x-correlator"
     And the response body is empty
 
-  @network_access_management_deleteTrustDomain_02_state_coherence_after_delete @basic_tier
+  @network_access_management_deleteTrustDomain_02_state_coherence_after_delete
   Scenario: After successful deletion, GET on the same id returns 404 IDENTIFIER_NOT_FOUND
     Given the path parameter "trustDomainId" is set to the id of a Trust Domain created by the calling API client
     And the request "deleteTrustDomain" has been sent and returned 204

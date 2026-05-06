@@ -1,3 +1,4 @@
+@basic_tier
 Feature: CAMARA Network Access Management API, vwip - Operation getServices
   # Operation: GET /services
   # Required scope: network-access-management:services:read
@@ -9,15 +10,13 @@ Feature: CAMARA Network Access Management API, vwip - Operation getServices
   # Full-tier (rainy-day) scenarios are tracked as a follow-up workstream
   # against the public-release readiness gate; see issue #52.
 
-  Background: Common getServices setup
+  @network_access_management_getServices_01_list_success
+  Scenario: List all Services accessible to the authenticated identity
     Given an environment at "apiRoot"
     And the resource "/network-access-management/vwip/services"
     And the header "Authorization" is set to a valid access token
     And the access token has the scope "network-access-management:services:read"
     And the header "x-correlator" complies with the schema at "#/components/schemas/XCorrelator"
-
-  @network_access_management_getServices_01_list_success @basic_tier
-  Scenario: List all Services accessible to the authenticated identity
     When the request "getServices" is sent
     Then the response status code is 200
     And the response header "Content-Type" is "application/json"
