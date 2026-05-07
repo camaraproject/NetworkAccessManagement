@@ -19,7 +19,7 @@ code/
 ├── common/
 │   └── CAMARA_common.yaml                       # Local cached copy of the Commonalities shared error responses
 └── modules/                                     # Modular domain-focused component files
-    ├── NAM_Common.yaml                          # Shared primitives (UUID, DateTime, ResourceAudit, securitySchemes)
+    ├── NAM_Common.yaml                          # Shared primitives (UUID, DateTime, PropertyAddress, ResourceIdentifier, securitySchemes)
     ├── AccessDetail.yaml                        # Discriminated access detail variants (Wi-Fi, Thread)
     ├── Policy.yaml                              # Trust Domain policy schemas (maxDevices, bandwidth, egress)
     ├── NetworkAccessDevices/                    # Network Access Device resource schemas
@@ -53,10 +53,11 @@ code/
 
 | File | Purpose | Reusability |
 |------|---------|-------------|
-| `Common.yaml` | Base types (UUID, DateTime, ErrorInfo) | High - used across all APIs |
-| `Policy.yaml` | Trust Domain governance policies | Medium - Trust Domain specific |
-| `AccessDetail.yaml` | Network access configurations | Medium - Network-related APIs |
-| `TrustDomains.yaml` | Core Trust Domain schemas | Low - Trust Domain specific |
+| `CAMARA_common.yaml` | CAMARA-wide error responses and shared schemas (cached from Commonalities) | High — required by every CAMARA API |
+| `NAM_Common.yaml` | NAM-wide primitives (UUID, DateTime, PropertyAddress, ResourceIdentifier, securitySchemes) | High — used across all NAM endpoints |
+| `Policy.yaml` | Trust Domain governance policies | Medium — Trust Domain specific |
+| `AccessDetail.yaml` | Network access configurations | Medium — Network-related schemas |
+| `TrustDomains.yaml` | Core Trust Domain schemas | Low — Trust Domain specific |
 
 ## Bundling and Validation
 
