@@ -18,10 +18,10 @@ and the reusable templates in
 |---|---|
 | Filename | `network-access-management-{operationId}.feature` (one file per `operationId`) |
 | Scenario tag | `@network_access_management_{operationId}_{NN}_{slug}` |
-| Tier tag | `@basic_tier` (release-candidate gate) or `@full_tier` (public-release gate). Placement depends on file shape: (a) **multi-scenario, single tier** → both `@basic_tier` and the unique scenario-id tag at Feature level only, scenarios carry no tags of their own; (b) **multi-scenario, mixed tiers** (like the pilot) → tier tag on each individual scenario alongside its unique id; (c) **single-scenario** → both tags at Feature level only (do not duplicate at the Scenario — that fires `no-superfluous-tags`). The interacting `gherkin-lint` rules to keep in mind: `no-homogenous-tags`, `required-tags`, `no-superfluous-tags`, `indentation`. Run `gherkin-lint` locally before pushing — see "Executing the tests" below. |
-| Auth-dependent tag | `@requires_oidc` — scenario requires real OIDC enforcement; skip when running against a facade in auth-disabled mode |
+| Tier tag | `@basic_tier` (release-candidate gate) or `@full_tier` (public-release gate). Placement: (a) **multi-scenario, single tier** → at Feature level (above `Feature:`, 2-space indent), with each scenario carrying just its unique id tag; (b) **multi-scenario, mixed tiers** (the pilot and every Group B file in this repo, which mix one `@basic_tier` happy path with one `@full_tier @requires_oidc` 401 scenario) → tier tag on each individual scenario alongside its unique id; no Feature-level tier tag. The four interacting `gherkin-lint` rules: `no-homogenous-tags` (scenarios may not all share a tag at scenario level), `required-tags` (every Scenario must have ≥1 tag), `no-superfluous-tags` (no tag duplicated across Feature and Scenario), `indentation` (2-space indent for tags). |
+| Auth-dependent tag | `@requires_oidc` — scenario requires real OIDC enforcement; auto-skip when running against a facade in auth-disabled mode |
 | Backend-dependent tag | `@backend_controlled` — scenario depends on backend state the facade alone cannot drive (e.g. 409 conflicts) |
-| Setup steps | For files with **2+ scenarios**, factored into a `Background:` block (`apiRoot` + resource + `Authorization` with required scope + `x-correlator` schema check, plus `Content-Type` and a default-valid request body for write ops). For files with a **single scenario**, inlined directly into the scenario — `Background:` is disallowed by `gherkin-lint`'s `no-background-only-scenario`. |
+| Setup steps | Always factored into a `Background:` block (`apiRoot` + resource + `Authorization` with required scope + `x-correlator` schema check, plus `Content-Type` and a default-valid request body for write ops, plus any path parameters shared across all scenarios). Every file in this directory has at least 2 scenarios — single-scenario files cannot satisfy the lint rule trio above, which is why Group B GETs each carry a 401 `@requires_oidc` scenario alongside the happy path. |
 | Schema references | JSON Pointer into the **bundled** OAS (e.g. `/components/schemas/TrustDomain`), not into `modules/...` |
 | Error-code coverage | One named `Scenario:` per documented response code; `Scenario Outline:` for parameter-varied cases (e.g. each missing-required-field permutation) |
 
@@ -37,10 +37,18 @@ Per the CAMARA API Testing Guidelines:
   (GET-after-POST agreement).
 
 `network-access-management-createTrustDomain.feature` is authored at the
-**full tier** as the canonical exemplar. The other 19 operations are
-authored at the **basic tier** only — happy-path scenarios sufficient for
-the release-candidate gate. Their full-tier rainy-day matrices are tracked
-as a follow-up workstream against the public-release readiness gate; see
+**full tier** as the canonical exemplar — happy paths plus the full
+400/401/403/409 error matrix.
+
+The other 19 operations are authored at **basic tier** for sunny-day
+coverage. The 9 single-resource GETs additionally include a `401`
+unauthenticated scenario (tagged `@full_tier @requires_oidc`) — added to
+satisfy the `gherkin-lint` rule trio that rejects single-scenario files,
+and serves as the seed for further full-tier expansion. Group A
+multi-scenario files (Trust Domain CRUD, Trust Domain Device CRUD,
+Reboot Request CRUD) remain basic-tier-only for now; their full-tier
+rainy-day matrices are tracked as a follow-up workstream against the
+public-release readiness gate; see
 [issue #52](https://github.com/camaraproject/NetworkAccessManagement/issues/52).
 
 ## File inventory
@@ -55,8 +63,9 @@ One `.feature` file per operationId, 20 files total, all committed.
 | Network Access Devices | `getNetworkAccessDevices`, `getNetworkAccessDevice` |
 | Reboot Requests | `createRebootRequest`, `getRebootRequests`, `getRebootRequest`, `updateRebootRequest`, `deleteRebootRequest` |
 
-`*` = full-tier exemplar; the remaining 19 are basic-tier only pending the
-follow-up rainy-day matrices.
+`*` = full-tier exemplar (full 4xx error matrix). The remaining 19 are
+basic-tier with a 401 `@requires_oidc` scenario added in each Group B
+GET file (see Coverage tiers above).
 
 ## Executing the tests
 
@@ -81,49 +90,68 @@ Examples of compatible runner stacks: Behave + `requests` + `openapi-core`
 committed to this repository — it is environment-specific and lives in
 the consuming organization's test infrastructure.
 
+## Local lint (run CI's `gherkin-lint` before you push)
+
+CAMARA's centralized lint is what trips PRs to this repo. Reproduce its
+gherkin-lint check locally with the exact rule config the CI uses:
+
+```bash
+# from anywhere
+curl -sSL https://raw.githubusercontent.com/camaraproject/tooling/v0/linting/config/.gherkin-lintrc \
+  -o /tmp/camara.gherkin-lintrc
+npx --yes gherkin-lint -c /tmp/camara.gherkin-lintrc code/Test_definitions/
+```
+
+Exit 0 means the gherkin step in CI will pass. The rules most likely to
+catch new authoring mistakes (and the order they typically fire in):
+`indentation` (tags need 2-space indent), `no-homogenous-tags` (don't
+repeat the same tag on every Scenario), `required-tags` (every Scenario
+needs ≥1 tag matching `^@.*$`), `no-superfluous-tags` (don't put the
+same tag at Feature *and* Scenario level), `no-background-only-scenario`
+(no `Background:` in a file that only has one Scenario).
+
+For the broader MegaLinter pipeline (Spectral on the OAS, yamllint, etc.)
+use `npx mega-linter-runner` — that pulls the same Docker image CI runs.
+
 ## Authoring guidance
 
 When adding a new file:
 
-1. Start from the pilot (`network-access-management-createTrustDomain.feature`)
-   for the multi-scenario / mixed-tier shape, or from any of the GET-by-id
-   files (e.g. `network-access-management-getService.feature`) for the
-   single-scenario shape with inlined setup steps.
-2. Decide where the tier tag goes based on the file's contents. Four
-   interacting `gherkin-lint` rules apply: `no-homogenous-tags`,
-   `required-tags`, `no-superfluous-tags`, and `indentation` (2-space
-   indent for tags).
-   - **Multi-scenario, all the same tier** → put `@basic_tier` (or
+1. Start from any existing file as a template:
+   - Full-tier: [`network-access-management-createTrustDomain.feature`](network-access-management-createTrustDomain.feature)
+     for write operations with the full error matrix.
+   - Basic-tier multi-scenario CRUD: any of the Trust Domain or Reboot
+     Request CRUD files for the standard Background + multiple-scenario
+     shape with each scenario carrying just its unique id tag.
+   - GET endpoint with a 401 escape hatch: any of the Group B files (e.g.
+     [`network-access-management-getService.feature`](network-access-management-getService.feature))
+     for the happy-path + 401 `@requires_oidc` pattern.
+2. **Every file must have ≥2 Scenarios.** Single-scenario files cannot
+   satisfy the `gherkin-lint` rule trio (`no-homogenous-tags`,
+   `required-tags`, `no-superfluous-tags`) — every tag arrangement
+   triggers at least one rule. If the operation truly has only one
+   sunny-day case, add a 401 `@requires_oidc` scenario as the second
+   scenario; that's what every Group B GET file does.
+3. Decide where the tier tag goes:
+   - **All scenarios at the same tier** → put `@basic_tier` (or
      `@full_tier`) on its own line above `Feature:` (2-space indent).
-     Each scenario keeps just its unique id tag — that satisfies
-     `required-tags`, no two scenarios share scenario-level tags so
-     `no-homogenous-tags` is silent, and no tag is duplicated across
-     levels so `no-superfluous-tags` is silent.
-   - **Multi-scenario, mixed tiers** (like the pilot, where some
-     scenarios are basic and others are full) → keep the tier tag on
-     each individual scenario alongside its unique id.
-   - **Single-scenario file** → put both `@basic_tier` and the unique
-     scenario id at Feature level (combined on one line, 2-space
-     indent). Do **not** repeat them above the Scenario — that fires
-     `no-superfluous-tags`. Note: this configuration depends on the
-     centralized CAMARA gherkin-lint config not enforcing
-     `required-tags` strictly on Scenario lines that inherit Feature
-     tags. **Always validate locally** with `gherkin-lint` before
-     pushing to avoid the rule-interaction surprises this PR
-     repeatedly hit (see "Executing the tests" for the recipe).
-3. Decide whether to use a `Background:` block:
-   - 2+ scenarios → factor common setup into a `Background:`.
-   - Exactly 1 scenario → inline the setup steps directly into that
-     scenario; `gherkin-lint`'s `no-background-only-scenario` rejects a
-     `Background:` with only one consumer.
-4. For request-body operations, adapt scenarios from
+     Each scenario carries just its unique id tag.
+   - **Mixed tiers** (e.g. one basic-tier happy path plus a full-tier
+     `@requires_oidc` scenario, like every Group B file) → keep the tier
+     tag on each individual scenario alongside its unique id; no
+     Feature-level tier tag.
+4. Factor common setup into a `Background:` block: `apiRoot`, resource
+   path, `Content-Type` (write ops only), `Authorization` plus the
+   required scope, `x-correlator` schema check, the default-valid
+   request body (write ops), and any path parameters shared across
+   scenarios.
+5. For request-body operations, adapt scenarios from
    [`syntax-errors-template.feature`](https://github.com/camaraproject/Commonalities/blob/main/artifacts/testing/syntax-errors-template.feature).
-5. For full-tier expansion, confirm every documented error status in the
+6. For full-tier expansion, confirm every documented error status in the
    OAS has at least one scenario.
-6. Run the Gherkin syntax check before committing:
-   `npx @cucumber/gherkin-utils format <file>`. The MegaLinter job in CI
-   additionally runs `gherkin-lint`; the rules called out above
-   (`no-homogenous-tags`, `no-background-only-scenario`) are the ones
-   that have caught past PRs.
-7. Tag scope-/auth-dependent scenarios with `@requires_oidc` so they are
+7. **Validate locally** with the recipe in "Local lint" above. Exit 0
+   means CI's gherkin step will pass. Do this every time before
+   committing — every CI lint failure on this PR was something
+   catchable in five seconds locally.
+8. Tag scope-/auth-dependent scenarios with `@requires_oidc` so they are
    automatically skipped in environments without an OIDC server.
