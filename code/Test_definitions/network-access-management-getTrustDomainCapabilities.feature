@@ -10,7 +10,6 @@ Feature: CAMARA Network Access Management API, vwip - Operation getTrustDomainCa
   # Full-tier (rainy-day) scenarios are tracked as a follow-up workstream
   # against the public-release readiness gate; see issue #52.
 
-  @basic_tier @network_access_management_getTrustDomainCapabilities_01_get_capabilities_success
   Scenario: Retrieve the Trust Domain capabilities advertised by the API provider
     Given an environment at "apiRoot"
     And the resource "/network-access-management/vwip/trust-domains/capabilities"

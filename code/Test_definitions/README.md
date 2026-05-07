@@ -18,7 +18,7 @@ and the reusable templates in
 |---|---|
 | Filename | `network-access-management-{operationId}.feature` (one file per `operationId`) |
 | Scenario tag | `@network_access_management_{operationId}_{NN}_{slug}` |
-| Tier tag | `@basic_tier` (release-candidate gate) or `@full_tier` (public-release gate). Three placements depending on file shape: (a) **multi-scenario, single tier** → Feature level only, with each scenario carrying just its unique id tag; (b) **multi-scenario, mixed tiers** (like the pilot) → on each individual scenario alongside its unique id; (c) **single-scenario** → at *both* Feature and Scenario level. The single-scenario case is forced by the simultaneous `gherkin-lint` rules `no-homogenous-tags` (factor shared tags up to Feature) and `required-tags` (every Scenario must carry ≥1 tag). |
+| Tier tag | `@basic_tier` (release-candidate gate) or `@full_tier` (public-release gate). Placement depends on file shape: (a) **multi-scenario, single tier** → both `@basic_tier` and the unique scenario-id tag at Feature level only, scenarios carry no tags of their own; (b) **multi-scenario, mixed tiers** (like the pilot) → tier tag on each individual scenario alongside its unique id; (c) **single-scenario** → both tags at Feature level only (do not duplicate at the Scenario — that fires `no-superfluous-tags`). The interacting `gherkin-lint` rules to keep in mind: `no-homogenous-tags`, `required-tags`, `no-superfluous-tags`, `indentation`. Run `gherkin-lint` locally before pushing — see "Executing the tests" below. |
 | Auth-dependent tag | `@requires_oidc` — scenario requires real OIDC enforcement; skip when running against a facade in auth-disabled mode |
 | Backend-dependent tag | `@backend_controlled` — scenario depends on backend state the facade alone cannot drive (e.g. 409 conflicts) |
 | Setup steps | For files with **2+ scenarios**, factored into a `Background:` block (`apiRoot` + resource + `Authorization` with required scope + `x-correlator` schema check, plus `Content-Type` and a default-valid request body for write ops). For files with a **single scenario**, inlined directly into the scenario — `Background:` is disallowed by `gherkin-lint`'s `no-background-only-scenario`. |
@@ -89,23 +89,28 @@ When adding a new file:
    for the multi-scenario / mixed-tier shape, or from any of the GET-by-id
    files (e.g. `network-access-management-getService.feature`) for the
    single-scenario shape with inlined setup steps.
-2. Decide where the tier tag goes based on the file's contents. Three
-   `gherkin-lint` rules interact here (`no-homogenous-tags`,
-   `required-tags`, and `indentation` requiring 2-space indent for tags):
+2. Decide where the tier tag goes based on the file's contents. Four
+   interacting `gherkin-lint` rules apply: `no-homogenous-tags`,
+   `required-tags`, `no-superfluous-tags`, and `indentation` (2-space
+   indent for tags).
    - **Multi-scenario, all the same tier** → put `@basic_tier` (or
      `@full_tier`) on its own line above `Feature:` (2-space indent).
      Each scenario keeps just its unique id tag — that satisfies
-     `required-tags`, and no two scenarios share scenario-level tags so
-     `no-homogenous-tags` is silent.
+     `required-tags`, no two scenarios share scenario-level tags so
+     `no-homogenous-tags` is silent, and no tag is duplicated across
+     levels so `no-superfluous-tags` is silent.
    - **Multi-scenario, mixed tiers** (like the pilot, where some
      scenarios are basic and others are full) → keep the tier tag on
      each individual scenario alongside its unique id.
-   - **Single-scenario file** → put the tag set at **both** Feature
-     level *and* Scenario level. `no-homogenous-tags` is satisfied
-     because the tags exist at Feature level; `required-tags` is
-     satisfied because the Scenario has its own tag line. Yes, this
-     duplicates the tags. Yes, both rules are simultaneously demanding
-     it. Don't try to remove either copy without re-running CI.
+   - **Single-scenario file** → put both `@basic_tier` and the unique
+     scenario id at Feature level (combined on one line, 2-space
+     indent). Do **not** repeat them above the Scenario — that fires
+     `no-superfluous-tags`. Note: this configuration depends on the
+     centralized CAMARA gherkin-lint config not enforcing
+     `required-tags` strictly on Scenario lines that inherit Feature
+     tags. **Always validate locally** with `gherkin-lint` before
+     pushing to avoid the rule-interaction surprises this PR
+     repeatedly hit (see "Executing the tests" for the recipe).
 3. Decide whether to use a `Background:` block:
    - 2+ scenarios → factor common setup into a `Background:`.
    - Exactly 1 scenario → inline the setup steps directly into that

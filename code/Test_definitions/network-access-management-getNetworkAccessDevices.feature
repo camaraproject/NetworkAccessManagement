@@ -10,7 +10,6 @@ Feature: CAMARA Network Access Management API, vwip - Operation getNetworkAccess
   # Full-tier (rainy-day) scenarios are tracked as a follow-up workstream
   # against the public-release readiness gate; see issue #52.
 
-  @basic_tier @network_access_management_getNetworkAccessDevices_01_list_success
   Scenario: List Network Access Devices associated with the subscriber
     Given an environment at "apiRoot"
     And the resource "/network-access-management/vwip/network-access-devices"
