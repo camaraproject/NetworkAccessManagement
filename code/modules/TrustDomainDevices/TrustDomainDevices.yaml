@@ -78,6 +78,7 @@ components:
       enum:
         - DPP
         - MATTER
+        - WKSO
 
     DppBootstrappingConfig:
       type: object
@@ -124,11 +125,41 @@ components:
             See Matter Core Specification Section 5.1.3 for payload structure details.
           example: "MT:Y3.13OTB00KA0648G00"
 
+    WksoBootstrappingConfig:
+      type: object
+      description: |
+        Well-Known SSID Onboarding (WKSO) bootstrapping configuration. The device
+        connects to a well-known SSID and presents a client certificate; the operator
+        uses identity material extracted from the certificate to look up and
+        authorize the device on the Trust Domain.
+
+        **Note:** The exact `bootstrappingUri` shape is provisional and
+        implementation-specific. WKSO is not yet standardized; the format below
+        reflects an initial proof-of-concept convention and is expected to evolve —
+        for example, future iterations may incorporate cryptographically verifiable
+        fields analogous to those carried in DPP bootstrapping URIs.
+      required:
+        - bootstrappingUri
+      properties:
+        bootstrappingUri:
+          type: string
+          maxLength: 2048
+          description: |
+            A WKSO bootstrapping URI carrying the identity material the operator
+            uses to locate and authenticate the device.
+
+            Format is provisional and may change as WKSO is standardized. The
+            current proof-of-concept convention encodes the device's Organizational
+            Unit (OU) and Serial Number (SN) from the client certificate subject,
+            expressed as semicolon-delimited key-value pairs. This shape is
+            illustrative rather than normative.
+          example: "WKS:OU:00405E;SN:rpi-client-1;;"
+
     BootstrappingInfo:
       type: object
       description: |
         Provisioning protocol configurations for onboarding a device to the Trust Domain.
-        Each protocol property (DPP, MATTER) represents a supported bootstrapping protocol
+        Each protocol property (DPP, MATTER, WKSO) represents a supported bootstrapping protocol
         and its configuration. A device may support multiple protocols simultaneously.
 
         When multiple protocols are configured, use `protocolPreference` to indicate the
@@ -162,6 +193,8 @@ components:
           $ref: "#/components/schemas/DppBootstrappingConfig"
         MATTER:
           $ref: "#/components/schemas/MatterBootstrappingConfig"
+        WKSO:
+          $ref: "#/components/schemas/WksoBootstrappingConfig"
 
     CredentialType:
       type: string
