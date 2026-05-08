@@ -125,7 +125,7 @@ Feature: CAMARA Network Access Management API, vwip - Operation createTrustDomai
   @network_access_management_createTrustDomain_400_05_access_type_payload_mismatch @full_tier
   Scenario: accessType discriminator does not match the supplied accessDetail variant
     Given the request body property "$.accessDetails[0].accessType" is set to "Thread:STRUCTURED"
-    And the request body property "$.accessDetails[0]" otherwise contains Wi-Fi:WPA_PERSONAL fields
+    And the request body property "$.accessDetails[0]" contains the fields of a Wi-Fi:WPA_PERSONAL accessDetail except for "accessType"
     When the request "createTrustDomain" is sent
     Then the response status code is 400
     And the response property "$.code" is "INVALID_ARGUMENT"
@@ -190,6 +190,9 @@ Feature: CAMARA Network Access Management API, vwip - Operation createTrustDomai
 
   @network_access_management_createTrustDomain_403_02_read_only_scope @full_tier @requires_oidc
   Scenario: Access token has only the :read-all variant, which does not authorize creation
+    # Background's Authorization step set a valid :trust-domains-scoped token; the
+    # Given below replaces it with a :read-all-only token to verify that scope alone
+    # cannot authorize creation.
     Given the access token is replaced with one whose only NAM scope is "network-access-management:trust-domains:read-all"
     When the request "createTrustDomain" is sent
     Then the response status code is 403

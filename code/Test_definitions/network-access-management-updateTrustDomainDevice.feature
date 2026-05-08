@@ -39,4 +39,4 @@ Feature: CAMARA Network Access Management API, vwip - Operation updateTrustDomai
     Then the response status code is 200
     And the response body complies with the OAS schema at "/components/schemas/TrustDomainDevice"
     And the response property "$.modifiedAt" is a valid RFC 3339 date-time with timezone
-    And the response body does not echo back the request body property "$.deviceCredential.value"
+    And the response body does not contain the property "$.deviceCredential.value"

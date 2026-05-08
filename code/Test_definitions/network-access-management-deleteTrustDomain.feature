@@ -29,6 +29,6 @@ Feature: CAMARA Network Access Management API, vwip - Operation deleteTrustDomai
   Scenario: After successful deletion, GET on the same id returns 404 IDENTIFIER_NOT_FOUND
     Given the path parameter "trustDomainId" is set to the id of a Trust Domain created by the calling API client
     And the request "deleteTrustDomain" has been sent and returned 204
-    When the request "getTrustDomain" is sent with the same trustDomainId
+    When the request "getTrustDomain" is sent
     Then the response status code is 404
     And the response property "$.code" is "NOT_FOUND"

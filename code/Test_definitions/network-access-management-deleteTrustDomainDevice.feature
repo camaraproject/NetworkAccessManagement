@@ -31,6 +31,6 @@ Feature: CAMARA Network Access Management API, vwip - Operation deleteTrustDomai
     Given the path parameter "trustDomainId" is set to the id of a Trust Domain created by the calling API client
     And the path parameter "deviceId" is set to the id of a device registered to that Trust Domain
     And the request "deleteTrustDomainDevice" has been sent and returned 204
-    When the request "getTrustDomainDevice" is sent with the same trustDomainId and deviceId
+    When the request "getTrustDomainDevice" is sent
     Then the response status code is 404
     And the response property "$.code" is "NOT_FOUND"

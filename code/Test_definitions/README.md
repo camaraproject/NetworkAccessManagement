@@ -18,9 +18,9 @@ and the reusable templates in
 |---|---|
 | Filename | `network-access-management-{operationId}.feature` (one file per `operationId`) |
 | Scenario tag | `@network_access_management_{operationId}_{NN}_{slug}` |
-| Tier tag | `@basic_tier` (release-candidate gate) or `@full_tier` (public-release gate). Placement: (a) **multi-scenario, single tier** → at Feature level (above `Feature:`, 2-space indent), with each scenario carrying just its unique id tag; (b) **multi-scenario, mixed tiers** (the pilot and every Group B file in this repo, which mix one `@basic_tier` happy path with one `@full_tier @requires_oidc` 401 scenario) → tier tag on each individual scenario alongside its unique id; no Feature-level tier tag. The four interacting `gherkin-lint` rules: `no-homogenous-tags` (scenarios may not all share a tag at scenario level), `required-tags` (every Scenario must have ≥1 tag), `no-superfluous-tags` (no tag duplicated across Feature and Scenario), `indentation` (2-space indent for tags). |
+| Tier tag | `@basic_tier` (release-candidate gate) or `@full_tier` (public-release gate). Placement depends on tier homogeneity within the file: if every scenario shares the same tier, put the tier tag once at Feature level (2-space indent, on the line above `Feature:`); if the file mixes tiers, drop the Feature-level tier tag and put the appropriate tier tag on each scenario alongside its unique id. The "Local lint" section below lists the underlying `gherkin-lint` rules this placement satisfies. |
 | Auth-dependent tag | `@requires_oidc` — scenario requires real OIDC enforcement; auto-skip when running against a facade in auth-disabled mode |
-| Backend-dependent tag | `@backend_controlled` — scenario depends on backend state the facade alone cannot drive (e.g. 409 conflicts) |
+| Backend-dependent tag | `@backend_controlled` — scenario depends on backend state the facade alone cannot drive (e.g. a 409 conflict where a duplicate must already exist on the server). Used sparingly: tag a scenario only when its setup truly requires backend cooperation a runner cannot simulate via client-side requests. |
 | Setup steps | Always factored into a `Background:` block (`apiRoot` + resource + `Authorization` with required scope + `x-correlator` schema check, plus `Content-Type` and a default-valid request body for write ops, plus any path parameters shared across all scenarios). Every file in this directory has at least 2 scenarios — single-scenario files cannot satisfy the lint rule trio above, which is why Group B GETs each carry a 401 `@requires_oidc` scenario alongside the happy path. |
 | Schema references | JSON Pointer into the **bundled** OAS (e.g. `/components/schemas/TrustDomain`), not into `modules/...` |
 | Error-code coverage | One named `Scenario:` per documented response code; `Scenario Outline:` for parameter-varied cases (e.g. each missing-required-field permutation) |
@@ -40,15 +40,22 @@ Per the CAMARA API Testing Guidelines:
 **full tier** as the canonical exemplar — happy paths plus the full
 400/401/403/409 error matrix.
 
-The other 19 operations are authored at **basic tier** for sunny-day
-coverage. The 9 single-resource GETs additionally include a `401`
-unauthenticated scenario (tagged `@full_tier @requires_oidc`) — added to
-satisfy the `gherkin-lint` rule trio that rejects single-scenario files,
-and serves as the seed for further full-tier expansion. Group A
-multi-scenario files (Trust Domain CRUD, Trust Domain Device CRUD,
-Reboot Request CRUD) remain basic-tier-only for now; their full-tier
-rainy-day matrices are tracked as a follow-up workstream against the
-public-release readiness gate; see
+The remaining 19 operations are authored at **basic tier** for sunny-day
+coverage, and split into two structural groups:
+
+- **Group A** — multi-scenario CRUD files (Trust Domain CRUD, Trust
+  Domain Device CRUD, Reboot Request CRUD). Every scenario is
+  basic-tier, so a single Feature-level `@basic_tier` tag covers all
+  scenarios in the file.
+- **Group B** — the 9 single-resource GETs. Each carries a basic-tier
+  happy-path scenario plus a `401` unauthenticated scenario tagged
+  `@full_tier @requires_oidc`. The 401 scenario seeds the eventual
+  full-tier expansion and also satisfies the `gherkin-lint` rule trio
+  that rejects single-scenario files. Because the file mixes tiers,
+  tier tags live on each scenario rather than at Feature level.
+
+Group A's full-tier rainy-day matrices are tracked as a follow-up
+workstream against the public-release readiness gate; see
 [issue #52](https://github.com/camaraproject/NetworkAccessManagement/issues/52).
 
 ## File inventory

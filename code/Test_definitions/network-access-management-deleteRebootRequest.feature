@@ -29,6 +29,6 @@ Feature: CAMARA Network Access Management API, vwip - Operation deleteRebootRequ
   Scenario: After successful deletion, GET on the same id returns 404
     Given the path parameter "rebootRequestId" is set to the id of a pending Reboot Request created by the calling API client
     And the request "deleteRebootRequest" has been sent and returned 204
-    When the request "getRebootRequest" is sent with the same rebootRequestId
+    When the request "getRebootRequest" is sent
     Then the response status code is 404
     And the response property "$.code" is "NOT_FOUND"

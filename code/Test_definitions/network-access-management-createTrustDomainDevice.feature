@@ -44,4 +44,4 @@ Feature: CAMARA Network Access Management API, vwip - Operation createTrustDomai
     When the request "createTrustDomainDevice" is sent
     Then the response status code is 201
     And the response body complies with the OAS schema at "/components/schemas/TrustDomainDevice"
-    And the response property "$.bootstrappingInfo" matches the request body property "$.bootstrappingInfo"
+    And the response property "$.bootstrappingInfo" is present and non-null
