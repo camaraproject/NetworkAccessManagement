@@ -8,21 +8,24 @@ The API definitions have been restructured from a monolithic approach to a modul
 
 ## Folder Structure
 
+The repository follows the layout defined in the [CAMARA Commonalities Consumption and Bundling Design](https://github.com/camaraproject/Commonalities/blob/main/documentation/Commonalities-Consumption-and-Bundling-Design.md): `common/` and `modules/` sit beside `API_definitions/` under `code/`, not inside it. This is what the central CAMARA release automation expects.
+
 ```
-API_definitions/
-├── README.md                                    # This file (authoring & process docs)
-├── redocly.yaml                                 # Lint/bundle configuration (Redocly CLI)
-├── network-access-management.yaml               # Source API spec with $ref references (committed on main)
+code/
+├── API_definitions/
+│   ├── README.md                                # This file (authoring & process docs)
+│   ├── redocly.yaml                             # Lint/bundle configuration (Redocly CLI)
+│   └── network-access-management.yaml           # Source API spec with $ref references (committed on main)
 ├── common/
-│   └── CAMARA_common.yaml                       # Shared CAMARA-style error responses
+│   └── CAMARA_common.yaml                       # Local cached copy of the Commonalities shared error responses
 └── modules/                                     # Modular domain-focused component files
     ├── NAM_Common.yaml                          # Shared primitives (UUID, DateTime, ResourceAudit, securitySchemes)
     ├── AccessDetail.yaml                        # Discriminated access detail variants (Wi-Fi, Thread)
-    ├── Capabilities.yaml                        # Device capability schemas
     ├── Policy.yaml                              # Trust Domain policy schemas (maxDevices, bandwidth, egress)
-    ├── NetworkAccessDevices/                     # Network Access Device resource schemas
-    ├── RebootRequests/                           # Reboot Request lifecycle schemas
+    ├── NetworkAccessDevices/                    # Network Access Device resource schemas
+    ├── RebootRequests/                          # Reboot Request lifecycle schemas
     ├── Services/                                # Service and ServiceSite schemas
+    ├── TrustDomainDevices/                      # Trust Domain Device resource schemas
     └── TrustDomains/                            # Trust Domain & related capability schemas
 ```
 
@@ -59,7 +62,7 @@ API_definitions/
 
 ### Key Constraint: Bundled Files Are Not Committed on Main
 
-Per the [CAMARA Consumption and Bundling Design](https://github.com/camaraproject/Commonalities/blob/main/documentation/Commonalities-Consumption-and-Bundling-Design.md), **bundled (standalone) API definitions are never committed on `main`**. The committed `network-access-management.yaml` retains its `$ref` references to `common/` and `modules/`. Bundled standalone OAS files are produced only on release branches/tags and for local validation.
+Per the [CAMARA Consumption and Bundling Design](https://github.com/camaraproject/Commonalities/blob/main/documentation/Commonalities-Consumption-and-Bundling-Design.md), **bundled (standalone) API definitions are never committed on `main`**. The committed `network-access-management.yaml` retains its `$ref` references to `../common/` and `../modules/`. Bundled standalone OAS files are produced only on release branches/tags and for local validation.
 
 This avoids merge conflicts in the large bundled output and keeps `main` as the single source of truth for modular schema authoring.
 
@@ -111,20 +114,21 @@ Key bundling features:
 
 ### API Specification
 
-- **`network-access-management.yaml`** - Source API specification with `$ref` references to `common/` and `modules/`. This is the file committed on `main`. Bundling resolves these refs into a standalone OAS file for release branches and local tooling.
+- **`network-access-management.yaml`** - Source API specification with `$ref` references to `../common/` and `../modules/`. This is the file committed on `main`. Bundling resolves these refs into a standalone OAS file for release branches and local tooling.
 
 ### Component Files
 
-- **`common/CAMARA_common.yaml`** - Shared CAMARA-style error responses and common schemas
-- **`modules/NAM_Common.yaml`** - Shared fundamental types (UUID, DateTime, ResourceAudit, securitySchemes)
-- **`modules/Policy.yaml`** - Trust Domain policy schemas (maxDevices, bandwidth limits, egress rules)
-- **`modules/AccessDetail.yaml`** - Network access configuration schemas (Wi-Fi, Thread, security modes)
-- **`modules/Capabilities.yaml`** - Device capability schemas
-- **`modules/TrustDomains/TrustDomains.yaml`** - Core Trust Domain schemas and examples
-- **`modules/NetworkAccessDevices/NetworkAccessDevices.yaml`** - Network Access Device resource schemas
-- **`modules/RebootRequests/RebootRequests.yaml`** - Reboot Request lifecycle schemas
-- **`modules/Services/Services.yaml`** - Service schemas
-- **`modules/Services/ServiceSites.yaml`** - Service Site schemas
+- **`../common/CAMARA_common.yaml`** - Shared CAMARA-style error responses and common schemas
+- **`../modules/NAM_Common.yaml`** - Shared fundamental types (UUID, DateTime, ResourceAudit, securitySchemes)
+- **`../modules/Policy.yaml`** - Trust Domain policy schemas (maxDevices, bandwidth limits, egress rules)
+- **`../modules/AccessDetail.yaml`** - Network access configuration schemas (Wi-Fi, Thread, security modes)
+- **`../modules/TrustDomains/TrustDomains.yaml`** - Core Trust Domain schemas and examples
+- **`../modules/TrustDomains/TrustDomainCapabilities.yaml`** - Trust Domain capability discovery schemas
+- **`../modules/TrustDomainDevices/TrustDomainDevices.yaml`** - Trust Domain Device resource schemas
+- **`../modules/NetworkAccessDevices/NetworkAccessDevices.yaml`** - Network Access Device resource schemas
+- **`../modules/RebootRequests/RebootRequests.yaml`** - Reboot Request lifecycle schemas
+- **`../modules/Services/Services.yaml`** - Service schemas
+- **`../modules/Services/ServiceSites.yaml`** - Service Site schemas
 
 ## Best Practices
 
@@ -151,7 +155,7 @@ TrustDomainExample:
   value:
     name: "My Network"
     accessDetails:
-      - $ref: "modules/AccessDetail.yaml#/components/examples/WiFiExample/value"  # Invalid!
+      - $ref: "../modules/AccessDetail.yaml#/components/examples/WiFiExample/value"  # Invalid!
 ```
 
 #### The Solutions
@@ -193,7 +197,7 @@ components:
 ```yaml
 # ✅ Reference complete examples at component level (not within values)
 WiFiAccessExample:
-  $ref: "modules/AccessDetail.yaml#/components/examples/WiFiAccessDetailWPA2Personal"
+  $ref: "../modules/AccessDetail.yaml#/components/examples/WiFiAccessDetailWPA2Personal"
 
 # But you still can't compose these inside other example values
 ```
