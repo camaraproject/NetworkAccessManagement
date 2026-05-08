@@ -9,6 +9,7 @@ Feature: CAMARA Network Access Management API, vwip - Operation updateRebootRequ
   # - @basic_tier  release-candidate gate (sunny-day + schema validation)
   # Full-tier (rainy-day) scenarios are tracked as a follow-up workstream
   # against the public-release readiness gate; see issue #52.
+  # Pending full-tier coverage: 400, 401, 403, 404, 409, 422.
 
   Background: Common updateRebootRequest setup
     Given an environment at "apiRoot"

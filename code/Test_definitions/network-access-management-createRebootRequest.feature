@@ -9,6 +9,7 @@ Feature: CAMARA Network Access Management API, vwip - Operation createRebootRequ
   # - @basic_tier  release-candidate gate (sunny-day + schema validation)
   # Full-tier (rainy-day) scenarios are tracked as a follow-up workstream
   # against the public-release readiness gate; see issue #52.
+  # Pending full-tier coverage: 400, 401, 403, 404, 409, 422.
 
   Background: Common createRebootRequest setup
     Given an environment at "apiRoot"
@@ -19,7 +20,7 @@ Feature: CAMARA Network Access Management API, vwip - Operation createRebootRequ
     And the header "x-correlator" complies with the schema at "#/components/schemas/XCorrelator"
     And the request body is set by default to a request body compliant with the schema at "/components/schemas/RebootRequestCreate"
 
-  @network_access_management_createRebootRequest_01_immediate_default_device_success
+  @network_access_management_createRebootRequest_01_immediate_default_device_success @backend_controlled
   Scenario: Request an immediate reboot of the default device (implicit targeting)
     Given the calling subscriber has exactly one reboot-capable Network Access Device
     And the API provider supports default-device inference
