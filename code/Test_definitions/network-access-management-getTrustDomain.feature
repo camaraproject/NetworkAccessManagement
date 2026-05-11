@@ -28,7 +28,7 @@ Feature: CAMARA Network Access Management API, vwip - Operation getTrustDomain
     And the response body complies with the OAS schema at "/components/schemas/TrustDomain"
     And the response property "$.id" equals the path parameter "trustDomainId"
 
-  @network_access_management_getTrustDomain_02_read_all_success
+  @network_access_management_getTrustDomain_02_read_all_success @backend_controlled
   Scenario: Retrieve a Trust Domain via the read-all scope
     Given the access token has the scope "network-access-management:trust-domains:read-all"
     And the path parameter "trustDomainId" is set to the id of a Trust Domain associated with the subscriber but created by a different API client

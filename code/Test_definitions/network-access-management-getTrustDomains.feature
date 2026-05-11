@@ -29,7 +29,7 @@ Feature: CAMARA Network Access Management API, vwip - Operation getTrustDomains
     And every element of the response body complies with the schema at "/components/schemas/TrustDomain"
     And every element of the response body has a "createdBy" property identifying the calling API client
 
-  @network_access_management_getTrustDomains_02_read_all_success
+  @network_access_management_getTrustDomains_02_read_all_success @backend_controlled
   Scenario: List all Trust Domains visible to the subscriber via the read-all scope
     Given the access token has the scope "network-access-management:trust-domains:read-all"
     And at least one Trust Domain exists for the subscriber, created by another API client
