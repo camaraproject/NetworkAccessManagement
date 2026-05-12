@@ -1,33 +1,61 @@
-# This file was pulled from https://github.com/camaraproject/Commonalities/blob/r3.4/artifacts/CAMARA_common.yaml
-# in order to reference Commonalities models directly from spec files using $ref statements.
-#
-# IMPORTANT: This file has been modified in this repo in order to address linter warnings/errors that
-# occurred in examples that referenced generic placeholder values like {{SPECIFIC_CODE}} or {{SPECIFIC_CODE_MESSAGE}}.
-# The original file was using { { SPECIFIC_CODE } } in examples which had two issues. First, it's not quoted so it
-# conform to the enum type (string). Second, even when quoted, the extraneous spaces inside the curly braces made it
-# not conform to the pattern defined for that field. The modifications made were to remove any such placeholder entries
-# from the examples, while leaving the rest of the example intact.
-openapi: 3.0.3
 info:
   title: CAMARA common data types
-  description: Common data types for CAMARA APIs
+  description: |
+    Common data types for CAMARA APIs.
+    This file contains Commonalities-owned schemas that are identical across all
+    CAMARA APIs, including error responses, common parameters, headers, and
+    reusable data types.
+
+    API repositories place this file in `code/common/` and reference schemas
+    via `$ref: "../common/CAMARA_common.yaml#/components/schemas/<SchemaName>"`.
   license:
     name: Apache 2.0
     url: https://www.apache.org/licenses/LICENSE-2.0.html
-  version: 0.7.1
-  x-camara-commonalities: 0.6
+  version: wip
+  x-camara-commonalities: 0.8.0-rc.2
 
-paths: {}
 components:
   securitySchemes:
     openId:
       type: openIdConnect
       openIdConnectUrl: https://example.com/.well-known/openid-configuration
+      description: OpenID Connect authentication via discovery metadata.
+
   headers:
     x-correlator:
       description: Correlation id for the different services
       schema:
         $ref: "#/components/schemas/XCorrelator"
+
+    x-total-count:
+      description: Total number of items. Mirrors `pagination.totalCount` in the response body.
+      required: false
+      schema:
+        $ref: "#/components/schemas/TotalCount"
+
+    x-total-pages:
+      description: Total number of pages. Mirrors `pagination.totalPages` in the response body.
+      required: false
+      schema:
+        $ref: "#/components/schemas/TotalPages"
+
+    link:
+      description: |
+        Navigation links for paginated results following
+        [RFC 8288](https://www.rfc-editor.org/rfc/rfc8288).
+        Includes only the rels applicable to the current position
+        (`first`, `prev`, `next`, `last`). All original query parameters
+        are preserved in Link URLs.
+        Example:
+          Link: <https://api.example.com/v1/resources?page=1&perPage=20>; rel="first",
+                <https://api.example.com/v1/resources?page=2&perPage=20>; rel="prev",
+                <https://api.example.com/v1/resources?page=4&perPage=20>; rel="next",
+                <https://api.example.com/v1/resources?page=5&perPage=20>; rel="last"
+      required: false
+      schema:
+        type: string
+        maxLength: 8192
+
   parameters:
     x-correlator:
       name: x-correlator
@@ -35,25 +63,53 @@ components:
       description: Correlation id for the different services
       schema:
         $ref: "#/components/schemas/XCorrelator"
+
+    page:
+      name: page
+      in: query
+      description: >
+        Requested page number. Pages are 1-indexed.
+        Values below 1 are rejected with `400 INVALID_ARGUMENT`.
+      required: false
+      schema:
+        $ref: "#/components/schemas/Page"
+
+    perPage:
+      name: perPage
+      in: query
+      description: >
+        Number of subscriptions to return per page.
+        Values outside the allowed range are rejected with `400 INVALID_ARGUMENT`.
+      required: false
+      schema:
+        $ref: "#/components/schemas/PerPage"
+
   schemas:
     XCorrelator:
       type: string
+      description: Correlator string, UUID format recommended but any string matching the pattern can be used
       pattern: ^[a-zA-Z0-9-_:;.\/<>{}]{0,256}$
+      maxLength: 256
       example: "b4333c46-49c0-4f62-80d7-f0ef930f1c46"
+    DateTime:
+      type: string
+      format: date-time
+      maxLength: 64
+      description: Timestamp. It must follow [RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339#section-5.6) and must have time zone.
+      example: "2018-04-05T17:31:00Z"
     TimePeriod:
+      type: object
+      description: A period of time defined by a start date and an optional end date. If `endDate` is not included, then the period has no ending date.
       properties:
         startDate:
-          type: string
-          format: date-time
-          description: An instant of time, starting of the TimePeriod. It must follow [RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339#section-5.6) and must have time zone.
+          $ref: "#/components/schemas/DateTime"
         endDate:
-          type: string
-          format: date-time
-          description: An instant of time, ending of the TimePeriod. If not included, then the period has no ending date. It must follow [RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339#section-5.6) and must have time zone.
+          $ref: "#/components/schemas/DateTime"
       required:
         - startDate
     ErrorInfo:
       type: object
+      description: A structured error response providing details about a failed request, including the HTTP status code, an error code, and a human-readable message
       required:
         - status
         - code
@@ -61,12 +117,17 @@ components:
       properties:
         status:
           type: integer
+          format: int32
+          minimum: 100
+          maximum: 599
           description: HTTP response status code
         code:
           type: string
+          maxLength: 96
           description: A human-readable code to describe the error
         message:
           type: string
+          maxLength: 512
           description: A human-readable description of what the event represents
     Device:
       description: |
@@ -76,7 +137,7 @@ components:
             * `ipv6Address`
             * `phoneNumber`
             * `networkAccessIdentifier`
-            NOTE1: the network operator might support only a subset of these options. The API invoker can provide multiple identifiers to be compatible across different network operators. In this case the identifiers MUST belong to the same device.
+            NOTE1: the network operator might support only a subset of these options. The API Consumer can provide multiple identifiers to ensure compatibility across different network operators. In this case, the API Provider will use one of the identifiers for the API logic without performing any matching checks among the provided identifiers.
             NOTE2: as for this Commonalities release, we are enforcing that the networkAccessIdentifier is only part of the schema for future-proofing, and CAMARA does not currently allow its use. After the CAMARA meta-release work is concluded and the relevant issues are resolved, its use will need to be explicitly documented in the guidelines.
       type: object
       properties:
@@ -85,7 +146,7 @@ components:
         networkAccessIdentifier:
           $ref: "#/components/schemas/NetworkAccessIdentifier"
         ipv4Address:
-          $ref: "#/components/schemas/DeviceIpv4Addr"
+          $ref: "#/components/schemas/DeviceIpv4Address"
         ipv6Address:
           $ref: "#/components/schemas/DeviceIpv6Address"
       minProperties: 1
@@ -104,14 +165,16 @@ components:
       description: A public identifier addressing a telephone subscription. In mobile networks it corresponds to the MSISDN (Mobile Station International Subscriber Directory Number). In order to be globally unique it has to be formatted in international format, according to E.164 standard, prefixed with '+'.
       type: string
       pattern: '^\+[1-9][0-9]{4,14}$'
+      maxLength: 16
       example: "+123456789"
 
     NetworkAccessIdentifier:
       description: A public identifier addressing a subscription in a mobile network. In 3GPP terminology, it corresponds to the GPSI formatted with the External Identifier ({Local Identifier}@{Domain Identifier}). Unlike the telephone number, the network access identifier is not subjected to portability ruling in force, and is individually managed by each operator.
       type: string
+      maxLength: 2048
       example: "123456789@example.com"
 
-    DeviceIpv4Addr:
+    DeviceIpv4Address:
       type: object
       description: |
         The device should be identified by either the public (observed) IP address and port as seen by the application server, or the private (local) and any public (observed) IP addresses in use by the device (this information can be obtained by various means, for example from some DNS servers).
@@ -123,9 +186,9 @@ components:
         In all cases, publicAddress must be specified, along with at least one of either privateAddress or publicPort, dependent upon which is known. In general, mobile devices cannot be identified by their public IPv4 address alone.
       properties:
         publicAddress:
-          $ref: "#/components/schemas/SingleIpv4Addr"
+          $ref: "#/components/schemas/SingleIpv4Address"
         privateAddress:
-          $ref: "#/components/schemas/SingleIpv4Addr"
+          $ref: "#/components/schemas/SingleIpv4Address"
         publicPort:
           $ref: "#/components/schemas/Port"
       anyOf:
@@ -135,16 +198,18 @@ components:
         publicAddress: "84.125.93.10"
         publicPort: 59765
 
-    SingleIpv4Addr:
+    SingleIpv4Address:
       description: A single IPv4 address with no subnet mask
       type: string
       format: ipv4
+      maxLength: 15
       example: "84.125.93.10"
 
     Port:
       description: TCP or UDP port number
       type: integer
-      minimum: 0
+      format: int32
+      minimum: 1
       maximum: 65535
 
     DeviceIpv6Address:
@@ -152,6 +217,7 @@ components:
         The device should be identified by the observed IPv6 address, or by any single IPv6 address from within the subnet allocated to the device (e.g. adding ::0 to the /64 prefix).
       type: string
       format: ipv6
+      maxLength: 45
       example: 2001:db8:85a3:8d3:1319:8a2e:370:7344
 
     Area:
@@ -242,6 +308,53 @@ components:
       minimum: -180
       maximum: 180
 
+    # ─────────────────────────────────────────────────────────────────────────
+    # Pagination
+    # ─────────────────────────────────────────────────────────────────────────
+
+    Pagination:
+      description: Pagination details helping to navigate through paged results efficiently.
+      type: object
+      properties:
+        page:
+          $ref: "#/components/schemas/Page"
+        perPage:
+          $ref: "#/components/schemas/PerPage"
+        totalCount:
+          $ref: "#/components/schemas/TotalCount"
+        totalPages:
+          $ref: "#/components/schemas/TotalPages"
+
+    Page:
+      type: integer
+      format: int32
+      minimum: 1
+      maximum: 2147483647
+      default: 1
+      description: Current page number (1-indexed).
+      example: 1
+    PerPage:
+      type: integer
+      format: int32
+      minimum: 1
+      maximum: 100
+      default: 20
+      description: Number of items per page.
+      example: 20
+    TotalCount:
+      type: integer
+      format: int32
+      minimum: 0
+      maximum: 2147483647
+      description: Total number of items matching the query, after filters applied. MAY be omitted where a full count query is prohibitively expensive.
+      example: 87
+    TotalPages:
+      type: integer
+      format: int32
+      minimum: 0
+      maximum: 2147483647
+      description: Total number of pages. Equals ceil(totalCount / perPage). MAY be omitted where totalCount is omitted.
+      example: 5
   responses:
     #######################################################
     #######################################################
@@ -300,6 +413,7 @@ components:
                     enum:
                       - INVALID_ARGUMENT
                       - OUT_OF_RANGE
+                      # - "{{SPECIFIC_CODE}}" - API-specific codes added if needed
           examples:
             GENERIC_400_INVALID_ARGUMENT:
               description: Invalid Argument. Generic Syntax Exception
@@ -313,6 +427,12 @@ components:
                 status: 400
                 code: OUT_OF_RANGE
                 message: Client specified an invalid range.
+                # GENERIC_400_{{SPECIFIC_CODE}}:
+                #   description: Specific Syntax Exception regarding a field that is relevant in the context of the API
+                #   value:
+                #     status: 400
+                #     code: "{{SPECIFIC_CODE}}"
+                #     message: Message for specific code
     Generic401:
       description: Unauthorized
       headers:
@@ -357,6 +477,7 @@ components:
                     enum:
                       - PERMISSION_DENIED
                       - INVALID_TOKEN_CONTEXT
+                      # - "{{SPECIFIC_CODE}}" - API-specific codes added if needed
           examples:
             GENERIC_403_PERMISSION_DENIED:
               description: Permission denied. OAuth2 token access does not have the required scope or when the user fails operational security
@@ -369,7 +490,14 @@ components:
               value:
                 status: 403
                 code: INVALID_TOKEN_CONTEXT
-                message: "{{field}} is not consistent with access token."
+                # message: "{{field}} is not consistent with access token."
+                message: "Request body is not consistent with access token."
+                # GENERIC_403_{{SPECIFIC_CODE}}:
+                #   description: Indicate a Business Logic condition that forbids a process not attached to a specific field in the context of the API
+                #   value:
+                #     status: 403
+                #     code: "{{SPECIFIC_CODE}}"
+                #     message: Message for specific code
     Generic404:
       description: Not found
       headers:
@@ -389,6 +517,7 @@ components:
                     enum:
                       - NOT_FOUND
                       - IDENTIFIER_NOT_FOUND
+                      # - "{{SPECIFIC_CODE}}" - API-specific codes added if needed
           examples:
             GENERIC_404_NOT_FOUND:
               description: Resource is not found
@@ -402,6 +531,12 @@ components:
                 status: 404
                 code: IDENTIFIER_NOT_FOUND
                 message: Device identifier not found.
+                # GENERIC_404_{{SPECIFIC_CODE}}:
+                #   description: Specific situation to highlight the resource/concept not found
+                #   value:
+                #     status: 404
+                #     code: "{{SPECIFIC_CODE}}"
+                #     message: Message for specific code
     Generic405:
       description: Method Not Allowed
       headers:
@@ -472,13 +607,15 @@ components:
                       - ABORTED
                       - ALREADY_EXISTS
                       - CONFLICT
+                      - INCOMPATIBLE_STATE
+                      # - "{{SPECIFIC_CODE}}" - API-specific codes added if needed
           examples:
             GENERIC_409_ABORTED:
-              description: Concurreny of processes of the same nature/scope
+              description: The resource is undergoing modification by another process
               value:
                 status: 409
                 code: ABORTED
-                message: Concurrency conflict.
+                message: Resource is being modified by another operation. Please wait, and retry if appropriate.
             GENERIC_409_ALREADY_EXISTS:
               description: Trying to create an existing resource
               value:
@@ -486,11 +623,27 @@ components:
                 code: ALREADY_EXISTS
                 message: The resource that a client tried to create already exists.
             GENERIC_409_CONFLICT:
+              ###################################
+              # This Error Code is DEPRECATED
+              ###################################
               description: Duplication of an existing resource
               value:
                 status: 409
                 code: CONFLICT
                 message: A specified resource duplicate entry found.
+            GENERIC_409_INCOMPATIBLE_STATE:
+              description: |
+                The status of the referenced resource is not compatible.
+              value:
+                status: 409
+                code: INCOMPATIBLE_STATE
+                message: Resource must be in AVAILABLE state to extend. Current state is UNAVAILABLE.
+                # GENERIC_409_{{SPECIFIC_CODE}}:
+                #   description: Specific conflict situation that is relevant in the context of the API
+                #   value:
+                #     status: 409
+                #     code: "{{SPECIFIC_CODE}}"
+                #     message: Message for specific code
     Generic410:
       description: Gone
       headers:
@@ -587,6 +740,7 @@ components:
                       - MISSING_IDENTIFIER
                       - UNSUPPORTED_IDENTIFIER
                       - UNNECESSARY_IDENTIFIER
+                      # - "{{SPECIFIC_CODE}}" - API-specific codes added if needed
           examples:
             GENERIC_422_SERVICE_NOT_APPLICABLE:
               description: Service not applicable for the provided identifier
@@ -612,6 +766,12 @@ components:
                 status: 422
                 code: UNNECESSARY_IDENTIFIER
                 message: The device is already identified by the access token.
+                # GENERIC_422_{{SPECIFIC_CODE}}:
+                #   description: Any semantic condition associated to business logic, specifically related to a field or data structure
+                #   value:
+                #     status: 422
+                #     code: "{{SPECIFIC_CODE}}"
+                #     message: Message for specific code
     Generic429:
       description: Too Many Requests
       headers:
