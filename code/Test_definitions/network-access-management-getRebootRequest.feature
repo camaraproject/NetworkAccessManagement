@@ -1,4 +1,4 @@
-Feature: CAMARA Network Access Management API, vwip - Operation getRebootRequest
+Feature: CAMARA Network Access Management API, v0.2.0-alpha.1 - Operation getRebootRequest
   # Operation: GET /reboot-requests/{rebootRequestId}
   # Required scope: network-access-management:reboot
   # Documented response codes: 200, 401, 403, 404, 500, 503
@@ -11,7 +11,7 @@ Feature: CAMARA Network Access Management API, vwip - Operation getRebootRequest
 
   Background: Common getRebootRequest setup
     Given an environment at "apiRoot"
-    And the resource "/network-access-management/vwip/reboot-requests/{rebootRequestId}"
+    And the resource "/network-access-management/v0.2alpha1/reboot-requests/{rebootRequestId}"
     And the header "Authorization" is set to a valid access token
     And the access token has the scope "network-access-management:reboot"
     And the header "x-correlator" complies with the schema at "#/components/schemas/XCorrelator"
