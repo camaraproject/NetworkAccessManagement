@@ -1,5 +1,5 @@
   @basic_tier
-Feature: CAMARA Network Access Management API, vwip - Operation updateRebootRequest
+Feature: CAMARA Network Access Management API, v0.2.0-alpha.1 - Operation updateRebootRequest
   # Operation: PATCH /reboot-requests/{rebootRequestId}
   # Required scope: network-access-management:reboot
   # Documented response codes: 200, 400, 401, 403, 404, 409, 422, 500, 503
@@ -13,7 +13,7 @@ Feature: CAMARA Network Access Management API, vwip - Operation updateRebootRequ
 
   Background: Common updateRebootRequest setup
     Given an environment at "apiRoot"
-    And the resource "/network-access-management/vwip/reboot-requests/{rebootRequestId}"
+    And the resource "/network-access-management/v0.2alpha1/reboot-requests/{rebootRequestId}"
     And the header "Content-Type" is set to "application/json"
     And the header "Authorization" is set to a valid access token
     And the access token has the scope "network-access-management:reboot"

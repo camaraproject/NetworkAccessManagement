@@ -1,5 +1,5 @@
   @basic_tier
-Feature: CAMARA Network Access Management API, vwip - Operation updateTrustDomainDevice
+Feature: CAMARA Network Access Management API, v0.2.0-alpha.1 - Operation updateTrustDomainDevice
   # Operation: PATCH /trust-domains/{trustDomainId}/devices/{deviceId}
   # Required scope: network-access-management:devices
   # Documented response codes: 200, 400, 401, 403, 404, 500, 503
@@ -12,7 +12,7 @@ Feature: CAMARA Network Access Management API, vwip - Operation updateTrustDomai
 
   Background: Common updateTrustDomainDevice setup
     Given an environment at "apiRoot"
-    And the resource "/network-access-management/vwip/trust-domains/{trustDomainId}/devices/{deviceId}"
+    And the resource "/network-access-management/v0.2alpha1/trust-domains/{trustDomainId}/devices/{deviceId}"
     And the header "Content-Type" is set to "application/json"
     And the header "Authorization" is set to a valid access token
     And the access token has the scope "network-access-management:devices"

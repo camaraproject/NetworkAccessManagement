@@ -1,5 +1,5 @@
   @basic_tier
-Feature: CAMARA Network Access Management API, vwip - Operation deleteTrustDomainDevice
+Feature: CAMARA Network Access Management API, v0.2.0-alpha.1 - Operation deleteTrustDomainDevice
   # Operation: DELETE /trust-domains/{trustDomainId}/devices/{deviceId}
   # Required scope: network-access-management:devices
   # Documented response codes: 204, 401, 403, 404, 500, 503
@@ -12,7 +12,7 @@ Feature: CAMARA Network Access Management API, vwip - Operation deleteTrustDomai
 
   Background: Common deleteTrustDomainDevice setup
     Given an environment at "apiRoot"
-    And the resource "/network-access-management/vwip/trust-domains/{trustDomainId}/devices/{deviceId}"
+    And the resource "/network-access-management/v0.2alpha1/trust-domains/{trustDomainId}/devices/{deviceId}"
     And the header "Authorization" is set to a valid access token
     And the access token has the scope "network-access-management:devices"
     And the header "x-correlator" complies with the schema at "#/components/schemas/XCorrelator"
