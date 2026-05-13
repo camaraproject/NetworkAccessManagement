@@ -30,5 +30,9 @@ permissions:
 
 jobs:
   validation:
-    uses: camaraproject/tooling/.github/workflows/validation.yml@v1-rc
+    # Temporary pin to the tooling S-037 hotfix (camaraproject/tooling#284).
+    # Revert to @v1-rc + drop the with: block once @v1-rc advances past this SHA.
+    uses: camaraproject/tooling/.github/workflows/validation.yml@2a6dc66c4cabc48716c165a612a13985d93a5bf4
+    with:
+      tooling_ref_override: "2a6dc66c4cabc48716c165a612a13985d93a5bf4"
     secrets: inherit
