@@ -93,7 +93,7 @@ The API definition(s) are based on
 
 ## network-access-management 0.2.0-alpha.1
 
-**network-access-management 0.2.0-alpha.1 is ...**
+**network-access-management 0.2.0-alpha.1 is** the first consumable alpha of NAM, providing Trust Domain management, Zero-Touch Onboarding for subscriber devices, and reboot-request operations on operator-supplied network access devices.
 
 - API definition **with inline documentation**:
   - [View it on ReDoc](https://redocly.github.io/redoc/?url=https://raw.githubusercontent.com/camaraproject/NetworkAccessManagement/r2.1/code/API_definitions/network-access-management.yaml&nocors)
@@ -102,19 +102,26 @@ The API definition(s) are based on
 
 ### Added
 
-* _To be filled during release review_
+* Initial Network Access Management API surface:
+    - **Trust Domains** — CRUD operations for declarative LAN-scoped network configurations, with policy-driven control over device admission, bandwidth, and egress. Capability discovery endpoint (`GET /trust-domains/capabilities`) exposes operator-supported configurations. Wi-Fi (WPA Personal/Enterprise) and Thread (Structured/TLV) access types supported.
+    - **Trust Domain Devices** — CRUD operations for registering subscriber and IoT devices into Trust Domains with Zero-Touch Onboarding via DPP, Matter, and Well-Known SSID Onboarding (WKSO) bootstrapping protocols (#118, #122).
+    - **Reboot Requests** — CRUD operations for immediate or scheduled reboot of operator-supplied network access devices.
+    - **Services** — read-only enumeration of subscriber service instances (`GET /services`, `GET /services/{serviceId}`).
+    - **Network Access Devices** — read-only enumeration of operator-supplied network access equipment (`GET /network-access-devices`, `GET /network-access-devices/{networkAccessDeviceId}`).
+* Basic-tier Gherkin test definitions covering sunny-day scenarios for every operation (#120).
+* Local cache of `CAMARA_common.yaml` and a project-local `modules/` directory under `code/`, aligned with the Commonalities Consumption-and-Bundling Design (#117, #121).
 
 ### Changed
 
-* _To be filled during release review_
+* Dependency on Commonalities updated to r4.2 (0.8.0-rc.2); ICM dependency updated to r4.2 (#126, #131).
 
 ### Fixed
 
-* _To be filled during release review_
+_none_
 
 ### Removed
 
-* _To be filled during release review_
+_none_
 
 **Full Changelog**: https://github.com/camaraproject/NetworkAccessManagement/commits/r2.1
 
