@@ -15,7 +15,7 @@ Sandbox API Repository to describe, develop, document, and test the NetworkAcces
 
 ## Scope
 * Service APIs for “Network Access Management” of Home Devices (see APIBacklog.md)  
-* It provides the customer with the ability to:  
+* It provides the API consumer with the ability to:  
   * manage fixed devices provided by network operators that reside at customer premises.
 * Describe, develop, document, and test the APIs (with 1-2 Telcos)  
 * Started: May 2024
@@ -25,7 +25,16 @@ Sandbox API Repository to describe, develop, document, and test the NetworkAcces
 
 ## Release Information
 
-The repository has no (pre)releases yet, work in progress is within the main branch.
+> [!NOTE]
+> This repository has only pre-release versions available yet. Pre-releases are for testing and may change before public release.
+
+* The latest pre-release is [r2.1](https://github.com/camaraproject/NetworkAccessManagement/releases/tag/r2.1) (alpha), with the following API versions:
+  * **network-access-management 0.2.0-alpha.1**
+  [[YAML]](https://github.com/camaraproject/NetworkAccessManagement/blob/r2.1/code/API_definitions/network-access-management.yaml)  [[ReDoc]](https://redocly.github.io/redoc/?url=https://raw.githubusercontent.com/camaraproject/NetworkAccessManagement/r2.1/code/API_definitions/network-access-management.yaml&nocors)  [[Swagger]](https://camaraproject.github.io/swagger-ui/?url=https://raw.githubusercontent.com/camaraproject/NetworkAccessManagement/r2.1/code/API_definitions/network-access-management.yaml)
+
+* For changes see [CHANGELOG](https://github.com/camaraproject/NetworkAccessManagement/tree/main/CHANGELOG)
+
+_The above section is automatically synchronized by CAMARA project-administration._
 <!-- CAMARA:RELEASE-INFO:END -->
 
 ## Contributing
