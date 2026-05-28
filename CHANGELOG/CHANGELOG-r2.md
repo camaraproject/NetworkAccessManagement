@@ -109,7 +109,6 @@ The API definition(s) are based on
     - **Services** — read-only enumeration of subscriber service instances (`GET /services`, `GET /services/{serviceId}`).
     - **Network Access Devices** — read-only enumeration of operator-supplied network access equipment (`GET /network-access-devices`, `GET /network-access-devices/{networkAccessDeviceId}`).
 * Basic-tier Gherkin test definitions covering sunny-day scenarios for every operation (#120).
-* Local cache of `CAMARA_common.yaml` and a project-local `modules/` directory under `code/`, aligned with the Commonalities Consumption-and-Bundling Design (#117, #121).
 
 ### Changed
 
