@@ -2,7 +2,7 @@ repository:
   repository_name: NetworkAccessManagement
   release_tag: r2.1
   release_type: pre-release-alpha
-  release_date: null
+  release_date: '2026-05-28T15:15:44Z'
   src_commit_sha: fdbc21694b6c90145538788d5206ef537d88f713
 apis:
 - api_name: network-access-management
