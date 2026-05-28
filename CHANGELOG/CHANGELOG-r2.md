@@ -93,7 +93,7 @@ The API definition(s) are based on
 
 ## network-access-management 0.2.0-alpha.1
 
-**network-access-management 0.2.0-alpha.1 is** the first consumable alpha of NAM, providing Trust Domain management, Zero-Touch Onboarding for subscriber devices, and reboot-request operations on operator-supplied network access devices.
+**network-access-management 0.2.0-alpha.1 is** the first consumable alpha of this API, providing Trust Domain management, Zero-Touch Onboarding for subscriber devices, and reboot-request operations on operator-supplied network access devices.
 
 - API definition **with inline documentation**:
   - [View it on ReDoc](https://redocly.github.io/redoc/?url=https://raw.githubusercontent.com/camaraproject/NetworkAccessManagement/r2.1/code/API_definitions/network-access-management.yaml&nocors)

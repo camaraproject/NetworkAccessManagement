@@ -15,7 +15,7 @@ Sandbox API Repository to describe, develop, document, and test the NetworkAcces
 
 ## Scope
 * Service APIs for “Network Access Management” of Home Devices (see APIBacklog.md)  
-* It provides the customer with the ability to:  
+* It provides the API consumer with the ability to:  
   * manage fixed devices provided by network operators that reside at customer premises.
 * Describe, develop, document, and test the APIs (with 1-2 Telcos)  
 * Started: May 2024
