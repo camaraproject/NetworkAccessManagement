@@ -28,9 +28,9 @@ Sandbox API Repository to describe, develop, document, and test the NetworkAcces
 > [!NOTE]
 > This repository has only pre-release versions available yet. Pre-releases are for testing and may change before public release.
 
-* The latest pre-release is [r2.1](https://github.com/camaraproject/NetworkAccessManagement/releases/tag/r2.1) (alpha), with the following API versions:
-  * **network-access-management 0.2.0-alpha.1**
-  [[YAML]](https://github.com/camaraproject/NetworkAccessManagement/blob/r2.1/code/API_definitions/network-access-management.yaml)  [[ReDoc]](https://redocly.github.io/redoc/?url=https://raw.githubusercontent.com/camaraproject/NetworkAccessManagement/r2.1/code/API_definitions/network-access-management.yaml&nocors)  [[Swagger]](https://camaraproject.github.io/swagger-ui/?url=https://raw.githubusercontent.com/camaraproject/NetworkAccessManagement/r2.1/code/API_definitions/network-access-management.yaml)
+* The latest pre-release is [r3.1](https://github.com/camaraproject/NetworkAccessManagement/releases/tag/r3.1) (release candidate), with the following API versions:
+  * **network-access-management 0.3.0-rc.1**
+  [[YAML]](https://github.com/camaraproject/NetworkAccessManagement/blob/r3.1/code/API_definitions/network-access-management.yaml)  [[ReDoc]](https://redocly.github.io/redoc/?url=https://raw.githubusercontent.com/camaraproject/NetworkAccessManagement/r3.1/code/API_definitions/network-access-management.yaml&nocors)  [[Swagger]](https://camaraproject.github.io/swagger-ui/?url=https://raw.githubusercontent.com/camaraproject/NetworkAccessManagement/r3.1/code/API_definitions/network-access-management.yaml)
 
 * For changes see [CHANGELOG](https://github.com/camaraproject/NetworkAccessManagement/tree/main/CHANGELOG)
 
