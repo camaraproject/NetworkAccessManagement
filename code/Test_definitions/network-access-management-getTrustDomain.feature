@@ -1,5 +1,5 @@
   @basic_tier
-Feature: CAMARA Network Access Management API, vwip - Operation getTrustDomain
+Feature: CAMARA Network Access Management API, v0.3.0-rc.1 - Operation getTrustDomain
   # Operation: GET /trust-domains/{trustDomainId}
   # Required scope: network-access-management:trust-domains
   #     OR        : network-access-management:trust-domains:read-all
@@ -13,7 +13,7 @@ Feature: CAMARA Network Access Management API, vwip - Operation getTrustDomain
 
   Background: Common getTrustDomain setup
     Given an environment at "apiRoot"
-    And the resource "/network-access-management/vwip/trust-domains/{trustDomainId}"
+    And the resource "/network-access-management/v0.3rc1/trust-domains/{trustDomainId}"
     And the header "Authorization" is set to a valid access token
     And the header "x-correlator" complies with the schema at "#/components/schemas/XCorrelator"
 

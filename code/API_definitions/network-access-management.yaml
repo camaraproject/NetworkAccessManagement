@@ -1,12 +1,11 @@
 openapi: 3.0.3
-
 info:
   title: Home Devices - Network Access Management
   license:
     name: Apache 2.0
     url: https://www.apache.org/licenses/LICENSE-2.0.html
-  version: wip
-  x-camara-commonalities: 0.8.0-rc.2
+  version: 0.3.0-rc.1
+  x-camara-commonalities: 0.8.0
   description: |
     Service enabling API for managing network operator supplied network access devices. This API's initial focus is on
     managing **Trust Domains** and device reboot requests.
@@ -167,18 +166,12 @@ info:
     Please refer to the `CAMARA_common.yaml` of the Commonalities Release associated to this API version for a complete list of error responses. The applicable Commonalities Release can be identified in the `API Readiness Checklist` document associated to this API version.
 
     As a specific rule, error `501 - NOT_IMPLEMENTED` can be only a possible error response if it is explicitly documented in the API.
-
-externalDocs:
-  description: Product documentation at CAMARA
-  url: https://github.com/camaraproject/NetworkAccessManagement
-
 servers:
-  - url: "{apiRoot}/network-access-management/vwip"
+  - url: '{apiRoot}/network-access-management/v0.3rc1'
     variables:
       apiRoot:
         default: http://localhost:9091
         description: API root, defined by the service provider, e.g. `api.example.com` or `api.example.com/somepath`
-
 tags:
   - name: Services
     description: Operations to list network services accessible to the authenticated identity
@@ -191,9 +184,10 @@ tags:
   - name: Reboot Requests
     description: |
       Operations to Create and Manage Reboot Requests for Network Access Devices
-
+externalDocs:
+  description: Product documentation at CAMARA
+  url: https://github.com/camaraproject/NetworkAccessManagement
 paths:
-
   /services:
     get:
       tags:
@@ -211,24 +205,21 @@ paths:
         This endpoint supports workflows where an API Consumer (e.g., AirBnB, Amazon)
         has received subscriber authorization and must enumerate services to link with
         Network Client Devices or Trust Domains.
-
       responses:
-        "200":
+        '200':
           description: Contains all services associated with the identity
           content:
             application/json:
               schema:
-                $ref: "../modules/Services/Services.yaml#/components/schemas/ServiceList"
-        "401":
-          $ref: "../common/CAMARA_common.yaml#/components/responses/Generic401"
-        "403":
-          $ref: "../common/CAMARA_common.yaml#/components/responses/Generic403"
-        "500":
-          $ref: "../common/CAMARA_common.yaml#/components/responses/Generic500"
-        "503":
-          $ref: "../common/CAMARA_common.yaml#/components/responses/Generic503"
-
-
+                $ref: '#/components/schemas/ServiceList'
+        '401':
+          $ref: '#/components/responses/Generic401'
+        '403':
+          $ref: '#/components/responses/Generic403'
+        '500':
+          $ref: '#/components/responses/Generic500'
+        '503':
+          $ref: '#/components/responses/Generic503'
   /services/{serviceId}:
     get:
       tags:
@@ -246,35 +237,33 @@ paths:
 
         **Required Scopes:**
         - `network-access-management:services:read`
-
       parameters:
         - name: serviceId
           in: path
           required: true
           schema:
-            $ref: "../modules/Services/Services.yaml#/components/schemas/ServiceId"
+            $ref: '#/components/schemas/ServiceId'
           description: |
             The ID of the service to retrieve.
 
             Must be a valid UUID as defined by RFC 4122 (versions 1-5) using only lowercase hexadecimal characters.
       responses:
-        "200":
+        '200':
           description: Information about the service
           content:
             application/json:
               schema:
-                $ref: "../modules/Services/Services.yaml#/components/schemas/Service"
-        "401":
-          $ref: "../common/CAMARA_common.yaml#/components/responses/Generic401"
-        "403":
-          $ref: "../common/CAMARA_common.yaml#/components/responses/Generic403"
-        "404":
-          $ref: "../common/CAMARA_common.yaml#/components/responses/Generic404"
-        "500":
-          $ref: "../common/CAMARA_common.yaml#/components/responses/Generic500"
-        "503":
-          $ref: "../common/CAMARA_common.yaml#/components/responses/Generic503"
-
+                $ref: '#/components/schemas/Service'
+        '401':
+          $ref: '#/components/responses/Generic401'
+        '403':
+          $ref: '#/components/responses/Generic403'
+        '404':
+          $ref: '#/components/responses/Generic404'
+        '500':
+          $ref: '#/components/responses/Generic500'
+        '503':
+          $ref: '#/components/responses/Generic503'
   /trust-domains/capabilities:
     get:
       tags:
@@ -296,23 +285,21 @@ paths:
 
         Use this endpoint before creating Trust Domains to ensure your configuration
         is supported by the target API provider/network operator.
-
       responses:
-        "200":
+        '200':
           description: Trust Domain capabilities supported by this API provider
           content:
             application/json:
               schema:
-                $ref: "../modules/TrustDomains/TrustDomainCapabilities.yaml#/components/schemas/TrustDomainCapabilities"
-        "401":
-          $ref: "../common/CAMARA_common.yaml#/components/responses/Generic401"
-        "403":
-          $ref: "../common/CAMARA_common.yaml#/components/responses/Generic403"
-        "500":
-          $ref: "../common/CAMARA_common.yaml#/components/responses/Generic500"
-        "503":
-          $ref: "../common/CAMARA_common.yaml#/components/responses/Generic503"
-
+                $ref: '#/components/schemas/TrustDomainCapabilities'
+        '401':
+          $ref: '#/components/responses/Generic401'
+        '403':
+          $ref: '#/components/responses/Generic403'
+        '500':
+          $ref: '#/components/responses/Generic500'
+        '503':
+          $ref: '#/components/responses/Generic503'
   /trust-domains:
     post:
       tags:
@@ -323,7 +310,6 @@ paths:
             - network-access-management:trust-domains
       description: |
         Creates and returns the new Trust Domain.
-
       operationId: createTrustDomain
       requestBody:
         description: Details of the Trust Domain to be created
@@ -331,43 +317,42 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '../modules/TrustDomains/TrustDomains.yaml#/components/schemas/TrustDomainCreate'
+              $ref: '#/components/schemas/TrustDomainCreate'
             examples:
               TrustDomainCreateWpa2Personal:
-                $ref: '../modules/TrustDomains/TrustDomains.yaml#/components/examples/TrustDomainCreateWpa2Personal'
+                $ref: '#/components/examples/TrustDomainCreateWpa2Personal'
               TrustDomainCreateInferredSsid:
-                $ref: '../modules/TrustDomains/TrustDomains.yaml#/components/examples/TrustDomainCreateInferredSsid'
+                $ref: '#/components/examples/TrustDomainCreateInferredSsid'
               TrustDomainCreateThreadStructured:
-                $ref: '../modules/TrustDomains/TrustDomains.yaml#/components/examples/TrustDomainCreateThreadStructured'
+                $ref: '#/components/examples/TrustDomainCreateThreadStructured'
               TrustDomainCreateEphemeral:
-                $ref: '../modules/TrustDomains/TrustDomains.yaml#/components/examples/TrustDomainCreateEphemeral'
+                $ref: '#/components/examples/TrustDomainCreateEphemeral'
               TrustDomainCreateQoSPolicies:
-                $ref: '../modules/TrustDomains/TrustDomains.yaml#/components/examples/TrustDomainCreateQoSPolicies'
+                $ref: '#/components/examples/TrustDomainCreateQoSPolicies'
       responses:
         '201':
           description: Trust Domain created successfully
           content:
             application/json:
               schema:
-                $ref: '../modules/TrustDomains/TrustDomains.yaml#/components/schemas/TrustDomain'
+                $ref: '#/components/schemas/TrustDomain'
               examples:
                 TrustDomainResponseBasic:
-                  $ref: '../modules/TrustDomains/TrustDomains.yaml#/components/examples/TrustDomainResponseBasic'
+                  $ref: '#/components/examples/TrustDomainResponseBasic'
                 TrustDomainResponseWiFiThread:
-                  $ref: '../modules/TrustDomains/TrustDomains.yaml#/components/examples/TrustDomainResponseWiFiThread'
+                  $ref: '#/components/examples/TrustDomainResponseWiFiThread'
         '400':
-          $ref: '../common/CAMARA_common.yaml#/components/responses/Generic400'
+          $ref: '#/components/responses/Generic400'
         '401':
-          $ref: '../common/CAMARA_common.yaml#/components/responses/Generic401'
+          $ref: '#/components/responses/Generic401'
         '403':
-          $ref: '../common/CAMARA_common.yaml#/components/responses/Generic403'
+          $ref: '#/components/responses/Generic403'
         '409':
-          $ref: '../common/CAMARA_common.yaml#/components/responses/Generic409'
+          $ref: '#/components/responses/Generic409'
         '500':
-          $ref: '../common/CAMARA_common.yaml#/components/responses/Generic500'
+          $ref: '#/components/responses/Generic500'
         '503':
-          $ref: '../common/CAMARA_common.yaml#/components/responses/Generic503'
-
+          $ref: '#/components/responses/Generic503'
     get:
       tags:
         - Trust Domains
@@ -385,28 +370,25 @@ paths:
         Trust Domains created by the caller. If the caller has `network-access-management:trust-domains:read-all`,
         the response includes all Trust Domains associated with the subscriber.
       responses:
-
-        "200":
+        '200':
           description: Contains information about all trust domains
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: "../modules/TrustDomains/TrustDomains.yaml#/components/schemas/TrustDomain"
-        "401":
-          $ref: "../common/CAMARA_common.yaml#/components/responses/Generic401"
-        "403":
-          $ref: "../common/CAMARA_common.yaml#/components/responses/Generic403"
-        "500":
-          $ref: "../common/CAMARA_common.yaml#/components/responses/Generic500"
-        "503":
-          $ref: "../common/CAMARA_common.yaml#/components/responses/Generic503"
-
+                  $ref: '#/components/schemas/TrustDomain'
+        '401':
+          $ref: '#/components/responses/Generic401'
+        '403':
+          $ref: '#/components/responses/Generic403'
+        '500':
+          $ref: '#/components/responses/Generic500'
+        '503':
+          $ref: '#/components/responses/Generic503'
   /trust-domains/{trustDomainId}:
     parameters:
-      - $ref: '../modules/TrustDomains/TrustDomains.yaml#/components/parameters/trustDomainId'
-
+      - $ref: '#/components/parameters/trustDomainId'
     get:
       tags:
         - Trust Domains
@@ -421,29 +403,26 @@ paths:
         Retrieves the Trust Domain identified by the given ID. Visibility of this Trust Domain depends on the caller's scope and ownership:
           - `trust-domains` restricts access to caller-owned Trust Domains.
           - `trust-domains:read-all` allows retrieval of any Trust Domain associated with the subscriber.
-
       responses:
-
-        "200":
+        '200':
           description: Contains information about the specified trust domain
           content:
             application/json:
               schema:
-                $ref: "../modules/TrustDomains/TrustDomains.yaml#/components/schemas/TrustDomain"
+                $ref: '#/components/schemas/TrustDomain'
               examples:
                 TrustDomainResponseBasic:
-                  $ref: '../modules/TrustDomains/TrustDomains.yaml#/components/examples/TrustDomainResponseBasic'
-        "401":
-          $ref: "../common/CAMARA_common.yaml#/components/responses/Generic401"
-        "403":
-          $ref: "../common/CAMARA_common.yaml#/components/responses/Generic403"
-        "404":
-          $ref: "../common/CAMARA_common.yaml#/components/responses/Generic404"
-        "500":
-          $ref: "../common/CAMARA_common.yaml#/components/responses/Generic500"
-        "503":
-          $ref: "../common/CAMARA_common.yaml#/components/responses/Generic503"
-
+                  $ref: '#/components/examples/TrustDomainResponseBasic'
+        '401':
+          $ref: '#/components/responses/Generic401'
+        '403':
+          $ref: '#/components/responses/Generic403'
+        '404':
+          $ref: '#/components/responses/Generic404'
+        '500':
+          $ref: '#/components/responses/Generic500'
+        '503':
+          $ref: '#/components/responses/Generic503'
     patch:
       tags:
         - Trust Domains
@@ -454,34 +433,31 @@ paths:
       operationId: updateTrustDomain
       description: |
         Updates the Trust Domain identified by the given ID. Any changes are automatically applied to all network access devices where the Trust Domain is configured.
-
       requestBody:
         content:
           application/json:
             schema:
-              $ref: "../modules/TrustDomains/TrustDomains.yaml#/components/schemas/TrustDomainUpdate"
+              $ref: '#/components/schemas/TrustDomainUpdate'
         required: true
       responses:
-        "200":
+        '200':
           description: Contains information about the updated trust domain
           content:
             application/json:
               schema:
-                $ref: "../modules/TrustDomains/TrustDomains.yaml#/components/schemas/TrustDomain"
-
-        "400":
-          $ref: "../common/CAMARA_common.yaml#/components/responses/Generic400"
-        "401":
-          $ref: "../common/CAMARA_common.yaml#/components/responses/Generic401"
-        "403":
-          $ref: "../common/CAMARA_common.yaml#/components/responses/Generic403"
-        "404":
-          $ref: "../common/CAMARA_common.yaml#/components/responses/Generic404"
-        "500":
-          $ref: "../common/CAMARA_common.yaml#/components/responses/Generic500"
-        "503":
-          $ref: "../common/CAMARA_common.yaml#/components/responses/Generic503"
-
+                $ref: '#/components/schemas/TrustDomain'
+        '400':
+          $ref: '#/components/responses/Generic400'
+        '401':
+          $ref: '#/components/responses/Generic401'
+        '403':
+          $ref: '#/components/responses/Generic403'
+        '404':
+          $ref: '#/components/responses/Generic404'
+        '500':
+          $ref: '#/components/responses/Generic500'
+        '503':
+          $ref: '#/components/responses/Generic503'
     delete:
       tags:
         - Trust Domains
@@ -492,25 +468,22 @@ paths:
       operationId: deleteTrustDomain
       description: |
         Deletes the Trust Domain identified by the given ID and removes its configuration from all network access devices where it is applied.
-
       responses:
-        "204":
+        '204':
           description: Trust Domain deleted successfully
-        "401":
-          $ref: "../common/CAMARA_common.yaml#/components/responses/Generic401"
-        "403":
-          $ref: "../common/CAMARA_common.yaml#/components/responses/Generic403"
-        "404":
-          $ref: "../common/CAMARA_common.yaml#/components/responses/Generic404"
-        "500":
-          $ref: "../common/CAMARA_common.yaml#/components/responses/Generic500"
-        "503":
-          $ref: "../common/CAMARA_common.yaml#/components/responses/Generic503"
-
+        '401':
+          $ref: '#/components/responses/Generic401'
+        '403':
+          $ref: '#/components/responses/Generic403'
+        '404':
+          $ref: '#/components/responses/Generic404'
+        '500':
+          $ref: '#/components/responses/Generic500'
+        '503':
+          $ref: '#/components/responses/Generic503'
   /trust-domains/{trustDomainId}/devices:
     parameters:
-      - $ref: '../modules/TrustDomains/TrustDomains.yaml#/components/parameters/trustDomainId'
-
+      - $ref: '#/components/parameters/trustDomainId'
     post:
       tags:
         - Trust Domain Devices
@@ -529,39 +502,38 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '../modules/TrustDomainDevices/TrustDomainDevices.yaml#/components/schemas/TrustDomainDeviceCreate'
+              $ref: '#/components/schemas/TrustDomainDeviceCreate'
             examples:
               TrustDomainDeviceCreateIoT:
-                $ref: '../modules/TrustDomainDevices/TrustDomainDevices.yaml#/components/examples/TrustDomainDeviceCreateIoT'
+                $ref: '#/components/examples/TrustDomainDeviceCreateIoT'
               TrustDomainDeviceCreateMinimal:
-                $ref: '../modules/TrustDomainDevices/TrustDomainDevices.yaml#/components/examples/TrustDomainDeviceCreateMinimal'
+                $ref: '#/components/examples/TrustDomainDeviceCreateMinimal'
               TrustDomainDeviceCreateMatter:
-                $ref: '../modules/TrustDomainDevices/TrustDomainDevices.yaml#/components/examples/TrustDomainDeviceCreateMatter'
+                $ref: '#/components/examples/TrustDomainDeviceCreateMatter'
       responses:
         '201':
           description: Device registered successfully
           content:
             application/json:
               schema:
-                $ref: '../modules/TrustDomainDevices/TrustDomainDevices.yaml#/components/schemas/TrustDomainDevice'
+                $ref: '#/components/schemas/TrustDomainDevice'
               examples:
                 TrustDomainDeviceResponseBasic:
-                  $ref: '../modules/TrustDomainDevices/TrustDomainDevices.yaml#/components/examples/TrustDomainDeviceResponseBasic'
+                  $ref: '#/components/examples/TrustDomainDeviceResponseBasic'
         '400':
-          $ref: '../common/CAMARA_common.yaml#/components/responses/Generic400'
+          $ref: '#/components/responses/Generic400'
         '401':
-          $ref: '../common/CAMARA_common.yaml#/components/responses/Generic401'
+          $ref: '#/components/responses/Generic401'
         '403':
-          $ref: '../common/CAMARA_common.yaml#/components/responses/Generic403'
+          $ref: '#/components/responses/Generic403'
         '404':
-          $ref: '../common/CAMARA_common.yaml#/components/responses/Generic404'
+          $ref: '#/components/responses/Generic404'
         '409':
-          $ref: '../common/CAMARA_common.yaml#/components/responses/Generic409'
+          $ref: '#/components/responses/Generic409'
         '500':
-          $ref: '../common/CAMARA_common.yaml#/components/responses/Generic500'
+          $ref: '#/components/responses/Generic500'
         '503':
-          $ref: '../common/CAMARA_common.yaml#/components/responses/Generic503'
-
+          $ref: '#/components/responses/Generic503'
     get:
       tags:
         - Trust Domain Devices
@@ -578,26 +550,24 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '../modules/TrustDomainDevices/TrustDomainDevices.yaml#/components/schemas/TrustDomainDeviceList'
+                $ref: '#/components/schemas/TrustDomainDeviceList'
               examples:
                 TrustDomainDeviceListResponse:
-                  $ref: '../modules/TrustDomainDevices/TrustDomainDevices.yaml#/components/examples/TrustDomainDeviceListResponse'
+                  $ref: '#/components/examples/TrustDomainDeviceListResponse'
         '401':
-          $ref: '../common/CAMARA_common.yaml#/components/responses/Generic401'
+          $ref: '#/components/responses/Generic401'
         '403':
-          $ref: '../common/CAMARA_common.yaml#/components/responses/Generic403'
+          $ref: '#/components/responses/Generic403'
         '404':
-          $ref: '../common/CAMARA_common.yaml#/components/responses/Generic404'
+          $ref: '#/components/responses/Generic404'
         '500':
-          $ref: '../common/CAMARA_common.yaml#/components/responses/Generic500'
+          $ref: '#/components/responses/Generic500'
         '503':
-          $ref: '../common/CAMARA_common.yaml#/components/responses/Generic503'
-
+          $ref: '#/components/responses/Generic503'
   /trust-domains/{trustDomainId}/devices/{deviceId}:
     parameters:
-      - $ref: '../modules/TrustDomains/TrustDomains.yaml#/components/parameters/trustDomainId'
-      - $ref: '../modules/TrustDomainDevices/TrustDomainDevices.yaml#/components/parameters/deviceId'
-
+      - $ref: '#/components/parameters/trustDomainId'
+      - $ref: '#/components/parameters/deviceId'
     get:
       tags:
         - Trust Domain Devices
@@ -614,21 +584,20 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '../modules/TrustDomainDevices/TrustDomainDevices.yaml#/components/schemas/TrustDomainDevice'
+                $ref: '#/components/schemas/TrustDomainDevice'
               examples:
                 TrustDomainDeviceResponseConnected:
-                  $ref: '../modules/TrustDomainDevices/TrustDomainDevices.yaml#/components/examples/TrustDomainDeviceResponseConnected'
+                  $ref: '#/components/examples/TrustDomainDeviceResponseConnected'
         '401':
-          $ref: '../common/CAMARA_common.yaml#/components/responses/Generic401'
+          $ref: '#/components/responses/Generic401'
         '403':
-          $ref: '../common/CAMARA_common.yaml#/components/responses/Generic403'
+          $ref: '#/components/responses/Generic403'
         '404':
-          $ref: '../common/CAMARA_common.yaml#/components/responses/Generic404'
+          $ref: '#/components/responses/Generic404'
         '500':
-          $ref: '../common/CAMARA_common.yaml#/components/responses/Generic500'
+          $ref: '#/components/responses/Generic500'
         '503':
-          $ref: '../common/CAMARA_common.yaml#/components/responses/Generic503'
-
+          $ref: '#/components/responses/Generic503'
     patch:
       tags:
         - Trust Domain Devices
@@ -645,7 +614,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '../modules/TrustDomainDevices/TrustDomainDevices.yaml#/components/schemas/TrustDomainDeviceUpdate'
+              $ref: '#/components/schemas/TrustDomainDeviceUpdate'
         required: true
       responses:
         '200':
@@ -653,20 +622,19 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '../modules/TrustDomainDevices/TrustDomainDevices.yaml#/components/schemas/TrustDomainDevice'
+                $ref: '#/components/schemas/TrustDomainDevice'
         '400':
-          $ref: '../common/CAMARA_common.yaml#/components/responses/Generic400'
+          $ref: '#/components/responses/Generic400'
         '401':
-          $ref: '../common/CAMARA_common.yaml#/components/responses/Generic401'
+          $ref: '#/components/responses/Generic401'
         '403':
-          $ref: '../common/CAMARA_common.yaml#/components/responses/Generic403'
+          $ref: '#/components/responses/Generic403'
         '404':
-          $ref: '../common/CAMARA_common.yaml#/components/responses/Generic404'
+          $ref: '#/components/responses/Generic404'
         '500':
-          $ref: '../common/CAMARA_common.yaml#/components/responses/Generic500'
+          $ref: '#/components/responses/Generic500'
         '503':
-          $ref: '../common/CAMARA_common.yaml#/components/responses/Generic503'
-
+          $ref: '#/components/responses/Generic503'
     delete:
       tags:
         - Trust Domain Devices
@@ -681,16 +649,15 @@ paths:
         '204':
           description: Device removed successfully
         '401':
-          $ref: '../common/CAMARA_common.yaml#/components/responses/Generic401'
+          $ref: '#/components/responses/Generic401'
         '403':
-          $ref: '../common/CAMARA_common.yaml#/components/responses/Generic403'
+          $ref: '#/components/responses/Generic403'
         '404':
-          $ref: '../common/CAMARA_common.yaml#/components/responses/Generic404'
+          $ref: '#/components/responses/Generic404'
         '500':
-          $ref: '../common/CAMARA_common.yaml#/components/responses/Generic500'
+          $ref: '#/components/responses/Generic500'
         '503':
-          $ref: '../common/CAMARA_common.yaml#/components/responses/Generic503'
-
+          $ref: '#/components/responses/Generic503'
   /network-access-devices:
     get:
       tags:
@@ -703,23 +670,22 @@ paths:
       description: |
         Retrieves all Network Access Devices associated with the subscriber that the caller is authorized to manage using the `network-access-management:reboot` scope.
       responses:
-        "200":
+        '200':
           description: Contains the list of network access devices
           content:
             application/json:
               schema:
-                $ref: "../modules/NetworkAccessDevices/NetworkAccessDevices.yaml#/components/schemas/NetworkAccessDeviceList"
-        "401":
-          $ref: "../common/CAMARA_common.yaml#/components/responses/Generic401"
-        "403":
-          $ref: "../common/CAMARA_common.yaml#/components/responses/Generic403"
-        "404":
-          $ref: "../common/CAMARA_common.yaml#/components/responses/Generic404"
-        "500":
-          $ref: "../common/CAMARA_common.yaml#/components/responses/Generic500"
-        "503":
-          $ref: "../common/CAMARA_common.yaml#/components/responses/Generic503"
-
+                $ref: '#/components/schemas/NetworkAccessDeviceList'
+        '401':
+          $ref: '#/components/responses/Generic401'
+        '403':
+          $ref: '#/components/responses/Generic403'
+        '404':
+          $ref: '#/components/responses/Generic404'
+        '500':
+          $ref: '#/components/responses/Generic500'
+        '503':
+          $ref: '#/components/responses/Generic503'
   /network-access-devices/{networkAccessDeviceId}:
     get:
       tags:
@@ -730,27 +696,26 @@ paths:
             - network-access-management:reboot
       operationId: getNetworkAccessDevice
       description: |
-         Retrieves the Network Access Device that matches the given ID.
+        Retrieves the Network Access Device that matches the given ID.
       parameters:
-        - $ref: '../modules/NetworkAccessDevices/NetworkAccessDevices.yaml#/components/parameters/networkAccessDeviceId'
+        - $ref: '#/components/parameters/networkAccessDeviceId'
       responses:
-        "200":
+        '200':
           description: Contains information about the specified network access device
           content:
             application/json:
               schema:
-                $ref: "../modules/NetworkAccessDevices/NetworkAccessDevices.yaml#/components/schemas/NetworkAccessDevice"
-        "401":
-          $ref: "../common/CAMARA_common.yaml#/components/responses/Generic401"
-        "403":
-          $ref: "../common/CAMARA_common.yaml#/components/responses/Generic403"
-        "404":
-          $ref: "../common/CAMARA_common.yaml#/components/responses/Generic404"
-        "500":
-          $ref: "../common/CAMARA_common.yaml#/components/responses/Generic500"
-        "503":
-          $ref: "../common/CAMARA_common.yaml#/components/responses/Generic503"
-
+                $ref: '#/components/schemas/NetworkAccessDevice'
+        '401':
+          $ref: '#/components/responses/Generic401'
+        '403':
+          $ref: '#/components/responses/Generic403'
+        '404':
+          $ref: '#/components/responses/Generic404'
+        '500':
+          $ref: '#/components/responses/Generic500'
+        '503':
+          $ref: '#/components/responses/Generic503'
   /reboot-requests:
     post:
       tags:
@@ -799,36 +764,35 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '../modules/RebootRequests/RebootRequests.yaml#/components/schemas/RebootRequestCreate'
+              $ref: '#/components/schemas/RebootRequestCreate'
             examples:
               RebootRequestCreateImmediate:
-                $ref: '../modules/RebootRequests/RebootRequests.yaml#/components/examples/RebootRequestCreateImmediateDefaultDevice'
+                $ref: '#/components/examples/RebootRequestCreateImmediateDefaultDevice'
               RebootRequestCreateScheduled:
-                $ref: '../modules/RebootRequests/RebootRequests.yaml#/components/examples/RebootRequestCreateScheduledMultipleDevices'
+                $ref: '#/components/examples/RebootRequestCreateScheduledMultipleDevices'
       responses:
         '201':
           description: Reboot Request created successfully
           content:
             application/json:
               schema:
-                $ref: '../modules/RebootRequests/RebootRequests.yaml#/components/schemas/RebootRequest'
+                $ref: '#/components/schemas/RebootRequest'
         '400':
-          $ref: '../common/CAMARA_common.yaml#/components/responses/Generic400'
+          $ref: '#/components/responses/Generic400'
         '401':
-          $ref: '../common/CAMARA_common.yaml#/components/responses/Generic401'
+          $ref: '#/components/responses/Generic401'
         '403':
-          $ref: '../common/CAMARA_common.yaml#/components/responses/Generic403'
+          $ref: '#/components/responses/Generic403'
         '404':
-          $ref: '../common/CAMARA_common.yaml#/components/responses/Generic404'
+          $ref: '#/components/responses/Generic404'
         '409':
-          $ref: '../common/CAMARA_common.yaml#/components/responses/Generic409'
+          $ref: '#/components/responses/Generic409'
         '422':
-          $ref: '../common/CAMARA_common.yaml#/components/responses/Generic422'
+          $ref: '#/components/responses/Generic422'
         '500':
-          $ref: '../common/CAMARA_common.yaml#/components/responses/Generic500'
+          $ref: '#/components/responses/Generic500'
         '503':
-          $ref: '../common/CAMARA_common.yaml#/components/responses/Generic503'
-
+          $ref: '#/components/responses/Generic503'
     get:
       tags:
         - Reboot Requests
@@ -847,20 +811,18 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '../modules/RebootRequests/RebootRequests.yaml#/components/schemas/RebootRequest'
+                  $ref: '#/components/schemas/RebootRequest'
         '401':
-          $ref: '../common/CAMARA_common.yaml#/components/responses/Generic401'
+          $ref: '#/components/responses/Generic401'
         '403':
-          $ref: '../common/CAMARA_common.yaml#/components/responses/Generic403'
+          $ref: '#/components/responses/Generic403'
         '500':
-          $ref: '../common/CAMARA_common.yaml#/components/responses/Generic500'
+          $ref: '#/components/responses/Generic500'
         '503':
-          $ref: '../common/CAMARA_common.yaml#/components/responses/Generic503'
-
+          $ref: '#/components/responses/Generic503'
   /reboot-requests/{rebootRequestId}:
     parameters:
-      - $ref: '../modules/RebootRequests/RebootRequests.yaml#/components/parameters/rebootRequestId'
-
+      - $ref: '#/components/parameters/rebootRequestId'
     get:
       tags:
         - Reboot Requests
@@ -877,18 +839,17 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '../modules/RebootRequests/RebootRequests.yaml#/components/schemas/RebootRequest'
+                $ref: '#/components/schemas/RebootRequest'
         '401':
-          $ref: '../common/CAMARA_common.yaml#/components/responses/Generic401'
+          $ref: '#/components/responses/Generic401'
         '403':
-          $ref: '../common/CAMARA_common.yaml#/components/responses/Generic403'
+          $ref: '#/components/responses/Generic403'
         '404':
-          $ref: '../common/CAMARA_common.yaml#/components/responses/Generic404'
+          $ref: '#/components/responses/Generic404'
         '500':
-          $ref: '../common/CAMARA_common.yaml#/components/responses/Generic500'
+          $ref: '#/components/responses/Generic500'
         '503':
-          $ref: '../common/CAMARA_common.yaml#/components/responses/Generic503'
-
+          $ref: '#/components/responses/Generic503'
     patch:
       tags:
         - Reboot Requests
@@ -903,7 +864,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '../modules/RebootRequests/RebootRequests.yaml#/components/schemas/RebootRequestUpdate'
+              $ref: '#/components/schemas/RebootRequestUpdate'
         required: true
       responses:
         '200':
@@ -911,24 +872,23 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '../modules/RebootRequests/RebootRequests.yaml#/components/schemas/RebootRequest'
+                $ref: '#/components/schemas/RebootRequest'
         '400':
-          $ref: '../common/CAMARA_common.yaml#/components/responses/Generic400'
+          $ref: '#/components/responses/Generic400'
         '401':
-          $ref: '../common/CAMARA_common.yaml#/components/responses/Generic401'
+          $ref: '#/components/responses/Generic401'
         '403':
-          $ref: '../common/CAMARA_common.yaml#/components/responses/Generic403'
+          $ref: '#/components/responses/Generic403'
         '404':
-          $ref: '../common/CAMARA_common.yaml#/components/responses/Generic404'
+          $ref: '#/components/responses/Generic404'
         '409':
-          $ref: '../common/CAMARA_common.yaml#/components/responses/Generic409'
+          $ref: '#/components/responses/Generic409'
         '422':
-          $ref: '../common/CAMARA_common.yaml#/components/responses/Generic422'
+          $ref: '#/components/responses/Generic422'
         '500':
-          $ref: '../common/CAMARA_common.yaml#/components/responses/Generic500'
+          $ref: '#/components/responses/Generic500'
         '503':
-          $ref: '../common/CAMARA_common.yaml#/components/responses/Generic503'
-
+          $ref: '#/components/responses/Generic503'
     delete:
       tags:
         - Reboot Requests
@@ -943,17 +903,2317 @@ paths:
         '204':
           description: Reboot Request deleted successfully
         '401':
-          $ref: '../common/CAMARA_common.yaml#/components/responses/Generic401'
+          $ref: '#/components/responses/Generic401'
         '403':
-          $ref: '../common/CAMARA_common.yaml#/components/responses/Generic403'
+          $ref: '#/components/responses/Generic403'
         '404':
-          $ref: '../common/CAMARA_common.yaml#/components/responses/Generic404'
+          $ref: '#/components/responses/Generic404'
         '500':
-          $ref: '../common/CAMARA_common.yaml#/components/responses/Generic500'
+          $ref: '#/components/responses/Generic500'
         '503':
-          $ref: '../common/CAMARA_common.yaml#/components/responses/Generic503'
-
+          $ref: '#/components/responses/Generic503'
 components:
   securitySchemes:
     openId:
-      $ref: '../modules/NAM_Common.yaml#/components/securitySchemes/openId'
+      type: openIdConnect
+      description: |
+        OpenID Connect authentication with scope-based authorization.
+
+        **Resource Isolation:**
+        Unless otherwise specified, all scopes only grant access to resources
+        (e.g., Trust Domains, Reboot Requests) created by the same API client.
+        API clients cannot access or modify resources created by other API clients
+        unless the `:read-all` or `:admin` scope variants are explicitly granted.
+
+        **Scope Model:**
+        This API uses a simplified scope model to balance clarity with flexibility.
+        Functional authorization (e.g., managing Trust Domains) is handled by scopes,
+        while ownership enforcement is handled by the API provider.
+
+        **Available Scopes:**
+        - `network-access-management:trust-domains` — Full management of Trust Domains created by the calling API client
+          (includes create, read, modify, and delete actions).
+        - `network-access-management:trust-domains:read-all` — Read-only access to all Trust Domains
+          associated with the same subscriber, including those created by other API clients.
+          Intended for use cases involving federated discovery or configuration replication.
+        - `network-access-management:devices` — Register, manage, and deregister subscriber/IoT devices
+          within Trust Domains created by the calling API client.
+        - `network-access-management:reboot` — Create, list, and manage Reboot Requests for network
+          access devices owned by or delegated to the calling API client.
+      openIdConnectUrl: https://example.com/.well-known/openid-configuration
+  schemas:
+    UUID:
+      type: string
+      format: uuid
+      pattern: ^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$
+      minLength: 36
+      maxLength: 36
+      description: |
+        A universally unique identifier (UUID) as defined by RFC 4122.
+        Must be a valid UUID format with proper version (1-5) and variant bits.
+        Only lowercase hexadecimal characters are accepted for consistency.
+      example: 550e8400-e29b-41d4-a716-446655440000
+    ServiceId:
+      allOf:
+        - $ref: '#/components/schemas/UUID'
+      description: |
+        A unique identifier that represents a service account associated with this resource.
+
+        Must be a valid UUID as defined by RFC 4122 (versions 1-5) using only lowercase hexadecimal characters.
+    Latitude:
+      description: Latitude component of a location
+      type: number
+      format: double
+      minimum: -90
+      maximum: 90
+    Longitude:
+      description: Longitude component of location
+      type: number
+      format: double
+      minimum: -180
+      maximum: 180
+    Point:
+      type: object
+      description: Coordinates (latitude, longitude) defining a location in a map
+      required:
+        - latitude
+        - longitude
+      properties:
+        latitude:
+          $ref: '#/components/schemas/Latitude'
+        longitude:
+          $ref: '#/components/schemas/Longitude'
+      example:
+        latitude: 50.735851
+        longitude: 7.10066
+    PropertyAddress:
+      type: object
+      description: Represents a physical property address following TMF673 Geographic Address Management API specification.
+      externalDocs:
+        description: TMF673 Geographic Address Management API User Guide v4.0.0
+        url: https://www.tmforum.org/resources/specification/tmf673-geographic-address-management-api-user-guide-v4-0-0/
+      properties:
+        id:
+          type: string
+          description: The unique identifier for the property address
+          minLength: 1
+          maxLength: 64
+          example: address-123
+        addressLine1:
+          type: string
+          maxLength: 128
+          description: The first line of the address
+          example: 123 Main St
+        addressLine2:
+          type: string
+          maxLength: 128
+          description: The second line of the address
+          example: Suite 456
+        streetNr:
+          type: string
+          maxLength: 64
+          description: The street number
+          example: '123'
+        streetNrSuffix:
+          type: string
+          maxLength: 64
+          description: The suffix for the street number
+          example: A
+        streetNrLast:
+          type: string
+          maxLength: 64
+          description: The last street number
+          example: '125'
+        streetNrLastSuffix:
+          type: string
+          maxLength: 64
+          description: The suffix for the last street number
+          example: B
+        streetName:
+          type: string
+          maxLength: 64
+          description: The name of the street
+          example: Main
+        subUnitType:
+          type: string
+          maxLength: 64
+          description: The type of sub-unit (e.g., Apartment, Suite)
+          example: Apartment
+        subUnitNr:
+          type: string
+          maxLength: 64
+          description: The number of the sub-unit
+          example: A12
+        levelType:
+          type: string
+          maxLength: 64
+          description: The type of level (e.g., Floor, Basement)
+          example: Floor
+        levelNr:
+          type: string
+          maxLength: 64
+          description: The number of the level
+          example: '3'
+        buildingName:
+          type: string
+          maxLength: 64
+          description: The name of the building
+          example: Example Building
+        privateStreetName:
+          type: string
+          maxLength: 64
+          description: The name of a private street
+          example: Private Rd
+        locality:
+          type: string
+          maxLength: 64
+          description: The locality (neighborhood, area)
+          example: Example Locality
+        city:
+          type: string
+          maxLength: 128
+          description: The city or town
+          example: Example State
+        stateOrProvince:
+          type: string
+          maxLength: 64
+          description: The state or province
+          example: EX
+        country:
+          type: string
+          maxLength: 64
+          description: The country
+          example: United States
+        postCode:
+          type: string
+          maxLength: 64
+          description: The postal code or ZIP code
+          example: '12345'
+        postCodeExtension:
+          type: string
+          maxLength: 64
+          description: The postal code extension
+          example: '6789'
+      example:
+        id: address-123
+        addressLine1: 123 Main St
+        addressLine2: Suite 456
+        streetNr: '123'
+        streetNrSuffix: A
+        streetNrLast: '125'
+        streetNrLastSuffix: B
+        streetName: Main
+        subUnitType: Apartment
+        subUnitNr: A12
+        levelType: Floor
+        levelNr: '3'
+        buildingName: Example Building
+        privateStreetName: Private Rd
+        locality: Example Locality
+        city: Example State
+        stateOrProvince: EX
+        country: United States
+        postCode: '12345'
+        postCodeExtension: '6789'
+    ServiceSite:
+      type: object
+      description: A Service Site represents a subscriber location associated with one or more Network Access Devices. Implementations MAY provide geographic coordinates, postal address data, or both, depending on local regulatory and operational requirements.
+      properties:
+        id:
+          allOf:
+            - $ref: '#/components/schemas/UUID'
+          readOnly: true
+        name:
+          type: string
+          description: The name of the service site.
+          maxLength: 64
+          example: Example Service Site 1
+        description:
+          type: string
+          description: A textual description of the service site.
+          maxLength: 64
+          example: This is the first example service site
+        location:
+          type: object
+          description: Geographic location information for the service site, including coordinates and/or property address.
+          properties:
+            geographicPoint:
+              $ref: '#/components/schemas/Point'
+            propertyAddress:
+              $ref: '#/components/schemas/PropertyAddress'
+          example:
+            geographicPoint:
+              latitude: 50.735851
+              longitude: 7.10066
+            propertyAddress:
+              id: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+              addressLine1: 123 Main St
+              addressLine2: Suite 456
+              streetNr: '123'
+              streetNrSuffix: A
+              streetNrLast: '125'
+              streetNrLastSuffix: B
+              streetName: Main
+              subUnitType: Apartment
+              subUnitNr: A12
+              levelType: Floor
+              levelNr: '3'
+              buildingName: Sunset Towers
+              privateStreetName: Private Rd
+              locality: Example Locality
+              city: Example State
+              stateOrProvince: EX
+              country: United States
+              postCode: '12345'
+              postCodeExtension: '6789'
+      required:
+        - id
+      example:
+        id: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+        name: Example Service Site 1
+        description: This is the first example service site
+        location:
+          geographicPoint:
+            latitude: 50.735851
+            longitude: 7.10066
+          propertyAddress:
+            id: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+            addressLine1: 123 Main St
+            addressLine2: Suite 456
+            streetNr: '123'
+            streetNrSuffix: A
+            streetNrLast: '125'
+            streetNrLastSuffix: B
+            streetName: Main
+            subUnitType: Apartment
+            subUnitNr: A12
+            levelType: Floor
+            levelNr: '3'
+            buildingName: Sunset Towers
+            privateStreetName: Private Rd
+            locality: Example Locality
+            city: Example State
+            stateOrProvince: EX
+            country: United States
+            postCode: '12345'
+            postCodeExtension: '6789'
+    Service:
+      type: object
+      description: |
+        A service represents a logical commercial subscription or account relationship
+        between a network operator and a subscriber. This may correspond to residential,
+        commercial, public Wi-Fi, or other service types.
+      properties:
+        id:
+          $ref: '#/components/schemas/ServiceId'
+        name:
+          type: string
+          maxLength: 64
+          description: Optional friendly name for the service
+          example: Main Home Internet
+        description:
+          type: string
+          maxLength: 255
+          description: Optional description of the service
+          example: Internet subscription for primary residence
+        serviceSite:
+          $ref: '#/components/schemas/ServiceSite'
+      required:
+        - id
+      example:
+        id: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+        name: Main Home Internet
+        description: Internet subscription for primary residence
+        serviceSite:
+          id: 123e4567-e89b-12d3-a456-426614174000
+          name: Primary Residence
+          description: 123 Main Street
+    ServiceList:
+      type: array
+      description: A list of services accessible to the calling identity
+      items:
+        $ref: '#/components/schemas/Service'
+      example:
+        - id: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+          name: Main Home Internet
+          description: Internet subscription for primary residence
+          serviceSite:
+            id: 123e4567-e89b-12d3-a456-426614174000
+            name: Primary Residence
+            description: 123 Main Street
+        - id: 123e4567-e89b-12d3-a456-426614174001
+          name: Vacation Home Internet
+          description: Internet subscription for vacation home
+    XCorrelator:
+      type: string
+      description: Correlator string, UUID format recommended but any string matching the pattern can be used
+      pattern: ^[a-zA-Z0-9-_:;.\/<>{}]{0,256}$
+      maxLength: 256
+      example: b4333c46-49c0-4f62-80d7-f0ef930f1c46
+    ErrorInfo:
+      type: object
+      description: A structured error response providing details about a failed request, including the HTTP status code, an error code, and a human-readable message
+      required:
+        - status
+        - code
+        - message
+      properties:
+        status:
+          type: integer
+          format: int32
+          minimum: 100
+          maximum: 599
+          description: HTTP response status code
+        code:
+          type: string
+          maxLength: 96
+          description: A human-readable code to describe the error
+        message:
+          type: string
+          maxLength: 512
+          description: A human-readable description of what the event represents
+    PasswordConstraints:
+      type: object
+      properties:
+        minLength:
+          type: integer
+          minimum: 8
+          description: Minimum password length
+          example: 8
+        maxLength:
+          type: integer
+          minimum: 1
+          description: Maximum password length
+          example: 63
+        requireSpecialCharacters:
+          type: boolean
+          description: Whether special characters are required
+          example: false
+      required:
+        - minLength
+        - maxLength
+      description: Password validation constraints
+    WiFiAccessTypeProperties:
+      type: object
+      properties:
+        ssidRequired:
+          type: boolean
+          description: Whether SSID must be provided (false if can be inferred)
+          example: true
+        supportedSecurityModes:
+          type: array
+          items:
+            type: string
+            enum:
+              - WPA2-Personal
+              - WPA3-Personal
+              - WPA2-WPA3-Personal
+              - WPA2-Enterprise
+              - WPA3-Enterprise
+          description: Supported Wi-Fi security mode types
+          example:
+            - WPA2-Personal
+            - WPA3-Personal
+        passwordConstraints:
+          $ref: '#/components/schemas/PasswordConstraints'
+        authServerRequired:
+          type: boolean
+          description: Whether authentication server must be specified for Enterprise modes
+          example: false
+      description: Wi-Fi specific access type properties
+    SupportedWiFiWpaPersonalAccessType:
+      type: object
+      properties:
+        accessType:
+          type: string
+          description: The type of network access.
+          enum:
+            - Wi-Fi:WPA_PERSONAL
+          example: Wi-Fi:WPA_PERSONAL
+        wifiProperties:
+          $ref: '#/components/schemas/WiFiAccessTypeProperties'
+      required:
+        - accessType
+        - wifiProperties
+      description: Wi-Fi WPA Personal access type capabilities
+    SupportedWiFiWpaEnterpriseAccessType:
+      type: object
+      properties:
+        accessType:
+          type: string
+          description: The type of network access.
+          enum:
+            - Wi-Fi:WPA_ENTERPRISE
+          example: Wi-Fi:WPA_ENTERPRISE
+        wifiProperties:
+          $ref: '#/components/schemas/WiFiAccessTypeProperties'
+      required:
+        - accessType
+        - wifiProperties
+      description: Wi-Fi WPA Enterprise access type capabilities
+    ThreadAccessTypeProperties:
+      type: object
+      properties:
+        supportedChannels:
+          type: object
+          properties:
+            min:
+              type: integer
+              minimum: 11
+              maximum: 26
+              description: Minimum supported Thread channel
+              example: 11
+            max:
+              type: integer
+              minimum: 11
+              maximum: 26
+              description: Maximum supported Thread channel
+              example: 26
+          required:
+            - min
+            - max
+          description: Range of supported Thread channels
+        networkKeyFormat:
+          type: string
+          enum:
+            - 32-hex-digits
+          description: Required format for Thread network keys
+          example: 32-hex-digits
+        networkNameConstraints:
+          type: object
+          properties:
+            minLength:
+              type: integer
+              minimum: 1
+              example: 1
+            maxLength:
+              type: integer
+              minimum: 1
+              example: 16
+          required:
+            - minLength
+            - maxLength
+          description: Constraints on Thread network names
+        maxDatasetLength:
+          type: integer
+          minimum: 1
+          description: Maximum length for TLV operational dataset (applies to Thread:TLV)
+          example: 255
+      description: Thread specific access type properties
+    SupportedThreadStructuredAccessType:
+      type: object
+      properties:
+        accessType:
+          type: string
+          description: The type of network access.
+          enum:
+            - Thread:STRUCTURED
+          example: Thread:STRUCTURED
+        threadProperties:
+          $ref: '#/components/schemas/ThreadAccessTypeProperties'
+      required:
+        - accessType
+        - threadProperties
+      description: Thread structured access type capabilities
+    SupportedThreadTlvAccessType:
+      type: object
+      properties:
+        accessType:
+          type: string
+          description: The type of network access.
+          enum:
+            - Thread:TLV
+          example: Thread:TLV
+        threadProperties:
+          $ref: '#/components/schemas/ThreadAccessTypeProperties'
+      required:
+        - accessType
+        - threadProperties
+      description: Thread TLV access type capabilities
+    SupportedAccessType:
+      type: object
+      description: Access type capabilities with discriminated properties based on accessType. Represents the configuration options supported by the API provider for a given access type. This is distinct from AccessDetail, which represents the configuration requested by an API client.
+      properties:
+        accessType:
+          type: string
+          enum:
+            - Wi-Fi:WPA_PERSONAL
+            - Wi-Fi:WPA_ENTERPRISE
+            - Thread:STRUCTURED
+            - Thread:TLV
+          description: The supported access type identifier (must match POST endpoint values)
+      oneOf:
+        - $ref: '#/components/schemas/SupportedWiFiWpaPersonalAccessType'
+        - $ref: '#/components/schemas/SupportedWiFiWpaEnterpriseAccessType'
+        - $ref: '#/components/schemas/SupportedThreadStructuredAccessType'
+        - $ref: '#/components/schemas/SupportedThreadTlvAccessType'
+      discriminator:
+        propertyName: accessType
+        mapping:
+          Wi-Fi:WPA_PERSONAL: '#/components/schemas/SupportedWiFiWpaPersonalAccessType'
+          Wi-Fi:WPA_ENTERPRISE: '#/components/schemas/SupportedWiFiWpaEnterpriseAccessType'
+          Thread:STRUCTURED: '#/components/schemas/SupportedThreadStructuredAccessType'
+          Thread:TLV: '#/components/schemas/SupportedThreadTlvAccessType'
+      required:
+        - accessType
+    MaxDevicesPolicyCapability:
+      type: object
+      properties:
+        maxValue:
+          type: integer
+          minimum: 1
+          description: Maximum number of devices allowed
+          example: 100
+        minValue:
+          type: integer
+          minimum: 1
+          description: Minimum number of devices allowed
+          example: 1
+      required:
+        - maxValue
+        - minValue
+      description: Capabilities for maximum devices policy
+    BandwidthPolicyCapability:
+      type: object
+      properties:
+        maxValue:
+          type: integer
+          minimum: 1
+          description: Maximum bandwidth value in bits per second
+          example: 1000000000
+        minValue:
+          type: integer
+          minimum: 1
+          description: Minimum bandwidth value in bits per second
+          example: 1000000
+      required:
+        - maxValue
+        - minValue
+      description: Capabilities for bandwidth control policies
+    EgressPolicyCapability:
+      type: object
+      properties:
+        maxEntries:
+          type: integer
+          minimum: 1
+          description: Maximum number of allowed egress destinations
+          example: 50
+        supportedDestinationTypes:
+          type: array
+          items:
+            type: string
+            enum:
+              - IP
+              - FQDN
+              - CIDR
+          description: Supported destination address formats
+          example:
+            - IP
+            - FQDN
+            - CIDR
+      required:
+        - maxEntries
+        - supportedDestinationTypes
+      description: Capabilities for egress allowed list policy
+    TrustDomainCapabilities:
+      type: object
+      properties:
+        supportedAccessTypes:
+          type: array
+          description: List of supported access types and their variants
+          items:
+            $ref: '#/components/schemas/SupportedAccessType'
+          minItems: 1
+        supportedPolicies:
+          type: object
+          description: Map of supported policy types to their capability details
+          properties:
+            maxDevices:
+              $ref: '#/components/schemas/MaxDevicesPolicyCapability'
+            maxDomainDownstreamRate:
+              $ref: '#/components/schemas/BandwidthPolicyCapability'
+            maxDomainUpstreamRate:
+              $ref: '#/components/schemas/BandwidthPolicyCapability'
+            egressAllowedList:
+              $ref: '#/components/schemas/EgressPolicyCapability'
+          example:
+            maxDevices:
+              maxValue: 100
+              minValue: 1
+            maxDomainDownstreamRate:
+              maxValue: 1000000000
+              minValue: 1000000
+      required:
+        - supportedAccessTypes
+      description: Describes the Trust Domain configuration capabilities supported by this API provider
+    ResourceIdentifier:
+      type: object
+      properties:
+        id:
+          allOf:
+            - $ref: '#/components/schemas/UUID'
+          readOnly: true
+      required:
+        - id
+      description: A generic schema for resources identified by a unique ID.
+    DateTime:
+      type: string
+      format: date-time
+      description: |
+        It must follow [RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339#section-5.6) and must have time zone.
+        Recommended format is yyyy-MM-dd'T'HH:mm:ss.SSSZ (i.e. which allows 2023-07-03T14:27:08.312+02:00 or
+        2023-07-03T12:27:08.312Z)
+      example: '2023-07-03T14:27:08.312+02:00'
+    MaxDevicesPolicy:
+      type: integer
+      minimum: 1
+      description: Limits the number of devices that may join the Trust Domain.
+      example: 10
+    MaxDomainDownstreamRatePolicy:
+      type: object
+      properties:
+        value:
+          type: integer
+          description: Maximum downstream throughput across the domain.
+        unit:
+          type: string
+          enum:
+            - Kbps
+            - Mbps
+            - Gbps
+          description: Unit of measurement for downstream throughput.
+      required:
+        - value
+        - unit
+      description: Maximum downstream throughput policy across the Trust Domain.
+      example:
+        value: 1000000
+        unit: Kbps
+    MaxDomainUpstreamRatePolicy:
+      type: object
+      properties:
+        value:
+          type: integer
+          description: Maximum upstream throughput across the domain.
+        unit:
+          type: string
+          enum:
+            - Kbps
+            - Mbps
+            - Gbps
+          description: Unit of measurement for upstream throughput.
+      required:
+        - value
+        - unit
+      description: Maximum upstream throughput policy across the Trust Domain.
+      example:
+        value: 500000
+        unit: Kbps
+    EgressAllowedListPolicy:
+      type: array
+      items:
+        type: string
+        description: FQDN or CIDR pattern
+      minItems: 1
+      description: Restricts egress traffic to the specified destinations.
+      example:
+        - api.vendor.com
+        - updates.vendor.com
+    Policies:
+      type: object
+      description: A set of policies governing Trust Domain behavior. Omission of a policy indicates no constraint for that category. Policies are applied independently unless otherwise specified by the implementation.
+      properties:
+        maxDevices:
+          $ref: '#/components/schemas/MaxDevicesPolicy'
+        maxDomainDownstreamRate:
+          $ref: '#/components/schemas/MaxDomainDownstreamRatePolicy'
+        maxDomainUpstreamRate:
+          $ref: '#/components/schemas/MaxDomainUpstreamRatePolicy'
+        egressAllowedList:
+          $ref: '#/components/schemas/EgressAllowedListPolicy'
+      additionalProperties: false
+      example:
+        maxDevices: 10
+        maxDomainDownstreamRate:
+          value: 500000
+          unit: Kbps
+        maxDomainUpstreamRate:
+          value: 10000
+          unit: Kbps
+        egressAllowedList:
+          - api.vendor.com
+          - updates.vendor.com
+    WpaPersonalDetail:
+      type: object
+      description: WPA Personal security mode configuration for Wi-Fi networks.
+      properties:
+        password:
+          type: string
+          writeOnly: true
+          minLength: 8
+          maxLength: 255
+          pattern: ^[\x20-\x7E]{8,63}$
+          description: The password for the WPA Personal Wi-Fi network
+          example: my-password
+        securityModeType:
+          type: string
+          enum:
+            - WPA2-Personal
+            - WPA2-WPA3-Personal
+            - WPA3-Personal
+          description: |
+            The security mode type for the WPA Personal Wi-Fi network.
+            Leave blank to auto-select.
+          example: WPA3-Personal
+      additionalProperties: false
+      required:
+        - password
+      example:
+        password: my-password
+        securityModeType: WPA3-Personal
+    WiFiWpaPersonalAccessDetail:
+      type: object
+      description: Complete access details for Wi-Fi networks using WPA Personal security mode.
+      properties:
+        accessType:
+          type: string
+          description: The type of network access.
+          enum:
+            - Wi-Fi:WPA_PERSONAL
+          example: Wi-Fi:WPA_PERSONAL
+        ssid:
+          type: string
+          minLength: 2
+          maxLength: 32
+          pattern: ^(?! )[\x20-\x7E]{2,32}(?<! )$
+          description: |
+            SSID (2-32 printable ASCII characters). No leading or trailing space.
+            Pattern enforces:
+            - Printable ASCII only (0x20-0x7E)
+            - First character not space
+            - Last character not space
+          example: my-ssid
+        securityMode:
+          allOf:
+            - $ref: '#/components/schemas/WpaPersonalDetail'
+          description: WPA Personal security mode details
+          example:
+            password: my-password
+            securityModeType: WPA3-Personal
+      additionalProperties: false
+      required:
+        - accessType
+        - securityMode
+      example:
+        accessType: Wi-Fi:WPA_PERSONAL
+        ssid: my-ssid
+        securityMode:
+          password: my-password
+          securityModeType: WPA3-Personal
+    WpaEnterpriseDetail:
+      type: object
+      description: WPA Enterprise security mode configuration for Wi-Fi networks.
+      properties:
+        authServer:
+          type: string
+          maxLength: 255
+          description: The authentication server for the WPA Enterprise Wi-Fi network
+          example: 1.2.3.4
+        securityModeType:
+          type: string
+          enum:
+            - WPA2-Enterprise
+            - WPA3-Enterprise
+          description: The security mode type for the WPA Enterprise Wi-Fi network
+          example: WPA3-Enterprise
+      additionalProperties: false
+      required:
+        - securityModeType
+      example:
+        authServer: 1.2.3.4
+        securityModeType: WPA3-Enterprise
+    WiFiWpaEnterpriseAccessDetail:
+      type: object
+      description: Complete access details for Wi-Fi networks using WPA Enterprise security mode.
+      properties:
+        accessType:
+          type: string
+          description: The type of network access.
+          enum:
+            - Wi-Fi:WPA_ENTERPRISE
+          example: Wi-Fi:WPA_ENTERPRISE
+        ssid:
+          type: string
+          minLength: 2
+          maxLength: 32
+          pattern: ^(?! )[\x20-\x7E]{2,32}(?<! )$
+          description: |
+            SSID (2-32 printable ASCII characters). No leading or trailing space.
+            Pattern enforces:
+            - Printable ASCII only (0x20-0x7E)
+            - First character not space
+            - Last character not space
+          example: my-ssid
+        securityMode:
+          allOf:
+            - $ref: '#/components/schemas/WpaEnterpriseDetail'
+          description: WPA Enterprise security mode details
+          example:
+            authServer: 1.2.3.4
+            securityModeType: WPA3-Enterprise
+      additionalProperties: false
+      required:
+        - accessType
+        - securityMode
+      example:
+        accessType: Wi-Fi:WPA_ENTERPRISE
+        ssid: my-ssid
+        securityMode:
+          authServer: 1.2.3.4
+          securityModeType: WPA3-Enterprise
+    ThreadStructuredAccessDetail:
+      type: object
+      description: Complete access details for Thread networks using structured (individual parameter) format.
+      properties:
+        accessType:
+          type: string
+          description: The type of network access.
+          enum:
+            - Thread:STRUCTURED
+          example: Thread:STRUCTURED
+        channel:
+          type: integer
+          minimum: 11
+          maximum: 26
+          description: The Thread channel (IEEE 802.15.4 channel number)
+          example: 13
+        extendedPanId:
+          type: string
+          pattern: ^[0-9a-fA-F]{16}$
+          description: The Extended PAN ID (16 hex digits)
+          example: d63e8e3e495ebbc3
+        networkKey:
+          type: string
+          pattern: ^[0-9a-fA-F]{32}$
+          description: The Thread Network Key (32 hex digits)
+          example: dfd34f0f05cad978ec4e32b0413038ff
+        networkName:
+          type: string
+          minLength: 1
+          maxLength: 16
+          description: The Thread Network Name (1-16 ASCII characters)
+          example: Spec-Thread-B3AF
+        panId:
+          type: string
+          pattern: ^[0-9a-fA-F]{4}$
+          description: The PAN ID (4 hex digits)
+          example: d63e
+      additionalProperties: false
+      required:
+        - accessType
+        - channel
+        - extendedPanId
+        - networkKey
+        - networkName
+        - panId
+      example:
+        accessType: Thread:STRUCTURED
+        channel: 13
+        extendedPanId: d63e8e3e495ebbc3
+        networkKey: dfd34f0f05cad978ec4e32b0413038ff
+        networkName: Spec-Thread-B3AF
+        panId: d63e
+    ThreadTlvAccessDetail:
+      type: object
+      description: Complete access details for Thread networks using TLV (Type-Length-Value) encoded operational dataset format.
+      properties:
+        accessType:
+          type: string
+          description: The type of network access.
+          enum:
+            - Thread:TLV
+          example: Thread:TLV
+        operationalDataset:
+          type: string
+          maxLength: 255
+          description: The Thread network credentials (operational dataset) encoded as a TLV hex string
+          example: 0e08000000000000010010000102030405060708090a0b0c0d0e0f
+      additionalProperties: false
+      required:
+        - accessType
+        - operationalDataset
+      example:
+        accessType: Thread:TLV
+        operationalDataset: 0e08000000000000010010000102030405060708090a0b0c0d0e0f
+    AccessDetail:
+      oneOf:
+        - $ref: '#/components/schemas/WiFiWpaPersonalAccessDetail'
+        - $ref: '#/components/schemas/WiFiWpaEnterpriseAccessDetail'
+        - $ref: '#/components/schemas/ThreadStructuredAccessDetail'
+        - $ref: '#/components/schemas/ThreadTlvAccessDetail'
+      discriminator:
+        propertyName: accessType
+        mapping:
+          Wi-Fi:WPA_PERSONAL: '#/components/schemas/WiFiWpaPersonalAccessDetail'
+          Wi-Fi:WPA_ENTERPRISE: '#/components/schemas/WiFiWpaEnterpriseAccessDetail'
+          Thread:STRUCTURED: '#/components/schemas/ThreadStructuredAccessDetail'
+          Thread:TLV: '#/components/schemas/ThreadTlvAccessDetail'
+      required:
+        - accessType
+      description: Network access details for different network types and variants
+      example:
+        accessType: Wi-Fi:WPA_PERSONAL
+        ssid: my-ssid
+        securityMode:
+          password: my-password
+          securityModeType: WPA3-Personal
+    TrustDomainUpdate:
+      type: object
+      description: Represents the updatable fields of a trust domain within the network access management system.
+      properties:
+        name:
+          type: string
+          description: Human-readable name for the trust domain.
+          example: Primary WiFi Network
+        description:
+          type: string
+          description: Detailed description of the trust domain.
+          example: Primary home WiFi Network for all devices
+        enabled:
+          type: boolean
+          description: Indicates whether the trust domain is currently enabled.
+          example: true
+        expiration:
+          allOf:
+            - $ref: '#/components/schemas/DateTime'
+            - description: |
+                The expiration date and time of the network.  It must follow [RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339#section-5.6)
+                and must have time zone. Recommended format is yyyy-MM-dd'T'HH:mm:ss.SSSZ (i.e. which allows
+                2023-07-03T14:27:08.312+02:00 or 2023-07-03T12:27:08.312Z).
+
+                If omitted, the trust domain will not automatically expire.
+        policies:
+          $ref: '#/components/schemas/Policies'
+        accessDetails:
+          type: array
+          description: |
+            A list of access configurations that define how end-user devices may join the
+            Trust Domain. Each entry represents one access type (e.g., Wi-Fi WPA Personal,
+            Wi-Fi WPA Enterprise, Thread Structured, Thread TLV).
+
+            **Multiplicity and Uniqueness**
+            - A Trust Domain MUST contain at least one accessDetail entry.
+            - Each `accessType` SHOULD appear at most once. If multiple entries of the same
+              `accessType` are provided, the API provider MAY reject the request.
+            - Order of entries has no semantic meaning.
+
+            **Creation and Update Semantics**
+            - On creation (POST), the full list of accessDetails MUST be provided.
+            - On update (PATCH), the list replaces the previous list entirely when included.
+              Partial merge semantics are not defined; clients MUST supply the complete
+              desired configuration for this field.
+            - To remove all access types, clients MAY provide an empty array, although the
+              API provider MAY reject configurations that result in no valid admittance
+              method for the Trust Domain.
+
+            **Validation Expectations**
+            - The API provider MUST validate that the requested access types and their
+              properties conform to the provider's advertised capabilities
+              (via GET /trust-domains/capabilities).
+            - Providers MAY enforce additional constraints (e.g., SSID uniqueness,
+              channel restrictions, Thread dataset rules) based on local policy.
+
+            **Deployment Behavior**
+            - All Network Access Devices configured with this Trust Domain MUST apply all
+              supplied accessDetails entries, unless the provider's capabilities indicate
+              that certain access types are not supported on specific devices.
+          items:
+            $ref: '#/components/schemas/AccessDetail'
+          minItems: 1
+    TrustDomainCreate:
+      allOf:
+        - $ref: '#/components/schemas/TrustDomainUpdate'
+      description: Represents the creation of a new trust domain within the network access management system.
+      required:
+        - name
+        - enabled
+        - accessDetails
+        - serviceId
+      properties:
+        serviceId:
+          $ref: '#/components/schemas/ServiceId'
+    ResourceAudit:
+      type: object
+      properties:
+        createdAt:
+          allOf:
+            - $ref: '#/components/schemas/DateTime'
+            - description: |
+                The creation date and time of the trust domain.  It must follow [RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339#section-5.6)
+                and must have time zone. Recommended format is yyyy-MM-dd'T'HH:mm:ss.SSSZ (i.e. which allows
+                2023-07-03T14:27:08.312+02:00 or 2023-07-03T12:27:08.312Z).
+            - readOnly: true
+        createdBy:
+          allOf:
+            - $ref: '#/components/schemas/UUID'
+          description: |
+            The ID of the user or system that created this resource.
+          example: 550e8400-e29b-41d4-a716-446655440000
+          readOnly: true
+        modifiedAt:
+          allOf:
+            - $ref: '#/components/schemas/DateTime'
+            - description: |
+                The last update date and time of the trust domain.  It must follow [RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339#section-5.6)
+                and must have time zone. Recommended format is yyyy-MM-dd'T'HH:mm:ss.SSSZ (i.e. which allows
+                2023-07-03T14:27:08.312+02:00 or 2023-07-03T12:27:08.312Z).
+            - readOnly: true
+        modifiedBy:
+          allOf:
+            - $ref: '#/components/schemas/UUID'
+          description: |
+            The ID of the user or system that modified this resource.
+          example: 660e8400-e29b-41d4-a716-446655440000
+          readOnly: true
+      description: A generic schema for resources with unique identifiers and audit fields.
+    TrustDomain:
+      allOf:
+        - $ref: '#/components/schemas/ResourceIdentifier'
+        - $ref: '#/components/schemas/TrustDomainCreate'
+        - $ref: '#/components/schemas/ResourceAudit'
+        - type: object
+          properties:
+            id:
+              readOnly: true
+            createdAt:
+              readOnly: true
+            createdBy:
+              readOnly: true
+            modifiedAt:
+              readOnly: true
+            modifiedBy:
+              readOnly: true
+      description: Represents a trust domain within the network access management system.
+    DeviceType:
+      type: string
+      description: The category of the device being registered to the Trust Domain.
+      enum:
+        - AUTOMOTIVE
+        - DESKTOP
+        - IOT
+        - LAPTOP
+        - MEDICAL
+        - OTHER
+        - SMARTPHONE
+        - TABLET
+        - TV
+        - WEARABLE
+      example: IOT
+    BootstrappingProtocol:
+      type: string
+      description: A bootstrapping protocol identifier for device onboarding.
+      enum:
+        - DPP
+        - MATTER
+        - WKSO
+    DppBootstrappingConfig:
+      type: object
+      description: |
+        DPP (Device Provisioning Protocol) bootstrapping configuration as defined
+        by the Wi-Fi Alliance DPP specification.
+      required:
+        - bootstrappingUri
+      properties:
+        bootstrappingUri:
+          type: string
+          maxLength: 2048
+          description: |
+            A DPP bootstrapping URI encoding the device's public key, channel information,
+            and MAC address. Typically presented as a QR code for scanning.
+          example: DPP:C:81/1;M:aabbccddeeff;K:MDkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDIgADURzxmttZoIRIPWGoQMV00XHWCAQIhXruVWOz0NjlkIA=;;
+    MatterBootstrappingConfig:
+      type: object
+      description: |
+        Matter commissioning configuration as defined by the Connectivity Standards
+        Alliance (CSA) Matter specification (Section 5.1.3 - Onboarding Payload).
+      externalDocs:
+        description: Matter Specification - Connectivity Standards Alliance
+        url: https://csa-iot.org/developer-resource/specifications-download-request/
+      required:
+        - setupPayload
+      properties:
+        setupPayload:
+          type: string
+          maxLength: 2048
+          description: |
+            A Matter onboarding payload used to commission the device. Accepts either format:
+
+            - **QR Code Payload**: Prefixed with `MT:`, followed by a base-38 encoded string
+              (characters `0-9`, `A-Z`, `-.`) encoding the device's vendor ID, product ID,
+              discriminator, setup passcode, and discovery capabilities.
+              Example: `MT:Y3.13OTB00KA0648G00`
+
+            - **Manual Pairing Code**: A numeric string (typically 11 or 21 digits) encoding
+              a subset of the same commissioning data for manual entry.
+              Example: `34970112332`
+
+            See Matter Core Specification Section 5.1.3 for payload structure details.
+          example: MT:Y3.13OTB00KA0648G00
+    WksoBootstrappingConfig:
+      type: object
+      description: |
+        Well-Known SSID Onboarding (WKSO) bootstrapping configuration. The device
+        connects to a well-known SSID and presents a client certificate; the operator
+        uses identity material extracted from the certificate to look up and
+        authorize the device on the Trust Domain.
+
+        **Note:** The exact `bootstrappingUri` shape is provisional and
+        implementation-specific. WKSO is not yet standardized; the format below
+        reflects an initial proof-of-concept convention and is expected to evolve —
+        for example, future iterations may incorporate cryptographically verifiable
+        fields analogous to those carried in DPP bootstrapping URIs.
+      required:
+        - bootstrappingUri
+      properties:
+        bootstrappingUri:
+          type: string
+          maxLength: 2048
+          description: |
+            A WKSO bootstrapping URI carrying the identity material the operator
+            uses to locate and authenticate the device.
+
+            Format is provisional and may change as WKSO is standardized. The
+            current proof-of-concept convention encodes the device's Organizational
+            Unit (OU) and Serial Number (SN) from the client certificate subject,
+            expressed as semicolon-delimited key-value pairs. This shape is
+            illustrative rather than normative.
+          example: WKS:OU:00405E;SN:rpi-client-1;;
+    BootstrappingInfo:
+      type: object
+      description: |
+        Provisioning protocol configurations for onboarding a device to the Trust Domain.
+        Each protocol property (DPP, MATTER, WKSO) represents a supported bootstrapping protocol
+        and its configuration. A device may support multiple protocols simultaneously.
+
+        When multiple protocols are configured, use `protocolPreference` to indicate the
+        desired selection order. The server selects the first protocol from this list that
+        the Trust Domain's access infrastructure also supports.
+      properties:
+        protocolPreference:
+          type: array
+          items:
+            $ref: '#/components/schemas/BootstrappingProtocol'
+          minItems: 1
+          description: |
+            Bootstrapping protocols in order of preference (most preferred first).
+            The server selects the first protocol compatible with the Trust Domain's
+            access infrastructure. Optional — when omitted, the server selects based
+            on its own policy. Recommended when multiple protocol configurations are
+            provided.
+          example:
+            - DPP
+            - MATTER
+        selectedProtocol:
+          allOf:
+            - $ref: '#/components/schemas/BootstrappingProtocol'
+            - readOnly: true
+              description: |
+                The bootstrapping protocol selected by the server for onboarding this
+                device. Present only in responses. Determined by intersecting the
+                device's configured protocols with the Trust Domain's capabilities,
+                respecting protocolPreference ordering if provided.
+        DPP:
+          $ref: '#/components/schemas/DppBootstrappingConfig'
+        MATTER:
+          $ref: '#/components/schemas/MatterBootstrappingConfig'
+        WKSO:
+          $ref: '#/components/schemas/WksoBootstrappingConfig'
+    CredentialType:
+      type: string
+      description: A network credential type for device authentication.
+      enum:
+        - WPA2_PSK
+        - WPA3_SAE
+    GenerateDeviceCredential:
+      type: object
+      description: |
+        Request the server to generate a unique per-device credential. The API
+        consumer provides the credential types the device supports, in preference
+        order (most preferred first). The server selects the first type that is
+        compatible with the Trust Domain's access configuration and generates a
+        unique credential of that type. The generated credential is exchanged
+        with the device during bootstrapping (DPP, Matter, etc.).
+      required:
+        - credentialAction
+        - supportedTypes
+      properties:
+        credentialAction:
+          type: string
+          enum:
+            - GENERATE
+          description: Indicates the server should generate a credential.
+          example: GENERATE
+        supportedTypes:
+          type: array
+          items:
+            $ref: '#/components/schemas/CredentialType'
+          minItems: 1
+          description: |
+            Credential types the device supports, ordered by preference (most
+            preferred first). The server selects the first type compatible with
+            the Trust Domain's access configuration.
+          example:
+            - WPA3_SAE
+            - WPA2_PSK
+        selectedType:
+          allOf:
+            - $ref: '#/components/schemas/CredentialType'
+            - readOnly: true
+              description: |
+                The credential type the server selected. Present only in responses.
+                Determined by matching supportedTypes against the Trust Domain's
+                access configuration.
+    AssignDeviceCredential:
+      type: object
+      description: |
+        Assign a specific credential value to the device. The API consumer
+        provides both the credential type and the passphrase to use.
+      required:
+        - credentialAction
+        - credentialType
+        - value
+      properties:
+        credentialAction:
+          type: string
+          enum:
+            - ASSIGN
+          description: Indicates the client is providing a specific credential.
+          example: ASSIGN
+        credentialType:
+          $ref: '#/components/schemas/CredentialType'
+        value:
+          type: string
+          writeOnly: true
+          minLength: 8
+          maxLength: 255
+          description: |
+            The credential value (e.g., passphrase or pre-shared key) to assign.
+            Write-only — never returned in API responses.
+          example: my-device-passphrase-123
+    DeviceCredential:
+      description: |
+        Per-device network credential configuration. Allows the API consumer to
+        either request server-generated credentials (GENERATE) or assign a
+        specific credential value (ASSIGN).
+
+        If this field is omitted entirely from the device registration, the device
+        uses the Trust Domain's shared credential from accessDetails.
+      oneOf:
+        - $ref: '#/components/schemas/GenerateDeviceCredential'
+        - $ref: '#/components/schemas/AssignDeviceCredential'
+      discriminator:
+        propertyName: credentialAction
+        mapping:
+          GENERATE: '#/components/schemas/GenerateDeviceCredential'
+          ASSIGN: '#/components/schemas/AssignDeviceCredential'
+    TrustDomainDeviceUpdate:
+      type: object
+      description: |
+        Represents the updatable fields of a device registered to a Trust Domain.
+        All fields are optional; only the fields included in the request body will be updated.
+      properties:
+        deviceName:
+          type: string
+          minLength: 1
+          maxLength: 255
+          description: Human-readable name for the device.
+          example: Living Room Speaker
+        deviceType:
+          $ref: '#/components/schemas/DeviceType'
+        enabled:
+          type: boolean
+          description: |
+            Indicates whether the device is enabled. When disabled, the device will not
+            be able to authenticate to the Trust Domain.
+          example: true
+        blocked:
+          type: boolean
+          description: |
+            Indicates whether the device's data forwarding is blocked. When blocked,
+            the device cannot forward data to the Internet or communicate with other
+            devices in the Trust Domain, even if it is enabled and connected.
+          example: false
+        hardwareAddress:
+          type: object
+          description: The hardware address of the device.
+          properties:
+            hardwareAddressType:
+              type: string
+              enum:
+                - EUI-48
+              description: The type of hardware address. Currently only EUI-48 (MAC-48) is supported.
+              example: EUI-48
+            value:
+              type: string
+              pattern: ^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$
+              description: The hardware address value in the format specified by hardwareAddressType.
+              example: AA:BB:CC:DD:EE:F1
+          required:
+            - hardwareAddressType
+            - value
+        bootstrappingInfo:
+          allOf:
+            - $ref: '#/components/schemas/BootstrappingInfo'
+            - description: |
+                Provisioning protocol configurations that define how this device can be
+                onboarded to the Trust Domain. Each property identifies a bootstrapping
+                protocol and its configuration. A device may support multiple protocols.
+                Use `protocolPreference` to express the device's preferred protocol ordering
+                for deterministic server selection.
+
+                **Update Semantics**
+                - On update (PATCH), the object replaces the previous object entirely when
+                  included. Partial merge semantics are not defined; clients MUST supply the
+                  complete desired configuration for this field.
+        deviceCredential:
+          $ref: '#/components/schemas/DeviceCredential'
+    TrustDomainDeviceCreate:
+      allOf:
+        - $ref: '#/components/schemas/TrustDomainDeviceUpdate'
+      description: |
+        Represents the creation payload for registering a new device to a Trust Domain.
+        Extends TrustDomainDeviceUpdate with additional creation-only fields and required field constraints.
+      required:
+        - deviceName
+        - enabled
+      properties:
+        externalId:
+          type: string
+          minLength: 1
+          maxLength: 255
+          description: |
+            A manufacturer or user-assigned identifier for the device (e.g., serial number,
+            model code, or asset tag). This is distinct from the system-generated UUID `id`
+            and can be used for cross-referencing the device with external systems.
+          example: SN-12345-ABCDE
+    PhoneNumber:
+      description: A public identifier addressing a telephone subscription. In mobile networks it corresponds to the MSISDN (Mobile Station International Subscriber Directory Number). In order to be globally unique it has to be formatted in international format, according to E.164 standard, prefixed with '+'.
+      type: string
+      pattern: ^\+[1-9][0-9]{4,14}$
+      maxLength: 16
+      example: '+123456789'
+    NetworkAccessIdentifier:
+      description: A public identifier addressing a subscription in a mobile network. In 3GPP terminology, it corresponds to the GPSI formatted with the External Identifier ({Local Identifier}@{Domain Identifier}). Unlike the telephone number, the network access identifier is not subjected to portability ruling in force, and is individually managed by each operator.
+      type: string
+      maxLength: 2048
+      example: 123456789@example.com
+    SingleIpv4Address:
+      description: A single IPv4 address with no subnet mask
+      type: string
+      format: ipv4
+      maxLength: 15
+      example: 84.125.93.10
+    Port:
+      description: TCP or UDP port number
+      type: integer
+      format: int32
+      minimum: 1
+      maximum: 65535
+    DeviceIpv4Address:
+      type: object
+      description: |
+        The device should be identified by either the public (observed) IP address and port as seen by the application server, or the private (local) and any public (observed) IP addresses in use by the device (this information can be obtained by various means, for example from some DNS servers).
+
+        If the allocated and observed IP addresses are the same (i.e. NAT is not in use) then  the same address should be specified for both publicAddress and privateAddress.
+
+        If NAT64 is in use, the device should be identified by its publicAddress and publicPort, or separately by its allocated IPv6 address (field ipv6Address of the Device object)
+
+        In all cases, publicAddress must be specified, along with at least one of either privateAddress or publicPort, dependent upon which is known. In general, mobile devices cannot be identified by their public IPv4 address alone.
+      properties:
+        publicAddress:
+          $ref: '#/components/schemas/SingleIpv4Address'
+        privateAddress:
+          $ref: '#/components/schemas/SingleIpv4Address'
+        publicPort:
+          $ref: '#/components/schemas/Port'
+      anyOf:
+        - required:
+            - publicAddress
+            - privateAddress
+        - required:
+            - publicAddress
+            - publicPort
+      example:
+        publicAddress: 84.125.93.10
+        publicPort: 59765
+    DeviceIpv6Address:
+      description: |
+        The device should be identified by the observed IPv6 address, or by any single IPv6 address from within the subnet allocated to the device (e.g. adding ::0 to the /64 prefix).
+      type: string
+      format: ipv6
+      maxLength: 45
+      example: 2001:db8:85a3:8d3:1319:8a2e:370:7344
+    Device:
+      description: |
+        End-user equipment able to connect to a mobile network. Examples of devices include smartphones or IoT sensors/actuators.
+            The developer can choose to provide the below specified device identifiers:
+            * `ipv4Address`
+            * `ipv6Address`
+            * `phoneNumber`
+            * `networkAccessIdentifier`
+            NOTE1: the network operator might support only a subset of these options. The API Consumer can provide multiple identifiers to ensure compatibility across different network operators. In this case, the API Provider will use one of the identifiers for the API logic without performing any matching checks among the provided identifiers.
+            NOTE2: as for this Commonalities release, we are enforcing that the networkAccessIdentifier is only part of the schema for future-proofing, and CAMARA does not currently allow its use. After the CAMARA meta-release work is concluded and the relevant issues are resolved, its use will need to be explicitly documented in the guidelines.
+      type: object
+      properties:
+        phoneNumber:
+          $ref: '#/components/schemas/PhoneNumber'
+        networkAccessIdentifier:
+          $ref: '#/components/schemas/NetworkAccessIdentifier'
+        ipv4Address:
+          $ref: '#/components/schemas/DeviceIpv4Address'
+        ipv6Address:
+          $ref: '#/components/schemas/DeviceIpv6Address'
+      minProperties: 1
+    TrustDomainDevice:
+      allOf:
+        - $ref: '#/components/schemas/ResourceIdentifier'
+        - $ref: '#/components/schemas/TrustDomainDeviceCreate'
+        - $ref: '#/components/schemas/Device'
+        - $ref: '#/components/schemas/ResourceAudit'
+        - type: object
+          properties:
+            id:
+              readOnly: true
+            ipv4Address:
+              readOnly: true
+            ipv6Address:
+              readOnly: true
+            createdAt:
+              readOnly: true
+            createdBy:
+              readOnly: true
+            modifiedAt:
+              readOnly: true
+            modifiedBy:
+              readOnly: true
+            connected:
+              type: boolean
+              readOnly: true
+              description: |
+                Indicates whether the device is currently connected to the network.
+                This field is populated by the system and is read-only.
+              example: true
+            associated:
+              type: boolean
+              readOnly: true
+              description: |
+                Indicates whether the device is currently associated with the Trust Domain's
+                network infrastructure. A device may be registered but not yet associated
+                if it has not completed the onboarding process.
+              example: true
+      description: |
+        Represents a device registered to a Trust Domain within the network access management system.
+        This schema represents subscriber or IoT devices that have been provisioned to join a Trust Domain,
+        as opposed to NetworkAccessDevice which represents operator-supplied network access equipment.
+
+        This schema extends the CAMARA Commonalities `Device` model. The inherited `ipv4Address` and
+        `ipv6Address` fields are populated by the system when the device connects and are read-only.
+        The inherited `phoneNumber` and `networkAccessIdentifier` fields are not applicable to
+        Trust Domain Devices and will not be populated.
+    TrustDomainDeviceList:
+      type: array
+      description: A list of devices registered to a Trust Domain.
+      items:
+        $ref: '#/components/schemas/TrustDomainDevice'
+    NetworkAccessDevice:
+      description: |
+        Represents a network access device managed within the network access management system.
+        This schema represents operator-supplied network access equipment (e.g., gateways, mesh Wi-Fi systems).
+        It extends the Commonalities Device model but MUST NOT be confused with end-user devices.
+        The identifiers and addressing fields reflect the operator-managed equipment, not client equipment.
+      allOf:
+        - $ref: '#/components/schemas/ResourceIdentifier'
+        - $ref: '#/components/schemas/Device'
+        - type: object
+          properties:
+            id:
+              readOnly: true
+            name:
+              type: string
+              minLength: 1
+              maxLength: 100
+              description: The name of the device
+              example: Gateway-1
+            description:
+              type: string
+              minLength: 0
+              maxLength: 255
+              description: A description of the device
+              example: A Wi-Fi gateway device
+            hardwareAddress:
+              description: The hardware address of the device
+              oneOf:
+                - type: object
+                  properties:
+                    hardwareAddressType:
+                      type: string
+                      enum:
+                        - EUI-48
+                      example: EUI-48
+                    value:
+                      type: string
+                      pattern: ^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$
+                      example: 12:34:56:78:9A:BC
+                  required:
+                    - hardwareAddressType
+                    - value
+              discriminator:
+                propertyName: hardwareAddressType
+              example:
+                hardwareAddressType: EUI-48
+                value: 12:34:56:78:9A:BC
+            serviceSite:
+              $ref: '#/components/schemas/ServiceSite'
+            deviceStatus:
+              type: string
+              enum:
+                - connected
+                - disconnected
+                - unavailable
+              default: unavailable
+              description: The current status of the device
+              example: connected
+          required:
+            - id
+          example:
+            id: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+            deviceStatus: connected
+            name: Gateway-1
+            description: A Wi-Fi gateway device
+            hardwareAddress:
+              hardwareAddressType: EUI-48
+              value: 12:34:56:78:9A:BC
+            serviceSite:
+              id: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+              name: Primary Residence
+              description: 123 Main Street
+              location:
+                id: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+                addressLine1: 123 Main St
+                addressLine2: Suite 456
+                streetNr: '123'
+                streetNrSuffix: A
+                streetNrLast: '125'
+                streetNrLastSuffix: B
+                streetName: Main
+                subUnitType: Apartment
+                subUnitNr: A12
+                levelType: Floor
+                levelNr: '3'
+                buildingName: Sunset Towers
+                privateStreetName: Private Rd
+                locality: Example Locality
+                city: Example State
+                stateOrProvince: EX
+                country: United States
+                postCode: '12345'
+                postCodeExtension: '6789'
+    NetworkAccessDeviceList:
+      type: array
+      description: A list of network access devices.
+      items:
+        $ref: '#/components/schemas/NetworkAccessDevice'
+      example:
+        - id: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+          deviceStatus: connected
+          name: Gateway-1
+          description: A Wi-Fi gateway device
+          hardwareAddress:
+            hardwareAddressType: EUI-48
+            value: 12:34:56:78:9A:BC
+          serviceSite:
+            id: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+            name: Primary Residence
+            description: 123 Main Street
+            location:
+              id: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+              addressLine1: 123 Main St
+              addressLine2: Suite 456
+              streetNr: '123'
+              streetNrSuffix: A
+              streetNrLast: '125'
+              streetNrLastSuffix: B
+              streetName: Main
+              subUnitType: Apartment
+              subUnitNr: A12
+              levelType: Floor
+              levelNr: '3'
+              buildingName: Sunset Towers
+              privateStreetName: Private Rd
+              locality: Example Locality
+              city: Example State
+              stateOrProvince: EX
+              country: United States
+              postCode: '12345'
+              postCodeExtension: '6789'
+        - id: 123e4567-e89b-12d3-a456-426614174000
+          deviceStatus: disconnected
+          name: Gateway-2
+          description: Another Wi-Fi gateway device
+          hardwareAddress:
+            hardwareAddressType: EUI-48
+            value: AB:CD:EF:12:34:56
+          serviceSite:
+            id: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+            name: Primary Residence
+            description: 123 Main Street
+            location:
+              id: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+              addressLine1: 123 Main St
+              addressLine2: Suite 456
+              streetNr: '123'
+              streetNrSuffix: A
+              streetNrLast: '125'
+              streetNrLastSuffix: B
+              streetName: Main
+              subUnitType: Apartment
+              subUnitNr: A12
+              levelType: Floor
+              levelNr: '3'
+              buildingName: Sunset Towers
+              privateStreetName: Private Rd
+              locality: Example Locality
+              city: Example State
+              stateOrProvince: EX
+              country: United States
+              postCode: '12345'
+              postCodeExtension: '6789'
+    RebootRequestUpdate:
+      type: object
+      description: Represents updatable fields for a reboot request, including optional message and scheduling information.
+      properties:
+        message:
+          type: string
+          maxLength: 255
+          description: A message related to the reboot request
+          example: reboot to correct performance
+        atTime:
+          allOf:
+            - $ref: '#/components/schemas/DateTime'
+            - description: |
+                The date and time to reboot the device. Do not include 'atTime' to request immediate reboot.  It must
+                follow [RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339#section-5.6) and must have time zone.
+                Recommended format is yyyy-MM-dd'T'HH:mm:ss.SSSZ (i.e. which allows 2023-07-03T14:27:08.312+02:00 or
+                2023-07-03T12:27:08.312Z).
+    RebootRequestCreate:
+      description: Represents the creation of a reboot request, including target devices and optional scheduling. If devices is omitted, the provider MAY infer a default device. Inference rules vary by implementation. If inference is unsupported or ambiguous, creation MUST fail.
+      allOf:
+        - $ref: '#/components/schemas/RebootRequestUpdate'
+        - properties:
+            devices:
+              type: array
+              items:
+                $ref: '#/components/schemas/UUID'
+              description: List of devices to reboot. When undefined, the reboot targets the 'default' device (simple use case that wouldn't use locations or devices). Throws an error when creating if there is no 'default' device.
+              example:
+                - 934ee3f4-1234-5678-9abc-abcdef123456
+                - 454ee3f4-1234-5678-9abc-abcdef123456
+    RebootRequest:
+      allOf:
+        - $ref: '#/components/schemas/ResourceIdentifier'
+        - $ref: '#/components/schemas/RebootRequestCreate'
+        - $ref: '#/components/schemas/ResourceAudit'
+        - type: object
+          properties:
+            id:
+              readOnly: true
+            createdAt:
+              readOnly: true
+            createdBy:
+              readOnly: true
+            modifiedAt:
+              readOnly: true
+            modifiedBy:
+              readOnly: true
+      required:
+        - devices
+      description: Represents a reboot request for one or more network access devices.
+  headers:
+    x-correlator:
+      description: Correlation id for the different services
+      schema:
+        $ref: '#/components/schemas/XCorrelator'
+  responses:
+    Generic401:
+      description: Unauthorized
+      headers:
+        x-correlator:
+          $ref: '#/components/headers/x-correlator'
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/ErrorInfo'
+              - type: object
+                properties:
+                  status:
+                    enum:
+                      - 401
+                  code:
+                    enum:
+                      - UNAUTHENTICATED
+          examples:
+            GENERIC_401_UNAUTHENTICATED:
+              description: Request cannot be authenticated and a new authentication is required
+              value:
+                status: 401
+                code: UNAUTHENTICATED
+                message: Request not authenticated due to missing, invalid, or expired credentials. A new authentication is required.
+    Generic403:
+      description: Forbidden
+      headers:
+        x-correlator:
+          $ref: '#/components/headers/x-correlator'
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/ErrorInfo'
+              - type: object
+                properties:
+                  status:
+                    enum:
+                      - 403
+                  code:
+                    enum:
+                      - PERMISSION_DENIED
+                      - INVALID_TOKEN_CONTEXT
+          examples:
+            GENERIC_403_PERMISSION_DENIED:
+              description: Permission denied. OAuth2 token access does not have the required scope or when the user fails operational security
+              value:
+                status: 403
+                code: PERMISSION_DENIED
+                message: Client does not have sufficient permissions to perform this action.
+            GENERIC_403_INVALID_TOKEN_CONTEXT:
+              description: Reflect some inconsistency between information in some field of the API and the related OAuth2 Token
+              value:
+                status: 403
+                code: INVALID_TOKEN_CONTEXT
+                message: Request body is not consistent with access token.
+    Generic500:
+      description: Internal Server Error
+      headers:
+        x-correlator:
+          $ref: '#/components/headers/x-correlator'
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/ErrorInfo'
+              - type: object
+                properties:
+                  status:
+                    enum:
+                      - 500
+                  code:
+                    enum:
+                      - INTERNAL
+          examples:
+            GENERIC_500_INTERNAL:
+              description: Problem in Server side. Regular Server Exception
+              value:
+                status: 500
+                code: INTERNAL
+                message: Unknown server error. Typically a server bug.
+    Generic503:
+      description: Service Unavailable
+      headers:
+        x-correlator:
+          $ref: '#/components/headers/x-correlator'
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/ErrorInfo'
+              - type: object
+                properties:
+                  status:
+                    enum:
+                      - 503
+                  code:
+                    enum:
+                      - UNAVAILABLE
+          examples:
+            GENERIC_503_UNAVAILABLE:
+              description: Service is not available. Temporary situation usually related to maintenance process in the server side
+              value:
+                status: 503
+                code: UNAVAILABLE
+                message: Service Unavailable.
+    Generic404:
+      description: Not found
+      headers:
+        x-correlator:
+          $ref: '#/components/headers/x-correlator'
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/ErrorInfo'
+              - type: object
+                properties:
+                  status:
+                    enum:
+                      - 404
+                  code:
+                    enum:
+                      - NOT_FOUND
+                      - IDENTIFIER_NOT_FOUND
+          examples:
+            GENERIC_404_NOT_FOUND:
+              description: Resource is not found
+              value:
+                status: 404
+                code: NOT_FOUND
+                message: The specified resource is not found.
+            GENERIC_404_IDENTIFIER_NOT_FOUND:
+              description: Some identifier cannot be matched to a device
+              value:
+                status: 404
+                code: IDENTIFIER_NOT_FOUND
+                message: Device identifier not found.
+    Generic400:
+      description: Bad Request
+      headers:
+        x-correlator:
+          $ref: '#/components/headers/x-correlator'
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/ErrorInfo'
+              - type: object
+                properties:
+                  status:
+                    enum:
+                      - 400
+                  code:
+                    enum:
+                      - INVALID_ARGUMENT
+                      - OUT_OF_RANGE
+          examples:
+            GENERIC_400_INVALID_ARGUMENT:
+              description: Invalid Argument. Generic Syntax Exception
+              value:
+                status: 400
+                code: INVALID_ARGUMENT
+                message: Client specified an invalid argument, request body or query param.
+            GENERIC_400_OUT_OF_RANGE:
+              description: Out of Range. Specific Syntax Exception used when a given field has a pre-defined range or a invalid filter criteria combination is requested
+              value:
+                status: 400
+                code: OUT_OF_RANGE
+                message: Client specified an invalid range.
+    Generic409:
+      description: Conflict
+      headers:
+        x-correlator:
+          $ref: '#/components/headers/x-correlator'
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/ErrorInfo'
+              - type: object
+                properties:
+                  status:
+                    enum:
+                      - 409
+                  code:
+                    enum:
+                      - ABORTED
+                      - ALREADY_EXISTS
+                      - CONFLICT
+                      - INCOMPATIBLE_STATE
+          examples:
+            GENERIC_409_ABORTED:
+              description: The resource is undergoing modification by another process
+              value:
+                status: 409
+                code: ABORTED
+                message: Resource is being modified by another operation. Please wait, and retry if appropriate.
+            GENERIC_409_ALREADY_EXISTS:
+              description: Trying to create an existing resource
+              value:
+                status: 409
+                code: ALREADY_EXISTS
+                message: The resource that a client tried to create already exists.
+            GENERIC_409_CONFLICT:
+              description: Duplication of an existing resource
+              value:
+                status: 409
+                code: CONFLICT
+                message: A specified resource duplicate entry found.
+            GENERIC_409_INCOMPATIBLE_STATE:
+              description: |
+                The status of the referenced resource is not compatible.
+              value:
+                status: 409
+                code: INCOMPATIBLE_STATE
+                message: Resource must be in AVAILABLE state to extend. Current state is UNAVAILABLE.
+    Generic422:
+      description: Unprocessable Content
+      headers:
+        x-correlator:
+          $ref: '#/components/headers/x-correlator'
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/ErrorInfo'
+              - type: object
+                properties:
+                  status:
+                    enum:
+                      - 422
+                  code:
+                    enum:
+                      - SERVICE_NOT_APPLICABLE
+                      - MISSING_IDENTIFIER
+                      - UNSUPPORTED_IDENTIFIER
+                      - UNNECESSARY_IDENTIFIER
+          examples:
+            GENERIC_422_SERVICE_NOT_APPLICABLE:
+              description: Service not applicable for the provided identifier
+              value:
+                status: 422
+                code: SERVICE_NOT_APPLICABLE
+                message: The service is not available for the provided identifier.
+            GENERIC_422_MISSING_IDENTIFIER:
+              description: An identifier is not included in the request and the device or phone number identification cannot be derived from the 3-legged access token
+              value:
+                status: 422
+                code: MISSING_IDENTIFIER
+                message: The device cannot be identified.
+            GENERIC_422_UNSUPPORTED_IDENTIFIER:
+              description: None of the provided identifiers is supported by the implementation
+              value:
+                status: 422
+                code: UNSUPPORTED_IDENTIFIER
+                message: The identifier provided is not supported.
+            GENERIC_422_UNNECESSARY_IDENTIFIER:
+              description: An explicit identifier is provided when a device or phone number has already been identified from the access token
+              value:
+                status: 422
+                code: UNNECESSARY_IDENTIFIER
+                message: The device is already identified by the access token.
+  examples:
+    TrustDomainCreateWpa2Personal:
+      summary: Create a Trust Domain with WPA2-Personal Wi-Fi access.
+      value:
+        name: Primary WiFi Network
+        description: Request defines a Trust Domain with WPA2-Personal Wi-Fi access. The request specifies an SSID, implying the SSID is created on the network infrastructure.
+        enabled: true
+        accessDetails:
+          - accessType: Wi-Fi:WPA_PERSONAL
+            ssid: my-ssid
+            securityMode:
+              password: my-password
+              securityModeType: WPA2-Personal
+        serviceId: 123e4567-e89b-12d3-a456-426614174000
+    TrustDomainCreateInferredSsid:
+      summary: Create a Trust Domain with inferred SSID Wi-Fi access.
+      value:
+        name: Inferred SSID Network
+        description: Request defines a Trust Domain with inferred SSID Wi-Fi access. The request omits the SSID, implying the Trust Domain is applied to an existing SSID on the network infrastructure.
+        enabled: true
+        accessDetails:
+          - accessType: Wi-Fi:WPA_PERSONAL
+            securityMode:
+              password: my-password
+              securityModeType: WPA2-Personal
+        serviceId: 123e4567-e89b-12d3-a456-426614174000
+    TrustDomainCreateThreadStructured:
+      summary: Create a Trust Domain with Thread structured access details.
+      value:
+        name: Thread Structured Network
+        description: Request defines a Trust Domain with Thread structured access details.
+        enabled: true
+        accessDetails:
+          - accessType: Thread:STRUCTURED
+            channel: 13
+            extendedPanId: d63e8e3e495ebbc3
+            networkKey: dfd34f0f05cad978ec4e32b0413038ff
+            networkName: Spec-Thread-B3AF
+            panId: d63e
+        serviceId: 123e4567-e89b-12d3-a456-426614174000
+    TrustDomainCreateEphemeral:
+      summary: Create a Trust Domain with ephemeral access details.
+      value:
+        name: Ephemeral Network
+        description: Request defines a Trust Domain with ephemeral access details.
+        enabled: true
+        accessDetails:
+          - accessType: Wi-Fi:WPA_PERSONAL
+            ssid: my-ssid
+            securityMode:
+              password: my-password
+              securityModeType: WPA3-Personal
+        expiration: '2024-12-31T23:59:59Z'
+        policies:
+          maxDevices: 10
+        serviceId: 123e4567-e89b-12d3-a456-426614174000
+    TrustDomainCreateQoSPolicies:
+      summary: Create a Trust Domain with QoS policies.
+      value:
+        name: QoS Policy Network
+        description: Request defines a Trust Domain with QoS policies.
+        enabled: true
+        accessDetails:
+          - accessType: Wi-Fi:WPA_PERSONAL
+            ssid: my-ssid
+            securityMode:
+              password: my-password
+              securityModeType: WPA3-Personal
+        policies:
+          maxDomainDownstreamRate:
+            value: 1000000
+            unit: Kbps
+          maxDomainUpstreamRate:
+            value: 500000
+            unit: Kbps
+        serviceId: 123e4567-e89b-12d3-a456-426614174000
+    TrustDomainResponseBasic:
+      summary: Basic Trust Domain Response
+      description: Example of a created Trust Domain with minimal details.
+      value:
+        id: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+        name: Basic Trust Domain
+        description: A basic trust domain example
+        enabled: true
+        accessDetails:
+          - accessType: Wi-Fi:WPA_PERSONAL
+            ssid: my-ssid
+            securityMode:
+              password: my-password
+              securityModeType: WPA2-Personal
+        serviceId: 123e4567-e89b-12d3-a456-426614174000
+        createdAt: '2025-10-21T14:27:08.312Z'
+        createdBy: 550e8400-e29b-41d4-a716-446655440000
+        modifiedAt: '2025-10-21T14:27:08.312Z'
+        modifiedBy: 660e8400-e29b-41d4-a716-446655440000
+    TrustDomainResponseWiFiThread:
+      summary: Created Trust Domain (Wi-Fi + Thread)
+      description: Example of a created Trust Domain including Wi-Fi and Thread access details and populated policies.
+      value:
+        id: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+        name: Primary WiFi Network
+        description: Primary home Wi-Fi Network for all devices
+        enabled: true
+        expiration: '2025-10-21T14:27:08.312Z'
+        policies:
+          egressAllowedList:
+            - api.vendor.com
+            - updates.vendor.com
+        accessDetails:
+          - accessType: Wi-Fi:WPA_PERSONAL
+            ssid: my-ssid
+            securityMode:
+              password: my-password
+              securityModeType: WPA3-Personal
+          - accessType: Thread:STRUCTURED
+            channel: 13
+            extendedPanId: d63e8e3e495ebbc3
+            networkKey: dfd34f0f05cad978ec4e32b0413038ff
+            networkName: Spec-Thread-B3AF
+            panId: d63e
+        serviceId: 123e4567-e89b-12d3-a456-426614174000
+        createdAt: '2025-10-21T14:27:08.312Z'
+        createdBy: 550e8400-e29b-41d4-a716-446655440000
+        modifiedAt: '2025-10-21T14:27:08.312Z'
+        modifiedBy: 770e8400-e29b-41d4-a716-446655440000
+    TrustDomainDeviceListResponse:
+      summary: List of registered devices
+      description: Example response for listing all devices in a Trust Domain.
+      value:
+        - id: a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d
+          deviceName: Smart Thermostat
+          externalId: SN-THERMO-001
+          deviceType: IOT
+          enabled: true
+          blocked: false
+          hardwareAddress:
+            hardwareAddressType: EUI-48
+            value: AA:BB:CC:DD:EE:F1
+          connected: true
+          associated: true
+          createdAt: '2025-11-15T10:30:00.000Z'
+          createdBy: 550e8400-e29b-41d4-a716-446655440000
+          modifiedAt: '2025-11-15T10:30:00.000Z'
+          modifiedBy: 550e8400-e29b-41d4-a716-446655440000
+        - id: b2c3d4e5-f6a7-4b8c-9d0e-1f2a3b4c5d6e
+          deviceName: Guest Laptop
+          deviceType: LAPTOP
+          enabled: true
+          blocked: false
+          hardwareAddress:
+            hardwareAddressType: EUI-48
+            value: AA:BB:CC:DD:EE:F2
+          connected: false
+          associated: false
+          createdAt: '2025-11-16T08:00:00.000Z'
+          createdBy: 550e8400-e29b-41d4-a716-446655440000
+          modifiedAt: '2025-11-16T08:00:00.000Z'
+          modifiedBy: 550e8400-e29b-41d4-a716-446655440000
+    TrustDomainDeviceCreateIoT:
+      summary: Register an IoT device with DPP bootstrapping and server-generated credential.
+      value:
+        deviceName: Smart Thermostat
+        externalId: SN-THERMO-001
+        deviceType: IOT
+        enabled: true
+        blocked: false
+        hardwareAddress:
+          hardwareAddressType: EUI-48
+          value: AA:BB:CC:DD:EE:F1
+        bootstrappingInfo:
+          protocolPreference:
+            - DPP
+          DPP:
+            bootstrappingUri: DPP:C:81/1;M:aabbccddeeff;K:MDkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDIgADURzxmttZoIRIPWGoQMV00XHWCAQIhXruVWOz0NjlkIA=;;
+        deviceCredential:
+          credentialAction: GENERATE
+          supportedTypes:
+            - WPA3_SAE
+            - WPA2_PSK
+    TrustDomainDeviceCreateMinimal:
+      summary: Register a device with minimal required fields.
+      value:
+        deviceName: Guest Laptop
+        enabled: true
+    TrustDomainDeviceCreateMatter:
+      summary: Register a Matter device.
+      value:
+        deviceName: Smart Light Bulb
+        externalId: MATTER-BULB-42
+        deviceType: IOT
+        enabled: true
+        blocked: false
+        bootstrappingInfo:
+          MATTER:
+            setupPayload: MT:Y3.13OTB00KA0648G00
+    TrustDomainDeviceResponseBasic:
+      summary: Basic device response
+      description: Example of a registered Trust Domain Device with server-generated credential.
+      value:
+        id: a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d
+        deviceName: Smart Thermostat
+        externalId: SN-THERMO-001
+        deviceType: IOT
+        enabled: true
+        blocked: false
+        hardwareAddress:
+          hardwareAddressType: EUI-48
+          value: AA:BB:CC:DD:EE:F1
+        bootstrappingInfo:
+          protocolPreference:
+            - DPP
+          selectedProtocol: DPP
+          DPP:
+            bootstrappingUri: DPP:C:81/1;M:aabbccddeeff;K:MDkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDIgADURzxmttZoIRIPWGoQMV00XHWCAQIhXruVWOz0NjlkIA=;;
+        deviceCredential:
+          credentialAction: GENERATE
+          supportedTypes:
+            - WPA3_SAE
+            - WPA2_PSK
+          selectedType: WPA2_PSK
+        connected: false
+        associated: false
+        createdAt: '2025-11-15T10:30:00.000Z'
+        createdBy: 550e8400-e29b-41d4-a716-446655440000
+        modifiedAt: '2025-11-15T10:30:00.000Z'
+        modifiedBy: 550e8400-e29b-41d4-a716-446655440000
+    TrustDomainDeviceResponseConnected:
+      summary: Connected device response
+      description: Example of a registered Trust Domain Device that is connected and associated.
+      value:
+        id: a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d
+        deviceName: Smart Thermostat
+        externalId: SN-THERMO-001
+        deviceType: IOT
+        enabled: true
+        blocked: false
+        hardwareAddress:
+          hardwareAddressType: EUI-48
+          value: AA:BB:CC:DD:EE:F1
+        bootstrappingInfo:
+          protocolPreference:
+            - DPP
+          selectedProtocol: DPP
+          DPP:
+            bootstrappingUri: DPP:C:81/1;M:aabbccddeeff;K:MDkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDIgADURzxmttZoIRIPWGoQMV00XHWCAQIhXruVWOz0NjlkIA=;;
+        deviceCredential:
+          credentialAction: GENERATE
+          supportedTypes:
+            - WPA3_SAE
+            - WPA2_PSK
+          selectedType: WPA2_PSK
+        ipv4Address:
+          publicAddress: 192.168.1.100
+          privateAddress: 192.168.1.100
+        ipv6Address: fe80::aabb:ccdd:eef1
+        connected: true
+        associated: true
+        createdAt: '2025-11-15T10:30:00.000Z'
+        createdBy: 550e8400-e29b-41d4-a716-446655440000
+        modifiedAt: '2025-11-15T12:00:00.000Z'
+        modifiedBy: 660e8400-e29b-41d4-a716-446655440000
+    RebootRequestCreateImmediateDefaultDevice:
+      summary: Example of a Reboot Request for immediate reboot
+      value:
+        message: reboot to correct performance
+    RebootRequestCreateScheduledMultipleDevices:
+      summary: Example of a Reboot Request for scheduled reboot of multiple devices
+      value:
+        message: Scheduled reboot for maintenance
+        atTime: '2023-07-03T12:27:08.312Z'
+        devices:
+          - 934ee3f4-1234-5678-9abc-abcdef123456
+          - 454ee3f4-1234-5678-9abc-abcdef123456
+  parameters:
+    trustDomainId:
+      name: trustDomainId
+      in: path
+      required: true
+      schema:
+        $ref: '#/components/schemas/UUID'
+      description: ID of the Trust Domain. If the Trust Domain exists but the caller lacks permission to access it, the API returns 403.
+    deviceId:
+      name: deviceId
+      in: path
+      required: true
+      schema:
+        $ref: '#/components/schemas/UUID'
+      description: |
+        The unique identifier of the Trust Domain Device. If the device exists but the caller
+        lacks permission to access it, the API returns 403.
+
+        Must be a valid UUID as defined by RFC 4122 (versions 1-5) using only lowercase hexadecimal characters.
+    networkAccessDeviceId:
+      name: networkAccessDeviceId
+      in: path
+      description: |
+        The unique identifier of the Network Access Device. If the device exists but the caller lacks permission to access it, the API returns 403.
+
+        Must be a valid UUID as defined by RFC 4122 (versions 1-5) using only lowercase hexadecimal characters.
+      required: true
+      schema:
+        $ref: '#/components/schemas/UUID'
+    rebootRequestId:
+      name: rebootRequestId
+      in: path
+      required: true
+      schema:
+        $ref: '#/components/schemas/UUID'
+      description: ID of the Reboot Request. If the Reboot Request exists but the caller lacks permission to access it, the API returns 403.

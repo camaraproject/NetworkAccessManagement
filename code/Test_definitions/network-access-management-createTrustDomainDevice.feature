@@ -1,5 +1,5 @@
   @basic_tier
-Feature: CAMARA Network Access Management API, vwip - Operation createTrustDomainDevice
+Feature: CAMARA Network Access Management API, v0.3.0-rc.1 - Operation createTrustDomainDevice
   # Operation: POST /trust-domains/{trustDomainId}/devices
   # Required scope: network-access-management:devices
   # Documented response codes: 201, 400, 401, 403, 404, 409, 500, 503
@@ -12,7 +12,7 @@ Feature: CAMARA Network Access Management API, vwip - Operation createTrustDomai
 
   Background: Common createTrustDomainDevice setup
     Given an environment at "apiRoot"
-    And the resource "/network-access-management/vwip/trust-domains/{trustDomainId}/devices"
+    And the resource "/network-access-management/v0.3rc1/trust-domains/{trustDomainId}/devices"
     And the header "Content-Type" is set to "application/json"
     And the header "Authorization" is set to a valid access token
     And the access token has the scope "network-access-management:devices"
