@@ -35,7 +35,7 @@ dependencies:
 apis:
   - api_name: network-access-management
     target_api_version: 0.3.0
-    target_api_status: alpha
+    target_api_status: rc
     main_contacts:
       - caubut-charter
       - mayur007
