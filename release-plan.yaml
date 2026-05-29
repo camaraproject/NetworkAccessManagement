@@ -8,24 +8,24 @@
 repository:
   # How this repository participates in CAMARA releases
   # Options: independent (default) | meta-release
-  release_track: independent
+  release_track: meta-release
 
   # Uncomment and set when planning a meta-release participation:
-  # meta_release: Sync26
+  meta_release: Sync26
 
   # Release tag -- first release for a repository is r1.1
   # - New release cycle (increment first number, reset second to 1)
   # - Progression in same cycle (increment second number)
-  target_release_tag: r2.1
+  target_release_tag: r3.1
 
   # Release type being prepared (must be set before release can be triggered)
   # Options: none | pre-release-alpha | pre-release-rc | public-release | maintenance-release
-  target_release_type: pre-release-alpha
+  target_release_type: pre-release-rc
 
 # Dependencies on Commonalities and ICM releases
 # Update per ReleaseManagement requirements for each release cycle
 dependencies:
-  commonalities_release: r4.2
+  commonalities_release: r4.3
   identity_consent_management_release: r4.2
 
 # APIs in this repository
@@ -34,8 +34,8 @@ dependencies:
 # - target_api_status: draft | alpha | rc | public (draft allows no file yet)
 apis:
   - api_name: network-access-management
-    target_api_version: 0.2.0
-    target_api_status: alpha
+    target_api_version: 0.3.0
+    target_api_status: rc
     main_contacts:
       - caubut-charter
       - mayur007
