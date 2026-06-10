@@ -12,9 +12,9 @@ The repository follows the layout defined in the [CAMARA Commonalities Consumpti
 
 ```
 code/
+├── README.md                                    # This file (authoring & process docs)
+├── redocly.yaml                                 # Lint/bundle configuration (Redocly CLI)
 ├── API_definitions/
-│   ├── README.md                                # This file (authoring & process docs)
-│   ├── redocly.yaml                             # Lint/bundle configuration (Redocly CLI)
 │   └── network-access-management.yaml           # Source API spec with $ref references (committed on main)
 ├── common/
 │   └── CAMARA_common.yaml                       # Local cached copy of the Commonalities shared error responses
@@ -80,16 +80,17 @@ npm install -g @redocly/cli
 
 Validate the spec and all referenced modules resolve correctly:
 ```bash
-cd code/API_definitions
-redocly lint network-access-management.yaml
+cd code
+redocly lint API_definitions/network-access-management.yaml
 ```
+(Redocly CLI auto-discovers `redocly.yaml` in the current working directory, i.e. `code/`.)
 
 ### Local Bundling (for Validation or Tooling)
 
 To produce a fully resolved, standalone OAS file locally:
 ```bash
-cd code/API_definitions
-redocly bundle network-access-management.yaml --output network-access-management-bundled.yaml
+cd code
+redocly bundle API_definitions/network-access-management.yaml --output API_definitions/network-access-management-bundled.yaml
 ```
 
 The bundled file is useful for:
@@ -115,21 +116,21 @@ Key bundling features:
 
 ### API Specification
 
-- **`network-access-management.yaml`** - Source API specification with `$ref` references to `../common/` and `../modules/`. This is the file committed on `main`. Bundling resolves these refs into a standalone OAS file for release branches and local tooling.
+- **`API_definitions/network-access-management.yaml`** - Source API specification with `$ref` references to `../common/` and `../modules/` (relative to the spec file). This is the file committed on `main`. Bundling resolves these refs into a standalone OAS file for release branches and local tooling.
 
 ### Component Files
 
-- **`../common/CAMARA_common.yaml`** - Shared CAMARA-style error responses and common schemas
-- **`../modules/NAM_Common.yaml`** - Shared fundamental types (UUID, DateTime, ResourceAudit, securitySchemes)
-- **`../modules/Policy.yaml`** - Trust Domain policy schemas (maxDevices, bandwidth limits, egress rules)
-- **`../modules/AccessDetail.yaml`** - Network access configuration schemas (Wi-Fi, Thread, security modes)
-- **`../modules/TrustDomains/TrustDomains.yaml`** - Core Trust Domain schemas and examples
-- **`../modules/TrustDomains/TrustDomainCapabilities.yaml`** - Trust Domain capability discovery schemas
-- **`../modules/TrustDomainDevices/TrustDomainDevices.yaml`** - Trust Domain Device resource schemas
-- **`../modules/NetworkAccessDevices/NetworkAccessDevices.yaml`** - Network Access Device resource schemas
-- **`../modules/RebootRequests/RebootRequests.yaml`** - Reboot Request lifecycle schemas
-- **`../modules/Services/Services.yaml`** - Service schemas
-- **`../modules/Services/ServiceSites.yaml`** - Service Site schemas
+- **`common/CAMARA_common.yaml`** - Shared CAMARA-style error responses and common schemas
+- **`modules/NAM_Common.yaml`** - Shared fundamental types (UUID, DateTime, ResourceAudit, securitySchemes)
+- **`modules/Policy.yaml`** - Trust Domain policy schemas (maxDevices, bandwidth limits, egress rules)
+- **`modules/AccessDetail.yaml`** - Network access configuration schemas (Wi-Fi, Thread, security modes)
+- **`modules/TrustDomains/TrustDomains.yaml`** - Core Trust Domain schemas and examples
+- **`modules/TrustDomains/TrustDomainCapabilities.yaml`** - Trust Domain capability discovery schemas
+- **`modules/TrustDomainDevices/TrustDomainDevices.yaml`** - Trust Domain Device resource schemas
+- **`modules/NetworkAccessDevices/NetworkAccessDevices.yaml`** - Network Access Device resource schemas
+- **`modules/RebootRequests/RebootRequests.yaml`** - Reboot Request lifecycle schemas
+- **`modules/Services/Services.yaml`** - Service schemas
+- **`modules/Services/ServiceSites.yaml`** - Service Site schemas
 
 ## Best Practices
 
