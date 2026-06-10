@@ -129,12 +129,16 @@ components:
       properties:
         maxValue:
           type: integer
+          format: int32
           minimum: 1
+          maximum: 1024
           description: Maximum number of devices allowed
           example: 100
         minValue:
           type: integer
+          format: int32
           minimum: 1
+          maximum: 1024
           description: Minimum number of devices allowed
           example: 1
       required:
@@ -147,12 +151,16 @@ components:
       properties:
         maxValue:
           type: integer
-          minimum: 1
+          format: int64
+          minimum: 0
+          maximum: 10000000000
           description: Maximum bandwidth value in bits per second
           example: 1000000000
         minValue:
           type: integer
-          minimum: 1
+          format: int64
+          minimum: 0
+          maximum: 10000000000
           description: Minimum bandwidth value in bits per second
           example: 1000000
       required:
@@ -165,7 +173,9 @@ components:
       properties:
         maxEntries:
           type: integer
+          format: int32
           minimum: 1
+          maximum: 1024
           description: Maximum number of allowed egress destinations
           example: 50
         supportedDestinationTypes:
@@ -216,12 +226,14 @@ components:
           properties:
             min:
               type: integer
+              format: int32
               minimum: 11
               maximum: 26
               description: Minimum supported Thread channel
               example: 11
             max:
               type: integer
+              format: int32
               minimum: 11
               maximum: 26
               description: Maximum supported Thread channel
@@ -240,11 +252,15 @@ components:
           properties:
             minLength:
               type: integer
+              format: int32
               minimum: 1
+              maximum: 16
               example: 1
             maxLength:
               type: integer
+              format: int32
               minimum: 1
+              maximum: 16
               example: 16
           required:
             - minLength
@@ -252,9 +268,11 @@ components:
           description: Constraints on Thread network names
         maxDatasetLength:
           type: integer
+          format: int32
           minimum: 1
+          maximum: 254
           description: Maximum length for TLV operational dataset (applies to Thread:TLV)
-          example: 255
+          example: 254
       description: Thread specific access type properties
 
     PasswordConstraints:
@@ -262,12 +280,16 @@ components:
       properties:
         minLength:
           type: integer
+          format: int32
           minimum: 8
+          maximum: 63
           description: Minimum password length
           example: 8
         maxLength:
           type: integer
-          minimum: 1
+          format: int32
+          minimum: 8
+          maximum: 63
           description: Maximum password length
           example: 63
         requireSpecialCharacters:

@@ -141,6 +141,7 @@ components:
           example: "Thread:STRUCTURED"
         channel:
           type: integer
+          format: int32
           minimum: 11
           maximum: 26
           description: The Thread channel (IEEE 802.15.4 channel number)
@@ -148,11 +149,13 @@ components:
         extendedPanId:
           type: string
           pattern: "^[0-9a-fA-F]{16}$"
+          maxLength: 16
           description: The Extended PAN ID (16 hex digits)
           example: "d63e8e3e495ebbc3"
         networkKey:
           type: string
           pattern: "^[0-9a-fA-F]{32}$"
+          maxLength: 32
           description: The Thread Network Key (32 hex digits)
           example: "dfd34f0f05cad978ec4e32b0413038ff"
         networkName:
@@ -164,6 +167,7 @@ components:
         panId:
           type: string
           pattern: "^[0-9a-fA-F]{4}$"
+          maxLength: 4
           description: The PAN ID (4 hex digits)
           example: "d63e"
       additionalProperties: false
