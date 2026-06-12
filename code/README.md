@@ -1,6 +1,6 @@
 # Network Access Management API Definitions
 
-This directory contains the OpenAPI specifications for the Network Access Management API, organized into modular components for better maintainability and reusability.
+This directory contains the OpenAPI specifications for the Network Access Management APIs — **Network Access Devices** and **Trust Domains** (see [issue #152](https://github.com/camaraproject/NetworkAccessManagement/issues/152); the `trust-domains` name is provisional pending naming feedback) — organized into modular components for better maintainability and reusability.
 
 ## Overview
 
@@ -15,7 +15,8 @@ code/
 ├── README.md                                    # This file (authoring & process docs)
 ├── redocly.yaml                                 # Lint/bundle configuration (Redocly CLI)
 ├── API_definitions/
-│   └── network-access-management.yaml           # Source API spec with $ref references (committed on main)
+│   ├── network-access-devices.yaml              # Network Access Devices API — device info + reboot requests (committed on main)
+│   └── trust-domains.yaml                        # Trust Domains API — segments, policy, device registration, services (committed on main)
 ├── common/
 │   └── CAMARA_common.yaml                       # Local cached copy of the Commonalities shared error responses
 └── modules/                                     # Modular domain-focused component files
@@ -63,7 +64,7 @@ code/
 
 ### Key Constraint: Bundled Files Are Not Committed on Main
 
-Per the [CAMARA Consumption and Bundling Design](https://github.com/camaraproject/Commonalities/blob/main/documentation/Commonalities-Consumption-and-Bundling-Design.md), **bundled (standalone) API definitions are never committed on `main`**. The committed `network-access-management.yaml` retains its `$ref` references to `../common/` and `../modules/`. Bundled standalone OAS files are produced only on release branches/tags and for local validation.
+Per the [CAMARA Consumption and Bundling Design](https://github.com/camaraproject/Commonalities/blob/main/documentation/Commonalities-Consumption-and-Bundling-Design.md), **bundled (standalone) API definitions are never committed on `main`**. The committed source specs (`network-access-devices.yaml` and `trust-domains.yaml`) retain their `$ref` references to `../common/` and `../modules/`. Bundled standalone OAS files are produced only on release branches/tags and for local validation.
 
 This avoids merge conflicts in the large bundled output and keeps `main` as the single source of truth for modular schema authoring.
 
@@ -78,19 +79,20 @@ npm install -g @redocly/cli
 
 ### Linting
 
-Validate the spec and all referenced modules resolve correctly:
+Validate each spec and all referenced modules resolve correctly (Redocly CLI auto-discovers `redocly.yaml` in the current working directory, i.e. `code/`):
 ```bash
 cd code
-redocly lint API_definitions/network-access-management.yaml
+redocly lint API_definitions/network-access-devices.yaml
+redocly lint API_definitions/trust-domains.yaml
 ```
-(Redocly CLI auto-discovers `redocly.yaml` in the current working directory, i.e. `code/`.)
 
 ### Local Bundling (for Validation or Tooling)
 
-To produce a fully resolved, standalone OAS file locally:
+To produce fully resolved, standalone OAS files locally:
 ```bash
 cd code
-redocly bundle API_definitions/network-access-management.yaml --output API_definitions/network-access-management-bundled.yaml
+redocly bundle API_definitions/network-access-devices.yaml --output API_definitions/network-access-devices-bundled.yaml
+redocly bundle API_definitions/trust-domains.yaml --output API_definitions/trust-domains-bundled.yaml
 ```
 
 The bundled file is useful for:
@@ -114,9 +116,14 @@ Key bundling features:
 
 ## File Purposes
 
-### API Specification
+### API Specifications
 
-- **`API_definitions/network-access-management.yaml`** - Source API specification with `$ref` references to `../common/` and `../modules/` (relative to the spec file). This is the file committed on `main`. Bundling resolves these refs into a standalone OAS file for release branches and local tooling.
+The repository defines **two** APIs (see [issue #152](https://github.com/camaraproject/NetworkAccessManagement/issues/152) — the `trust-domains` name is provisional pending naming feedback). Both are committed on `main` with `$ref` references into `../common/` and `../modules/`; bundling resolves these into standalone OAS files.
+
+- **`API_definitions/network-access-devices.yaml`** - Network Access Devices API: retrieve operator-supplied devices (`/network-access-devices`) and create/monitor reboots (`/reboot-requests`). Uses the `NetworkAccessDevices` and `RebootRequests` modules plus the shared `ServiceSite`.
+- **`API_definitions/trust-domains.yaml`** - Trust Domains API: manage Trust Domains (`/trust-domains`), register subscriber/IoT devices (`/trust-domains/{id}/devices`), and enumerate services (`/services`). Uses the `TrustDomains`, `TrustDomainCapabilities`, `TrustDomainDevices`, `Policy`, `AccessDetail`, and `Service` modules.
+
+Modules referenced by **both** APIs (shared, authored once and bundled into each spec): `modules/NAM_Common.yaml`, `common/CAMARA_common.yaml`, and `modules/Services/ServiceSites.yaml` (`ServiceSite`).
 
 ### Component Files
 

@@ -6,6 +6,14 @@ of each operation: happy paths, schema validation, and the documented
 error cases. They are runner-agnostic by design — see "Executing the tests"
 below.
 
+> **API split in progress ([issue #152](https://github.com/camaraproject/NetworkAccessManagement/issues/152)).**
+> The single Network Access Management spec is being split into two APIs — **Network Access Devices**
+> (`network-access-devices.yaml`) and **Trust Domains** (`trust-domains.yaml`, provisional name). The `.feature`
+> files in this directory still carry the `network-access-management-` filename prefix and the
+> `@network_access_management_` scenario-tag prefix; re-prefixing/re-homing them per API and pointing each file
+> header at the correct spec is a mechanical follow-up deferred until the API names are finalized, to avoid churning
+> 20 files on a working name. The operation→API mapping is firm — see the File inventory below.
+
 These tests are produced and graded against the
 [CAMARA API Testing Guidelines](https://github.com/camaraproject/Commonalities/blob/main/documentation/API-Testing-Guidelines.md)
 and the reusable templates in
@@ -16,8 +24,8 @@ and the reusable templates in
 
 | Convention | Value |
 |---|---|
-| Filename | `network-access-management-{operationId}.feature` (one file per `operationId`) |
-| Scenario tag | `@network_access_management_{operationId}_{NN}_{slug}` |
+| Filename | `<api>-{operationId}.feature` (one file per `operationId`), where `<api>` is `network-access-devices` or `trust-domains`. **Current state:** existing files still use the `network-access-management-` prefix pending the per-API rename (see the API-split note above). |
+| Scenario tag | `@<api>_{operationId}_{NN}_{slug}` (e.g. `@network_access_devices_...`, `@trust_domains_...`). **Current state:** existing files still use `@network_access_management_...` pending the rename. |
 | Tier tag | `@basic_tier` (release-candidate gate) or `@full_tier` (public-release gate). Placement depends on tier homogeneity within the file: if every scenario shares the same tier, put the tier tag once at Feature level (2-space indent, on the line above `Feature:`); if the file mixes tiers, drop the Feature-level tier tag and put the appropriate tier tag on each scenario alongside its unique id. The "Local lint" section below lists the underlying `gherkin-lint` rules this placement satisfies. |
 | Auth-dependent tag | `@requires_oidc` — scenario requires real OIDC enforcement; auto-skip when running against a facade in auth-disabled mode |
 | Backend-dependent tag | `@backend_controlled` — scenario depends on backend state the facade alone cannot drive (e.g. a 409 conflict where a duplicate must already exist on the server). Used sparingly: tag a scenario only when its setup truly requires backend cooperation a runner cannot simulate via client-side requests. |
@@ -62,13 +70,13 @@ workstream against the public-release readiness gate; see
 
 One `.feature` file per operationId, 20 files total, all committed.
 
-| Tag group | Operations |
-|---|---|
-| Services | `getServices`, `getService` |
-| Trust Domains | `getTrustDomainCapabilities`, `createTrustDomain`*, `getTrustDomains`, `getTrustDomain`, `updateTrustDomain`, `deleteTrustDomain` |
-| Trust Domain Devices | `createTrustDomainDevice`, `getTrustDomainDevices`, `getTrustDomainDevice`, `updateTrustDomainDevice`, `deleteTrustDomainDevice` |
-| Network Access Devices | `getNetworkAccessDevices`, `getNetworkAccessDevice` |
-| Reboot Requests | `createRebootRequest`, `getRebootRequests`, `getRebootRequest`, `updateRebootRequest`, `deleteRebootRequest` |
+| Tag group | Target API (post-split) | Operations |
+|---|---|---|
+| Services | `trust-domains` | `getServices`, `getService` |
+| Trust Domains | `trust-domains` | `getTrustDomainCapabilities`, `createTrustDomain`*, `getTrustDomains`, `getTrustDomain`, `updateTrustDomain`, `deleteTrustDomain` |
+| Trust Domain Devices | `trust-domains` | `createTrustDomainDevice`, `getTrustDomainDevices`, `getTrustDomainDevice`, `updateTrustDomainDevice`, `deleteTrustDomainDevice` |
+| Network Access Devices | `network-access-devices` | `getNetworkAccessDevices`, `getNetworkAccessDevice` |
+| Reboot Requests | `network-access-devices` | `createRebootRequest`, `getRebootRequests`, `getRebootRequest`, `updateRebootRequest`, `deleteRebootRequest` |
 
 `*` = full-tier exemplar (full 4xx error matrix). The remaining 19 are
 basic-tier with a 401 `@requires_oidc` scenario added in each Group B
@@ -80,9 +88,11 @@ CAMARA does not standardize a test runner. The step phrases used in these
 files are runner-agnostic — they reference the OAS by `operationId` and
 JSON Pointer rather than by literal HTTP details — so a runner needs to:
 
-1. Load the **bundled** OAS (`redocly bundle API_definitions/network-access-management.yaml
-   --output API_definitions/network-access-management-bundled.yaml` from
-   `code/`) and index `operationId → (method, path, schemas)`.
+1. Load the **bundled** OAS for the API that owns the operation under test (see the File inventory),
+   bundling from `code/`:
+   `redocly bundle API_definitions/network-access-devices.yaml --output API_definitions/network-access-devices-bundled.yaml`
+   or `redocly bundle API_definitions/trust-domains.yaml --output API_definitions/trust-domains-bundled.yaml`,
+   then index `operationId → (method, path, schemas)`.
 2. Set `apiRoot` from the target environment.
 3. Acquire a token compatible with the scope listed in each operation's
    `security: openId: [...]` block. The test runner is expected to support
