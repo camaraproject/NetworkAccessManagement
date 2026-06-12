@@ -5,4 +5,4 @@
 | Vodafone | Mayur Channegowda | mayur007 |
 | CableLabs | Ben Hepworth | benhepworth |
 | CableLabs | Cody Lundie | clundie-CL |
-| Comcast | Rich Woundy | rwound00_comcast |
+| Comcast | Rich Woundy | rwoundy |
