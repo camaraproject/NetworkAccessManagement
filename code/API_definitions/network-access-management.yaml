@@ -219,6 +219,8 @@ paths:
             application/json:
               schema:
                 $ref: "../modules/Services/Services.yaml#/components/schemas/ServiceList"
+        "400":
+          $ref: "../common/CAMARA_common.yaml#/components/responses/Generic400"
         "401":
           $ref: "../common/CAMARA_common.yaml#/components/responses/Generic401"
         "403":
@@ -264,6 +266,8 @@ paths:
             application/json:
               schema:
                 $ref: "../modules/Services/Services.yaml#/components/schemas/Service"
+        "400":
+          $ref: "../common/CAMARA_common.yaml#/components/responses/Generic400"
         "401":
           $ref: "../common/CAMARA_common.yaml#/components/responses/Generic401"
         "403":
@@ -304,6 +308,8 @@ paths:
             application/json:
               schema:
                 $ref: "../modules/TrustDomains/TrustDomainCapabilities.yaml#/components/schemas/TrustDomainCapabilities"
+        "400":
+          $ref: "../common/CAMARA_common.yaml#/components/responses/Generic400"
         "401":
           $ref: "../common/CAMARA_common.yaml#/components/responses/Generic401"
         "403":
@@ -394,6 +400,8 @@ paths:
                 type: array
                 items:
                   $ref: "../modules/TrustDomains/TrustDomains.yaml#/components/schemas/TrustDomain"
+        "400":
+          $ref: "../common/CAMARA_common.yaml#/components/responses/Generic400"
         "401":
           $ref: "../common/CAMARA_common.yaml#/components/responses/Generic401"
         "403":
@@ -433,6 +441,8 @@ paths:
               examples:
                 TrustDomainResponseBasic:
                   $ref: '../modules/TrustDomains/TrustDomains.yaml#/components/examples/TrustDomainResponseBasic'
+        "400":
+          $ref: "../common/CAMARA_common.yaml#/components/responses/Generic400"
         "401":
           $ref: "../common/CAMARA_common.yaml#/components/responses/Generic401"
         "403":
@@ -496,6 +506,8 @@ paths:
       responses:
         "204":
           description: Trust Domain deleted successfully
+        "400":
+          $ref: "../common/CAMARA_common.yaml#/components/responses/Generic400"
         "401":
           $ref: "../common/CAMARA_common.yaml#/components/responses/Generic401"
         "403":
@@ -582,6 +594,8 @@ paths:
               examples:
                 TrustDomainDeviceListResponse:
                   $ref: '../modules/TrustDomainDevices/TrustDomainDevices.yaml#/components/examples/TrustDomainDeviceListResponse'
+        '400':
+          $ref: '../common/CAMARA_common.yaml#/components/responses/Generic400'
         '401':
           $ref: '../common/CAMARA_common.yaml#/components/responses/Generic401'
         '403':
@@ -618,6 +632,8 @@ paths:
               examples:
                 TrustDomainDeviceResponseConnected:
                   $ref: '../modules/TrustDomainDevices/TrustDomainDevices.yaml#/components/examples/TrustDomainDeviceResponseConnected'
+        '400':
+          $ref: '../common/CAMARA_common.yaml#/components/responses/Generic400'
         '401':
           $ref: '../common/CAMARA_common.yaml#/components/responses/Generic401'
         '403':
@@ -680,6 +696,8 @@ paths:
       responses:
         '204':
           description: Device removed successfully
+        '400':
+          $ref: '../common/CAMARA_common.yaml#/components/responses/Generic400'
         '401':
           $ref: '../common/CAMARA_common.yaml#/components/responses/Generic401'
         '403':
@@ -709,6 +727,8 @@ paths:
             application/json:
               schema:
                 $ref: "../modules/NetworkAccessDevices/NetworkAccessDevices.yaml#/components/schemas/NetworkAccessDeviceList"
+        "400":
+          $ref: "../common/CAMARA_common.yaml#/components/responses/Generic400"
         "401":
           $ref: "../common/CAMARA_common.yaml#/components/responses/Generic401"
         "403":
@@ -740,6 +760,8 @@ paths:
             application/json:
               schema:
                 $ref: "../modules/NetworkAccessDevices/NetworkAccessDevices.yaml#/components/schemas/NetworkAccessDevice"
+        "400":
+          $ref: "../common/CAMARA_common.yaml#/components/responses/Generic400"
         "401":
           $ref: "../common/CAMARA_common.yaml#/components/responses/Generic401"
         "403":
@@ -848,6 +870,8 @@ paths:
                 type: array
                 items:
                   $ref: '../modules/RebootRequests/RebootRequests.yaml#/components/schemas/RebootRequest'
+        '400':
+          $ref: '../common/CAMARA_common.yaml#/components/responses/Generic400'
         '401':
           $ref: '../common/CAMARA_common.yaml#/components/responses/Generic401'
         '403':
@@ -878,6 +902,8 @@ paths:
             application/json:
               schema:
                 $ref: '../modules/RebootRequests/RebootRequests.yaml#/components/schemas/RebootRequest'
+        '400':
+          $ref: '../common/CAMARA_common.yaml#/components/responses/Generic400'
         '401':
           $ref: '../common/CAMARA_common.yaml#/components/responses/Generic401'
         '403':
@@ -942,6 +968,8 @@ paths:
       responses:
         '204':
           description: Reboot Request deleted successfully
+        '400':
+          $ref: '../common/CAMARA_common.yaml#/components/responses/Generic400'
         '401':
           $ref: '../common/CAMARA_common.yaml#/components/responses/Generic401'
         '403':
