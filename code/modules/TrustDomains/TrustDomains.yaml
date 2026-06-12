@@ -75,10 +75,12 @@ components:
       properties:
         name:
           type: string
+          maxLength: 64
           description: Human-readable name for the trust domain.
           example: "Primary WiFi Network"
         description:
           type: string
+          maxLength: 255
           description: Detailed description of the trust domain.
           example: "Primary home WiFi Network for all devices"
         enabled:

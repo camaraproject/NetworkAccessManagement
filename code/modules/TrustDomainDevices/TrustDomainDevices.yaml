@@ -327,6 +327,7 @@ components:
             value:
               type: string
               pattern: "^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$"
+              maxLength: 17
               description: The hardware address value in the format specified by hardwareAddressType.
               example: "AA:BB:CC:DD:EE:F1"
           required:
