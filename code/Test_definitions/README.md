@@ -80,9 +80,9 @@ CAMARA does not standardize a test runner. The step phrases used in these
 files are runner-agnostic — they reference the OAS by `operationId` and
 JSON Pointer rather than by literal HTTP details — so a runner needs to:
 
-1. Load the **bundled** OAS (`redocly bundle network-access-management.yaml
-   --output network-access-management-bundled.yaml` from
-   `code/API_definitions/`) and index `operationId → (method, path, schemas)`.
+1. Load the **bundled** OAS (`redocly bundle API_definitions/network-access-management.yaml
+   --output API_definitions/network-access-management-bundled.yaml` from
+   `code/`) and index `operationId → (method, path, schemas)`.
 2. Set `apiRoot` from the target environment.
 3. Acquire a token compatible with the scope listed in each operation's
    `security: openId: [...]` block. The test runner is expected to support
