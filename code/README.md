@@ -1,6 +1,6 @@
 # Network Access Management API Definitions
 
-This directory contains the OpenAPI specifications for the Network Access Management APIs — **Network Access Devices** and **Trust Domains** (see [issue #152](https://github.com/camaraproject/NetworkAccessManagement/issues/152); the `trust-domains` name is provisional pending naming feedback) — organized into modular components for better maintainability and reusability.
+This directory contains the OpenAPI specifications for the Network Access Management APIs — **Network Access Devices** and **Trust Domains** — organized into modular components for better maintainability and reusability.
 
 ## Overview
 
@@ -118,7 +118,7 @@ Key bundling features:
 
 ### API Specifications
 
-The repository defines **two** APIs (see [issue #152](https://github.com/camaraproject/NetworkAccessManagement/issues/152) — the `trust-domains` name is provisional pending naming feedback). Both are committed on `main` with `$ref` references into `../common/` and `../modules/`; bundling resolves these into standalone OAS files.
+The repository defines **two** APIs. Both are committed on `main` with `$ref` references into `../common/` and `../modules/`; bundling resolves these into standalone OAS files.
 
 - **`API_definitions/network-access-devices.yaml`** - Network Access Devices API: retrieve operator-supplied devices (`/network-access-devices`) and create/monitor reboots (`/reboot-requests`). Uses the `NetworkAccessDevices` and `RebootRequests` modules plus the shared `ServiceSite`.
 - **`API_definitions/trust-domains.yaml`** - Trust Domains API: manage Trust Domains (`/trust-domains`), register subscriber/IoT devices (`/trust-domains/{id}/devices`), and enumerate services (`/services`). Uses the `TrustDomains`, `TrustDomainCapabilities`, `TrustDomainDevices`, `Policy`, `AccessDetail`, and `Service` modules.
