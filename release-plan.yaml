@@ -33,9 +33,17 @@ dependencies:
 # - api_name: kebab-case identifier (used as filename in code/API_definitions/)
 # - target_api_status: draft | alpha | rc | public (draft allows no file yet)
 apis:
-  - api_name: network-access-management
+  - api_name: network-access-devices
     target_api_version: 0.3.0
-    target_api_status: rc
+    target_api_status: draft
+    main_contacts:
+      - caubut-charter
+      - mayur007
+      - clundie-CL
+      - benhepworth
+  - api_name: network-access-domains
+    target_api_version: 0.3.0
+    target_api_status: draft
     main_contacts:
       - caubut-charter
       - mayur007
