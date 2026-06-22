@@ -64,7 +64,7 @@ info:
 
     | Scope | Description |
     |-------|-------------|
-    | **network-access-management:reboot** | Create, list, and manage Reboot Requests for owned devices. |
+    | **network-access-devices:reboot** | Create, list, and manage Reboot Requests for owned devices. |
 
     ## Comments for API Clients
 
@@ -168,10 +168,10 @@ paths:
       summary: Get all Network Access Devices associated with the service owner
       security:
         - openId:
-            - network-access-management:reboot
+            - network-access-devices:reboot
       operationId: getNetworkAccessDevices
       description: |
-        Retrieves all Network Access Devices associated with the subscriber that the caller is authorized to manage using the `network-access-management:reboot` scope.
+        Retrieves all Network Access Devices associated with the subscriber that the caller is authorized to manage using the `network-access-devices:reboot` scope.
       responses:
         "200":
           description: Contains the list of network access devices
@@ -199,7 +199,7 @@ paths:
       summary: Get a specific Network Access Device
       security:
         - openId:
-            - network-access-management:reboot
+            - network-access-devices:reboot
       operationId: getNetworkAccessDevice
       description: |
          Retrieves the Network Access Device that matches the given ID.
@@ -232,7 +232,7 @@ paths:
       summary: Create a new Reboot Request
       security:
         - openId:
-            - network-access-management:reboot
+            - network-access-devices:reboot
       description: |
         Creates a new Reboot Request targeting one or more Network Access Devices.
       operationId: createRebootRequest
@@ -309,7 +309,7 @@ paths:
       summary: Get all Reboot Requests created by the calling API client
       security:
         - openId:
-            - network-access-management:reboot
+            - network-access-devices:reboot
       operationId: getRebootRequests
       description: |
         This endpoint returns a list of Reboot Requests associated with the service owner created by the calling API client.
@@ -343,7 +343,7 @@ paths:
       summary: Get a specific Reboot Request
       security:
         - openId:
-            - network-access-management:reboot
+            - network-access-devices:reboot
       operationId: getRebootRequest
       description: |
         Retrieves the Reboot Request that matches the given ID.
@@ -373,7 +373,7 @@ paths:
       summary: Update an existing Reboot Request
       security:
         - openId:
-            - network-access-management:reboot
+            - network-access-devices:reboot
       description: |
         Updates an existing Reboot Request to modify its scheduled time or cancel it.
       operationId: updateRebootRequest
@@ -413,7 +413,7 @@ paths:
       summary: Delete an existing Reboot Request
       security:
         - openId:
-            - network-access-management:reboot
+            - network-access-devices:reboot
       description: |
         Deletes an existing Reboot Request, cancelling the scheduled reboot if it has not yet occurred.
       operationId: deleteRebootRequest

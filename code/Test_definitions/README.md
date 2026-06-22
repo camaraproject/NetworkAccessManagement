@@ -16,8 +16,8 @@ and the reusable templates in
 
 | Convention | Value |
 |---|---|
-| Filename | `network-access-management-{operationId}.feature` (one file per `operationId`) |
-| Scenario tag | `@network_access_management_{operationId}_{NN}_{slug}` |
+| Filename | `network-access-devices-{operationId}.feature` or `network-access-domains-{operationId}.feature` (one file per `operationId`, prefixed by the API the operation belongs to) |
+| Scenario tag | `@network_access_devices_{operationId}_{NN}_{slug}` or `@network_access_domains_{operationId}_{NN}_{slug}` |
 | Tier tag | `@basic_tier` (release-candidate gate) or `@full_tier` (public-release gate). Placement depends on tier homogeneity within the file: if every scenario shares the same tier, put the tier tag once at Feature level (2-space indent, on the line above `Feature:`); if the file mixes tiers, drop the Feature-level tier tag and put the appropriate tier tag on each scenario alongside its unique id. The "Local lint" section below lists the underlying `gherkin-lint` rules this placement satisfies. |
 | Auth-dependent tag | `@requires_oidc` — scenario requires real OIDC enforcement; auto-skip when running against a facade in auth-disabled mode |
 | Backend-dependent tag | `@backend_controlled` — scenario depends on backend state the facade alone cannot drive (e.g. a 409 conflict where a duplicate must already exist on the server). Used sparingly: tag a scenario only when its setup truly requires backend cooperation a runner cannot simulate via client-side requests. |
@@ -36,7 +36,7 @@ Per the CAMARA API Testing Guidelines:
   validation, optional-field combinations, and CRUD state coherence
   (GET-after-POST agreement).
 
-`network-access-management-createTrustDomain.feature` is authored at the
+`network-access-domains-createTrustDomain.feature` is authored at the
 **full tier** as the canonical exemplar — happy paths plus the full
 400/401/403/409 error matrix.
 
@@ -82,7 +82,7 @@ JSON Pointer rather than by literal HTTP details — so a runner needs to:
 
 1. Load the **bundled** OAS for the API under test, bundling from `code/`:
    `redocly bundle API_definitions/network-access-devices.yaml --output API_definitions/network-access-devices-bundled.yaml`
-   or `redocly bundle API_definitions/trust-domains.yaml --output API_definitions/trust-domains-bundled.yaml`,
+   or `redocly bundle API_definitions/network-access-domains.yaml --output API_definitions/network-access-domains-bundled.yaml`,
    then index `operationId → (method, path, schemas)`.
 2. Set `apiRoot` from the target environment.
 3. Acquire a token compatible with the scope listed in each operation's
@@ -126,13 +126,13 @@ use `npx mega-linter-runner` — that pulls the same Docker image CI runs.
 When adding a new file:
 
 1. Start from any existing file as a template:
-   - Full-tier: [`network-access-management-createTrustDomain.feature`](network-access-management-createTrustDomain.feature)
+   - Full-tier: [`network-access-domains-createTrustDomain.feature`](network-access-domains-createTrustDomain.feature)
      for write operations with the full error matrix.
    - Basic-tier multi-scenario CRUD: any of the Trust Domain or Reboot
      Request CRUD files for the standard Background + multiple-scenario
      shape with each scenario carrying just its unique id tag.
    - GET endpoint with a 401 escape hatch: any of the Group B files (e.g.
-     [`network-access-management-getService.feature`](network-access-management-getService.feature))
+     [`network-access-domains-getService.feature`](network-access-domains-getService.feature))
      for the happy-path + 401 `@requires_oidc` pattern.
 2. **Every file must have ≥2 Scenarios.** Single-scenario files cannot
    satisfy the `gherkin-lint` rule trio (`no-homogenous-tags`,

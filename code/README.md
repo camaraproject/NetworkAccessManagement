@@ -1,6 +1,6 @@
 # Network Access Management API Definitions
 
-This directory contains the OpenAPI specifications for the Network Access Management APIs — **Network Access Devices** and **Trust Domains** — organized into modular components for better maintainability and reusability.
+This directory contains the OpenAPI specifications for the Network Access Management APIs — **Network Access Devices** and **Network Access Domains** — organized into modular components for better maintainability and reusability.
 
 ## Overview
 
@@ -16,7 +16,7 @@ code/
 ├── redocly.yaml                                 # Lint/bundle configuration (Redocly CLI)
 ├── API_definitions/
 │   ├── network-access-devices.yaml              # Network Access Devices API — device info + reboot requests (committed on main)
-│   └── trust-domains.yaml                        # Trust Domains API — segments, policy, device registration, services (committed on main)
+│   └── network-access-domains.yaml              # Network Access Domains API — segments, policy, device registration, services (committed on main)
 ├── common/
 │   └── CAMARA_common.yaml                       # Local cached copy of the Commonalities shared error responses
 └── modules/                                     # Modular domain-focused component files
@@ -64,7 +64,7 @@ code/
 
 ### Key Constraint: Bundled Files Are Not Committed on Main
 
-Per the [CAMARA Consumption and Bundling Design](https://github.com/camaraproject/Commonalities/blob/main/documentation/Commonalities-Consumption-and-Bundling-Design.md), **bundled (standalone) API definitions are never committed on `main`**. The committed source specs (`network-access-devices.yaml` and `trust-domains.yaml`) retain their `$ref` references to `../common/` and `../modules/`. Bundled standalone OAS files are produced only on release branches/tags and for local validation.
+Per the [CAMARA Consumption and Bundling Design](https://github.com/camaraproject/Commonalities/blob/main/documentation/Commonalities-Consumption-and-Bundling-Design.md), **bundled (standalone) API definitions are never committed on `main`**. The committed source specs (`network-access-devices.yaml` and `network-access-domains.yaml`) retain their `$ref` references to `../common/` and `../modules/`. Bundled standalone OAS files are produced only on release branches/tags and for local validation.
 
 This avoids merge conflicts in the large bundled output and keeps `main` as the single source of truth for modular schema authoring.
 
@@ -83,7 +83,7 @@ Validate each spec and all referenced modules resolve correctly (Redocly CLI aut
 ```bash
 cd code
 redocly lint API_definitions/network-access-devices.yaml
-redocly lint API_definitions/trust-domains.yaml
+redocly lint API_definitions/network-access-domains.yaml
 ```
 
 ### Local Bundling (for Validation or Tooling)
@@ -92,7 +92,7 @@ To produce fully resolved, standalone OAS files locally:
 ```bash
 cd code
 redocly bundle API_definitions/network-access-devices.yaml --output API_definitions/network-access-devices-bundled.yaml
-redocly bundle API_definitions/trust-domains.yaml --output API_definitions/trust-domains-bundled.yaml
+redocly bundle API_definitions/network-access-domains.yaml --output API_definitions/network-access-domains-bundled.yaml
 ```
 
 The bundled file is useful for:
@@ -121,7 +121,7 @@ Key bundling features:
 The repository defines **two** APIs. Both are committed on `main` with `$ref` references into `../common/` and `../modules/`; bundling resolves these into standalone OAS files.
 
 - **`API_definitions/network-access-devices.yaml`** - Network Access Devices API: retrieve operator-supplied devices (`/network-access-devices`) and create/monitor reboots (`/reboot-requests`). Uses the `NetworkAccessDevices` and `RebootRequests` modules plus the shared `ServiceSite`.
-- **`API_definitions/trust-domains.yaml`** - Trust Domains API: manage Trust Domains (`/trust-domains`), register subscriber/IoT devices (`/trust-domains/{id}/devices`), and enumerate services (`/services`). Uses the `TrustDomains`, `TrustDomainCapabilities`, `TrustDomainDevices`, `Policy`, `AccessDetail`, and `Service` modules.
+- **`API_definitions/network-access-domains.yaml`** - Network Access Domains API: manage Trust Domains (`/trust-domains`), register subscriber/IoT devices (`/trust-domains/{id}/devices`), and enumerate services (`/services`). Uses the `TrustDomains`, `TrustDomainCapabilities`, `TrustDomainDevices`, `Policy`, `AccessDetail`, and `Service` modules.
 
 Modules referenced by **both** APIs (shared, authored once and bundled into each spec): `modules/NAM_Common.yaml`, `common/CAMARA_common.yaml`, and `modules/Services/ServiceSites.yaml` (`ServiceSite`).
 

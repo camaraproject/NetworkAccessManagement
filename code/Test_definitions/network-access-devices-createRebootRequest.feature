@@ -1,11 +1,11 @@
   @basic_tier
-Feature: CAMARA Network Access Management API, vwip - Operation createRebootRequest
+Feature: CAMARA Network Access Devices API, vwip - Operation createRebootRequest
   # Operation: POST /reboot-requests
-  # Required scope: network-access-management:reboot
+  # Required scope: network-access-devices:reboot
   # Documented response codes: 201, 400, 401, 403, 404, 409, 422, 500, 503
   #
   # Tagging:
-  # - @network_access_management_createRebootRequest_NN_<slug>  unique scenario id
+  # - @network_access_devices_createRebootRequest_NN_<slug>  unique scenario id
   # - @basic_tier  release-candidate gate (sunny-day + schema validation)
   # Full-tier (rainy-day) scenarios are tracked as a follow-up workstream
   # against the public-release readiness gate; see issue #52.
@@ -13,14 +13,14 @@ Feature: CAMARA Network Access Management API, vwip - Operation createRebootRequ
 
   Background: Common createRebootRequest setup
     Given an environment at "apiRoot"
-    And the resource "/network-access-management/vwip/reboot-requests"
+    And the resource "/network-access-devices/vwip/reboot-requests"
     And the header "Content-Type" is set to "application/json"
     And the header "Authorization" is set to a valid access token
-    And the access token has the scope "network-access-management:reboot"
+    And the access token has the scope "network-access-devices:reboot"
     And the header "x-correlator" complies with the schema at "#/components/schemas/XCorrelator"
     And the request body is set by default to a request body compliant with the schema at "/components/schemas/RebootRequestCreate"
 
-  @network_access_management_createRebootRequest_01_immediate_default_device_success @backend_controlled
+  @network_access_devices_createRebootRequest_01_immediate_default_device_success @backend_controlled
   Scenario: Request an immediate reboot of the default device (implicit targeting)
     Given the calling subscriber has exactly one reboot-capable Network Access Device
     And the API provider supports default-device inference
@@ -33,7 +33,7 @@ Feature: CAMARA Network Access Management API, vwip - Operation createRebootRequ
     And the response property "$.id" is a valid UUID
     And the response property "$.devices" is an array of length 1 containing the inferred default device id
 
-  @network_access_management_createRebootRequest_02_scheduled_explicit_devices_success
+  @network_access_devices_createRebootRequest_02_scheduled_explicit_devices_success
   Scenario: Schedule a reboot for an explicit list of multiple devices
     Given the calling subscriber has at least two reboot-capable Network Access Devices
     And the request body is set to the example "RebootRequestCreateScheduledMultipleDevices" of the schema "RebootRequestCreate"

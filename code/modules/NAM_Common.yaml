@@ -19,14 +19,14 @@ components:
         while ownership enforcement is handled by the API provider.
 
         **Available Scopes:**
-        - `network-access-management:trust-domains` — Full management of Trust Domains created by the calling API client
+        - `network-access-domains:trust-domains` — Full management of Trust Domains created by the calling API client
           (includes create, read, modify, and delete actions).
-        - `network-access-management:trust-domains:read-all` — Read-only access to all Trust Domains
+        - `network-access-domains:trust-domains:read-all` — Read-only access to all Trust Domains
           associated with the same subscriber, including those created by other API clients.
           Intended for use cases involving federated discovery or configuration replication.
-        - `network-access-management:devices` — Register, manage, and deregister subscriber/IoT devices
+        - `network-access-domains:devices` — Register, manage, and deregister subscriber/IoT devices
           within Trust Domains created by the calling API client.
-        - `network-access-management:reboot` — Create, list, and manage Reboot Requests for network
+        - `network-access-devices:reboot` — Create, list, and manage Reboot Requests for network
           access devices owned by or delegated to the calling API client.
       openIdConnectUrl: https://example.com/.well-known/openid-configuration
 
