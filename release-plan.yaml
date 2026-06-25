@@ -20,7 +20,7 @@ repository:
 
   # Release type being prepared (must be set before release can be triggered)
   # Options: none | pre-release-alpha | pre-release-rc | public-release | maintenance-release
-  target_release_type: pre-release-rc
+  target_release_type: none
 
 # Dependencies on Commonalities and ICM releases
 # Update per ReleaseManagement requirements for each release cycle
@@ -35,7 +35,23 @@ dependencies:
 apis:
   - api_name: network-access-management
     target_api_version: 0.3.0
-    target_api_status: rc
+    target_api_status: draft
+    main_contacts:
+      - caubut-charter
+      - mayur007
+      - clundie-CL
+      - benhepworth
+  - api_name: network-access-devices
+    target_api_version: 0.3.0
+    target_api_status: draft
+    main_contacts:
+      - caubut-charter
+      - mayur007
+      - clundie-CL
+      - benhepworth
+  - api_name: network-access-domains
+    target_api_version: 0.3.0
+    target_api_status: draft
     main_contacts:
       - caubut-charter
       - mayur007
