@@ -9,6 +9,7 @@ components:
           items:
             $ref: "#/components/schemas/SupportedAccessType"
           minItems: 1
+          maxItems: 4
         supportedPolicies:
           type: object
           description: Map of supported policy types to their capability details
@@ -183,6 +184,7 @@ components:
           items:
             type: string
             enum: ["IP", "FQDN", "CIDR"]
+          maxItems: 3
           description: Supported destination address formats
           example: ["IP", "FQDN", "CIDR"]
       required:
@@ -208,6 +210,7 @@ components:
               - "WPA2-WPA3-Personal"
               - "WPA2-Enterprise"
               - "WPA3-Enterprise"
+          maxItems: 5
           description: Supported Wi-Fi security mode types
           example: ["WPA2-Personal", "WPA3-Personal"]
         passwordConstraints:

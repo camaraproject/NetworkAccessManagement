@@ -88,6 +88,7 @@ components:
       description: A list of services accessible to the calling identity
       items:
         $ref: "#/components/schemas/Service"
+      maxItems: 100
       example:
         - id: *uuid-example
           name: "Main Home Internet"

@@ -117,6 +117,7 @@ components:
       description: A list of network access devices.
       items:
         $ref: "#/components/schemas/NetworkAccessDevice"
+      maxItems: 100
       example: &device-list
         - *device
         - id: *uuid-example-2

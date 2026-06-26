@@ -100,6 +100,7 @@ components:
           $ref: "../Policy.yaml#/components/schemas/Policies"
         accessDetails:
           type: array
+          maxItems: 16
           # Each item grants access for a device to this Trust Domain, scoped by the associated AP/network access device or AP group.
           description: |
             A list of access configurations that define how end-user devices may join the

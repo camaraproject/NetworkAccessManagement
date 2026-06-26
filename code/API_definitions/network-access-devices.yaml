@@ -322,6 +322,7 @@ paths:
                 type: array
                 items:
                   $ref: '../modules/RebootRequests/RebootRequests.yaml#/components/schemas/RebootRequest'
+                maxItems: 100
         '400':
           $ref: '../common/CAMARA_common.yaml#/components/responses/Generic400'
         '401':

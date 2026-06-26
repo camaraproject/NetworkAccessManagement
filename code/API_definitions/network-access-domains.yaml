@@ -334,6 +334,7 @@ paths:
                 type: array
                 items:
                   $ref: "../modules/TrustDomains/TrustDomains.yaml#/components/schemas/TrustDomain"
+                maxItems: 100
         "400":
           $ref: "../common/CAMARA_common.yaml#/components/responses/Generic400"
         "401":
