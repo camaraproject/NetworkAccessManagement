@@ -11,7 +11,7 @@ components:
         Unless otherwise specified, all scopes only grant access to resources
         (e.g., Trust Domains, Reboot Requests) created by the same API client.
         API clients cannot access or modify resources created by other API clients
-        unless the `:read-all` or `:admin` scope variants are explicitly granted.
+        unless the `:read-all` scope variant is explicitly granted.
 
         **Scope Model:**
         This API uses a simplified scope model to balance clarity with flexibility.
@@ -26,6 +26,7 @@ components:
           Intended for use cases involving federated discovery or configuration replication.
         - `network-access-domains:devices` — Register, manage, and deregister subscriber/IoT devices
           within Trust Domains created by the calling API client.
+        - `network-access-domains:services:read` — List services accessible to the authenticated identity.
         - `network-access-devices:reboot` — Create, list, and manage Reboot Requests for network
           access devices owned by or delegated to the calling API client.
       openIdConnectUrl: https://example.com/.well-known/openid-configuration
