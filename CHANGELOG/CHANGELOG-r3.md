@@ -116,15 +116,19 @@ The API definition(s) are based on
 
 ### Breaking changes
 
-* N/A
+* Carved out of the former `network-access-management` API (alpha, r2.1). Reboot Requests and Network Access Device enumeration are now served by **network-access-devices** at basePath `/network-access-devices/vwip`, with the reboot scope renamed to `network-access-devices:reboot` (#153).
 
 ### Added
 
-* N/A
+* Initial **network-access-devices** API surface (split from network-access-management):
+    - **Reboot Requests** — CRUD operations for immediate or scheduled reboot of operator-supplied network access devices.
+    - **Network Access Devices** — read-only enumeration of operator-supplied network access equipment (`GET /network-access-devices`, `GET /network-access-devices/{networkAccessDeviceId}`).
+* `400` input-validation response on all read and delete operations (#149).
 
 ### Changed
 
-* N/A
+* Tightened schema constraints: integer `format` with min/max bounds and string `maxLength` (#150), and `maxItems` bounds on array fields (#156).
+* Dependency on Commonalities updated to r4.3 (0.8.0); ICM dependency r4.2 (0.5.0) (#144, #145).
 
 ### Fixed
 
@@ -145,15 +149,20 @@ The API definition(s) are based on
 
 ### Breaking changes
 
-* N/A
+* Carved out of the former `network-access-management` API (alpha, r2.1). Trust Domains, Trust Domain Devices, and Services are now served by **network-access-domains** at basePath `/network-access-domains/vwip`, with scopes renamed to `network-access-domains:trust-domains`, `network-access-domains:trust-domains:read-all`, `network-access-domains:devices`, and `network-access-domains:services:read` (#153).
 
 ### Added
 
-* N/A
+* Initial **network-access-domains** API surface (split from network-access-management):
+    - **Trust Domains** — CRUD operations for declarative LAN-scoped network configurations, with policy-driven control over device admission, bandwidth, and egress. Capability discovery endpoint (`GET /trust-domains/capabilities`) exposes operator-supported configurations. Wi-Fi (WPA Personal/Enterprise) and Thread (Structured/TLV) access types supported.
+    - **Trust Domain Devices** — CRUD operations for registering subscriber and IoT devices into Trust Domains with Zero-Touch Onboarding via DPP, Matter, and Well-Known SSID Onboarding (WKSO) bootstrapping protocols.
+    - **Services** — read-only enumeration of subscriber service instances (`GET /services`, `GET /services/{serviceId}`).
+* `400` input-validation response on all read and delete operations (#149).
 
 ### Changed
 
-* N/A
+* Tightened schema constraints: integer `format` with min/max bounds and string `maxLength` (#150), and `maxItems` bounds on array fields (#156).
+* Dependency on Commonalities updated to r4.3 (0.8.0); ICM dependency r4.2 (0.5.0) (#144, #145).
 
 ### Fixed
 
