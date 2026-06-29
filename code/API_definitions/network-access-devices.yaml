@@ -1,12 +1,11 @@
 openapi: 3.0.3
-
 info:
   title: Home Devices - Network Access Devices
   license:
     name: Apache 2.0
     url: https://www.apache.org/licenses/LICENSE-2.0.html
-  version: wip
-  x-camara-commonalities: 0.8.0-rc.2
+  version: 0.3.0-rc.1
+  x-camara-commonalities: 0.8.0
   description: |
     Service enabling API for managing network operator supplied **Network Access Devices** (gateways, routers, and
     access points): retrieving device information and creating and monitoring **Reboot Requests** for that equipment.
@@ -158,27 +157,22 @@ info:
 
     As a specific rule, error `501 - NOT_IMPLEMENTED` can be only a possible error response if it is explicitly documented in the API.
     <!-- CAMARA:MANDATORY:additional-error-responses:END -->
-
-externalDocs:
-  description: Product documentation at CAMARA
-  url: https://github.com/camaraproject/NetworkAccessManagement
-
 servers:
-  - url: "{apiRoot}/network-access-devices/vwip"
+  - url: '{apiRoot}/network-access-devices/v0.3rc1'
     variables:
       apiRoot:
         default: http://localhost:9091
         description: API root, defined by the service provider, e.g. `api.example.com` or `api.example.com/somepath`
-
 tags:
   - name: Network Access Devices
     description: Operations to retrieve operator-supplied Network Access Devices (gateways, routers, access points).
   - name: Reboot Requests
     description: |
       Operations to Create and Manage Reboot Requests for Network Access Devices
-
+externalDocs:
+  description: Product documentation at CAMARA
+  url: https://github.com/camaraproject/NetworkAccessManagement
 paths:
-
   /network-access-devices:
     get:
       tags:
@@ -191,25 +185,24 @@ paths:
       description: |
         Retrieves all Network Access Devices associated with the subscriber that the caller is authorized to manage using the `network-access-devices:reboot` scope.
       responses:
-        "200":
+        '200':
           description: Contains the list of network access devices
           content:
             application/json:
               schema:
-                $ref: "../modules/NetworkAccessDevices/NetworkAccessDevices.yaml#/components/schemas/NetworkAccessDeviceList"
-        "400":
-          $ref: "../common/CAMARA_common.yaml#/components/responses/Generic400"
-        "401":
-          $ref: "../common/CAMARA_common.yaml#/components/responses/Generic401"
-        "403":
-          $ref: "../common/CAMARA_common.yaml#/components/responses/Generic403"
-        "404":
-          $ref: "../common/CAMARA_common.yaml#/components/responses/Generic404"
-        "500":
-          $ref: "../common/CAMARA_common.yaml#/components/responses/Generic500"
-        "503":
-          $ref: "../common/CAMARA_common.yaml#/components/responses/Generic503"
-
+                $ref: '#/components/schemas/NetworkAccessDeviceList'
+        '400':
+          $ref: '#/components/responses/Generic400'
+        '401':
+          $ref: '#/components/responses/Generic401'
+        '403':
+          $ref: '#/components/responses/Generic403'
+        '404':
+          $ref: '#/components/responses/Generic404'
+        '500':
+          $ref: '#/components/responses/Generic500'
+        '503':
+          $ref: '#/components/responses/Generic503'
   /network-access-devices/{networkAccessDeviceId}:
     get:
       tags:
@@ -220,29 +213,28 @@ paths:
             - network-access-devices:reboot
       operationId: getNetworkAccessDevice
       description: |
-         Retrieves the Network Access Device that matches the given ID.
+        Retrieves the Network Access Device that matches the given ID.
       parameters:
-        - $ref: '../modules/NetworkAccessDevices/NetworkAccessDevices.yaml#/components/parameters/networkAccessDeviceId'
+        - $ref: '#/components/parameters/networkAccessDeviceId'
       responses:
-        "200":
+        '200':
           description: Contains information about the specified network access device
           content:
             application/json:
               schema:
-                $ref: "../modules/NetworkAccessDevices/NetworkAccessDevices.yaml#/components/schemas/NetworkAccessDevice"
-        "400":
-          $ref: "../common/CAMARA_common.yaml#/components/responses/Generic400"
-        "401":
-          $ref: "../common/CAMARA_common.yaml#/components/responses/Generic401"
-        "403":
-          $ref: "../common/CAMARA_common.yaml#/components/responses/Generic403"
-        "404":
-          $ref: "../common/CAMARA_common.yaml#/components/responses/Generic404"
-        "500":
-          $ref: "../common/CAMARA_common.yaml#/components/responses/Generic500"
-        "503":
-          $ref: "../common/CAMARA_common.yaml#/components/responses/Generic503"
-
+                $ref: '#/components/schemas/NetworkAccessDevice'
+        '400':
+          $ref: '#/components/responses/Generic400'
+        '401':
+          $ref: '#/components/responses/Generic401'
+        '403':
+          $ref: '#/components/responses/Generic403'
+        '404':
+          $ref: '#/components/responses/Generic404'
+        '500':
+          $ref: '#/components/responses/Generic500'
+        '503':
+          $ref: '#/components/responses/Generic503'
   /reboot-requests:
     post:
       tags:
@@ -291,36 +283,35 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '../modules/RebootRequests/RebootRequests.yaml#/components/schemas/RebootRequestCreate'
+              $ref: '#/components/schemas/RebootRequestCreate'
             examples:
               RebootRequestCreateImmediate:
-                $ref: '../modules/RebootRequests/RebootRequests.yaml#/components/examples/RebootRequestCreateImmediateDefaultDevice'
+                $ref: '#/components/examples/RebootRequestCreateImmediateDefaultDevice'
               RebootRequestCreateScheduled:
-                $ref: '../modules/RebootRequests/RebootRequests.yaml#/components/examples/RebootRequestCreateScheduledMultipleDevices'
+                $ref: '#/components/examples/RebootRequestCreateScheduledMultipleDevices'
       responses:
         '201':
           description: Reboot Request created successfully
           content:
             application/json:
               schema:
-                $ref: '../modules/RebootRequests/RebootRequests.yaml#/components/schemas/RebootRequest'
+                $ref: '#/components/schemas/RebootRequest'
         '400':
-          $ref: '../common/CAMARA_common.yaml#/components/responses/Generic400'
+          $ref: '#/components/responses/Generic400'
         '401':
-          $ref: '../common/CAMARA_common.yaml#/components/responses/Generic401'
+          $ref: '#/components/responses/Generic401'
         '403':
-          $ref: '../common/CAMARA_common.yaml#/components/responses/Generic403'
+          $ref: '#/components/responses/Generic403'
         '404':
-          $ref: '../common/CAMARA_common.yaml#/components/responses/Generic404'
+          $ref: '#/components/responses/Generic404'
         '409':
-          $ref: '../common/CAMARA_common.yaml#/components/responses/Generic409'
+          $ref: '#/components/responses/Generic409'
         '422':
-          $ref: '../common/CAMARA_common.yaml#/components/responses/Generic422'
+          $ref: '#/components/responses/Generic422'
         '500':
-          $ref: '../common/CAMARA_common.yaml#/components/responses/Generic500'
+          $ref: '#/components/responses/Generic500'
         '503':
-          $ref: '../common/CAMARA_common.yaml#/components/responses/Generic503'
-
+          $ref: '#/components/responses/Generic503'
     get:
       tags:
         - Reboot Requests
@@ -339,23 +330,21 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '../modules/RebootRequests/RebootRequests.yaml#/components/schemas/RebootRequest'
+                  $ref: '#/components/schemas/RebootRequest'
                 maxItems: 100
         '400':
-          $ref: '../common/CAMARA_common.yaml#/components/responses/Generic400'
+          $ref: '#/components/responses/Generic400'
         '401':
-          $ref: '../common/CAMARA_common.yaml#/components/responses/Generic401'
+          $ref: '#/components/responses/Generic401'
         '403':
-          $ref: '../common/CAMARA_common.yaml#/components/responses/Generic403'
+          $ref: '#/components/responses/Generic403'
         '500':
-          $ref: '../common/CAMARA_common.yaml#/components/responses/Generic500'
+          $ref: '#/components/responses/Generic500'
         '503':
-          $ref: '../common/CAMARA_common.yaml#/components/responses/Generic503'
-
+          $ref: '#/components/responses/Generic503'
   /reboot-requests/{rebootRequestId}:
     parameters:
-      - $ref: '../modules/RebootRequests/RebootRequests.yaml#/components/parameters/rebootRequestId'
-
+      - $ref: '#/components/parameters/rebootRequestId'
     get:
       tags:
         - Reboot Requests
@@ -372,20 +361,19 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '../modules/RebootRequests/RebootRequests.yaml#/components/schemas/RebootRequest'
+                $ref: '#/components/schemas/RebootRequest'
         '400':
-          $ref: '../common/CAMARA_common.yaml#/components/responses/Generic400'
+          $ref: '#/components/responses/Generic400'
         '401':
-          $ref: '../common/CAMARA_common.yaml#/components/responses/Generic401'
+          $ref: '#/components/responses/Generic401'
         '403':
-          $ref: '../common/CAMARA_common.yaml#/components/responses/Generic403'
+          $ref: '#/components/responses/Generic403'
         '404':
-          $ref: '../common/CAMARA_common.yaml#/components/responses/Generic404'
+          $ref: '#/components/responses/Generic404'
         '500':
-          $ref: '../common/CAMARA_common.yaml#/components/responses/Generic500'
+          $ref: '#/components/responses/Generic500'
         '503':
-          $ref: '../common/CAMARA_common.yaml#/components/responses/Generic503'
-
+          $ref: '#/components/responses/Generic503'
     patch:
       tags:
         - Reboot Requests
@@ -400,7 +388,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '../modules/RebootRequests/RebootRequests.yaml#/components/schemas/RebootRequestUpdate'
+              $ref: '#/components/schemas/RebootRequestUpdate'
         required: true
       responses:
         '200':
@@ -408,24 +396,23 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '../modules/RebootRequests/RebootRequests.yaml#/components/schemas/RebootRequest'
+                $ref: '#/components/schemas/RebootRequest'
         '400':
-          $ref: '../common/CAMARA_common.yaml#/components/responses/Generic400'
+          $ref: '#/components/responses/Generic400'
         '401':
-          $ref: '../common/CAMARA_common.yaml#/components/responses/Generic401'
+          $ref: '#/components/responses/Generic401'
         '403':
-          $ref: '../common/CAMARA_common.yaml#/components/responses/Generic403'
+          $ref: '#/components/responses/Generic403'
         '404':
-          $ref: '../common/CAMARA_common.yaml#/components/responses/Generic404'
+          $ref: '#/components/responses/Generic404'
         '409':
-          $ref: '../common/CAMARA_common.yaml#/components/responses/Generic409'
+          $ref: '#/components/responses/Generic409'
         '422':
-          $ref: '../common/CAMARA_common.yaml#/components/responses/Generic422'
+          $ref: '#/components/responses/Generic422'
         '500':
-          $ref: '../common/CAMARA_common.yaml#/components/responses/Generic500'
+          $ref: '#/components/responses/Generic500'
         '503':
-          $ref: '../common/CAMARA_common.yaml#/components/responses/Generic503'
-
+          $ref: '#/components/responses/Generic503'
     delete:
       tags:
         - Reboot Requests
@@ -440,19 +427,969 @@ paths:
         '204':
           description: Reboot Request deleted successfully
         '400':
-          $ref: '../common/CAMARA_common.yaml#/components/responses/Generic400'
+          $ref: '#/components/responses/Generic400'
         '401':
-          $ref: '../common/CAMARA_common.yaml#/components/responses/Generic401'
+          $ref: '#/components/responses/Generic401'
         '403':
-          $ref: '../common/CAMARA_common.yaml#/components/responses/Generic403'
+          $ref: '#/components/responses/Generic403'
         '404':
-          $ref: '../common/CAMARA_common.yaml#/components/responses/Generic404'
+          $ref: '#/components/responses/Generic404'
         '500':
-          $ref: '../common/CAMARA_common.yaml#/components/responses/Generic500'
+          $ref: '#/components/responses/Generic500'
         '503':
-          $ref: '../common/CAMARA_common.yaml#/components/responses/Generic503'
-
+          $ref: '#/components/responses/Generic503'
 components:
   securitySchemes:
     openId:
-      $ref: '../modules/NAM_Common.yaml#/components/securitySchemes/openId'
+      type: openIdConnect
+      description: |
+        OpenID Connect authentication with scope-based authorization.
+
+        **Resource Isolation:**
+        Unless otherwise specified, all scopes only grant access to resources
+        (e.g., Trust Domains, Reboot Requests) created by the same API client.
+        API clients cannot access or modify resources created by other API clients
+        unless the `:read-all` scope variant is explicitly granted.
+
+        **Scope Model:**
+        This API uses a simplified scope model to balance clarity with flexibility.
+        Functional authorization (e.g., managing Trust Domains) is handled by scopes,
+        while ownership enforcement is handled by the API provider.
+
+        **Available Scopes:**
+        - `network-access-domains:trust-domains` — Full management of Trust Domains created by the calling API client
+          (includes create, read, modify, and delete actions).
+        - `network-access-domains:trust-domains:read-all` — Read-only access to all Trust Domains
+          associated with the same subscriber, including those created by other API clients.
+          Intended for use cases involving federated discovery or configuration replication.
+        - `network-access-domains:devices` — Register, manage, and deregister subscriber/IoT devices
+          within Trust Domains created by the calling API client.
+        - `network-access-domains:services:read` — List services accessible to the authenticated identity.
+        - `network-access-devices:reboot` — Create, list, and manage Reboot Requests for network
+          access devices owned by or delegated to the calling API client.
+      openIdConnectUrl: https://example.com/.well-known/openid-configuration
+  schemas:
+    UUID:
+      type: string
+      format: uuid
+      pattern: ^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$
+      minLength: 36
+      maxLength: 36
+      description: |
+        A universally unique identifier (UUID) as defined by RFC 4122.
+        Must be a valid UUID format with proper version (1-5) and variant bits.
+        Only lowercase hexadecimal characters are accepted for consistency.
+      example: 550e8400-e29b-41d4-a716-446655440000
+    ResourceIdentifier:
+      type: object
+      properties:
+        id:
+          allOf:
+            - $ref: '#/components/schemas/UUID'
+          readOnly: true
+      required:
+        - id
+      description: A generic schema for resources identified by a unique ID.
+    PhoneNumber:
+      description: A public identifier addressing a telephone subscription. In mobile networks it corresponds to the MSISDN (Mobile Station International Subscriber Directory Number). In order to be globally unique it has to be formatted in international format, according to E.164 standard, prefixed with '+'.
+      type: string
+      pattern: ^\+[1-9][0-9]{4,14}$
+      maxLength: 16
+      example: '+123456789'
+    NetworkAccessIdentifier:
+      description: A public identifier addressing a subscription in a mobile network. In 3GPP terminology, it corresponds to the GPSI formatted with the External Identifier ({Local Identifier}@{Domain Identifier}). Unlike the telephone number, the network access identifier is not subjected to portability ruling in force, and is individually managed by each operator.
+      type: string
+      maxLength: 2048
+      example: 123456789@example.com
+    SingleIpv4Address:
+      description: A single IPv4 address with no subnet mask
+      type: string
+      format: ipv4
+      maxLength: 15
+      example: 84.125.93.10
+    Port:
+      description: TCP or UDP port number
+      type: integer
+      format: int32
+      minimum: 1
+      maximum: 65535
+    DeviceIpv4Address:
+      type: object
+      description: |
+        The device should be identified by either the public (observed) IP address and port as seen by the application server, or the private (local) and any public (observed) IP addresses in use by the device (this information can be obtained by various means, for example from some DNS servers).
+
+        If the allocated and observed IP addresses are the same (i.e. NAT is not in use) then  the same address should be specified for both publicAddress and privateAddress.
+
+        If NAT64 is in use, the device should be identified by its publicAddress and publicPort, or separately by its allocated IPv6 address (field ipv6Address of the Device object)
+
+        In all cases, publicAddress must be specified, along with at least one of either privateAddress or publicPort, dependent upon which is known. In general, mobile devices cannot be identified by their public IPv4 address alone.
+      properties:
+        publicAddress:
+          $ref: '#/components/schemas/SingleIpv4Address'
+        privateAddress:
+          $ref: '#/components/schemas/SingleIpv4Address'
+        publicPort:
+          $ref: '#/components/schemas/Port'
+      anyOf:
+        - required:
+            - publicAddress
+            - privateAddress
+        - required:
+            - publicAddress
+            - publicPort
+      example:
+        publicAddress: 84.125.93.10
+        publicPort: 59765
+    DeviceIpv6Address:
+      description: |
+        The device should be identified by the observed IPv6 address, or by any single IPv6 address from within the subnet allocated to the device (e.g. adding ::0 to the /64 prefix).
+      type: string
+      format: ipv6
+      maxLength: 45
+      example: 2001:db8:85a3:8d3:1319:8a2e:370:7344
+    Device:
+      description: |
+        End-user equipment able to connect to a mobile network. Examples of devices include smartphones or IoT sensors/actuators.
+            The developer can choose to provide the below specified device identifiers:
+            * `ipv4Address`
+            * `ipv6Address`
+            * `phoneNumber`
+            * `networkAccessIdentifier`
+            NOTE1: the network operator might support only a subset of these options. The API Consumer can provide multiple identifiers to ensure compatibility across different network operators. In this case, the API Provider will use one of the identifiers for the API logic without performing any matching checks among the provided identifiers.
+            NOTE2: as for this Commonalities release, we are enforcing that the networkAccessIdentifier is only part of the schema for future-proofing, and CAMARA does not currently allow its use. After the CAMARA meta-release work is concluded and the relevant issues are resolved, its use will need to be explicitly documented in the guidelines.
+      type: object
+      properties:
+        phoneNumber:
+          $ref: '#/components/schemas/PhoneNumber'
+        networkAccessIdentifier:
+          $ref: '#/components/schemas/NetworkAccessIdentifier'
+        ipv4Address:
+          $ref: '#/components/schemas/DeviceIpv4Address'
+        ipv6Address:
+          $ref: '#/components/schemas/DeviceIpv6Address'
+      minProperties: 1
+    Latitude:
+      description: Latitude component of a location
+      type: number
+      format: double
+      minimum: -90
+      maximum: 90
+    Longitude:
+      description: Longitude component of location
+      type: number
+      format: double
+      minimum: -180
+      maximum: 180
+    Point:
+      type: object
+      description: Coordinates (latitude, longitude) defining a location in a map
+      required:
+        - latitude
+        - longitude
+      properties:
+        latitude:
+          $ref: '#/components/schemas/Latitude'
+        longitude:
+          $ref: '#/components/schemas/Longitude'
+      example:
+        latitude: 50.735851
+        longitude: 7.10066
+    PropertyAddress:
+      type: object
+      description: Represents a physical property address following TMF673 Geographic Address Management API specification.
+      externalDocs:
+        description: TMF673 Geographic Address Management API User Guide v4.0.0
+        url: https://www.tmforum.org/resources/specification/tmf673-geographic-address-management-api-user-guide-v4-0-0/
+      properties:
+        id:
+          type: string
+          description: The unique identifier for the property address
+          minLength: 1
+          maxLength: 64
+          example: address-123
+        addressLine1:
+          type: string
+          maxLength: 128
+          description: The first line of the address
+          example: 123 Main St
+        addressLine2:
+          type: string
+          maxLength: 128
+          description: The second line of the address
+          example: Suite 456
+        streetNr:
+          type: string
+          maxLength: 64
+          description: The street number
+          example: '123'
+        streetNrSuffix:
+          type: string
+          maxLength: 64
+          description: The suffix for the street number
+          example: A
+        streetNrLast:
+          type: string
+          maxLength: 64
+          description: The last street number
+          example: '125'
+        streetNrLastSuffix:
+          type: string
+          maxLength: 64
+          description: The suffix for the last street number
+          example: B
+        streetName:
+          type: string
+          maxLength: 64
+          description: The name of the street
+          example: Main
+        subUnitType:
+          type: string
+          maxLength: 64
+          description: The type of sub-unit (e.g., Apartment, Suite)
+          example: Apartment
+        subUnitNr:
+          type: string
+          maxLength: 64
+          description: The number of the sub-unit
+          example: A12
+        levelType:
+          type: string
+          maxLength: 64
+          description: The type of level (e.g., Floor, Basement)
+          example: Floor
+        levelNr:
+          type: string
+          maxLength: 64
+          description: The number of the level
+          example: '3'
+        buildingName:
+          type: string
+          maxLength: 64
+          description: The name of the building
+          example: Example Building
+        privateStreetName:
+          type: string
+          maxLength: 64
+          description: The name of a private street
+          example: Private Rd
+        locality:
+          type: string
+          maxLength: 64
+          description: The locality (neighborhood, area)
+          example: Example Locality
+        city:
+          type: string
+          maxLength: 128
+          description: The city or town
+          example: Example State
+        stateOrProvince:
+          type: string
+          maxLength: 64
+          description: The state or province
+          example: EX
+        country:
+          type: string
+          maxLength: 64
+          description: The country
+          example: United States
+        postCode:
+          type: string
+          maxLength: 64
+          description: The postal code or ZIP code
+          example: '12345'
+        postCodeExtension:
+          type: string
+          maxLength: 64
+          description: The postal code extension
+          example: '6789'
+      example:
+        id: address-123
+        addressLine1: 123 Main St
+        addressLine2: Suite 456
+        streetNr: '123'
+        streetNrSuffix: A
+        streetNrLast: '125'
+        streetNrLastSuffix: B
+        streetName: Main
+        subUnitType: Apartment
+        subUnitNr: A12
+        levelType: Floor
+        levelNr: '3'
+        buildingName: Example Building
+        privateStreetName: Private Rd
+        locality: Example Locality
+        city: Example State
+        stateOrProvince: EX
+        country: United States
+        postCode: '12345'
+        postCodeExtension: '6789'
+    ServiceSite:
+      type: object
+      description: A Service Site represents a subscriber location associated with one or more Network Access Devices. Implementations MAY provide geographic coordinates, postal address data, or both, depending on local regulatory and operational requirements.
+      properties:
+        id:
+          allOf:
+            - $ref: '#/components/schemas/UUID'
+          readOnly: true
+        name:
+          type: string
+          description: The name of the service site.
+          maxLength: 64
+          example: Example Service Site 1
+        description:
+          type: string
+          description: A textual description of the service site.
+          maxLength: 64
+          example: This is the first example service site
+        location:
+          type: object
+          description: Geographic location information for the service site, including coordinates and/or property address.
+          properties:
+            geographicPoint:
+              $ref: '#/components/schemas/Point'
+            propertyAddress:
+              $ref: '#/components/schemas/PropertyAddress'
+          example:
+            geographicPoint:
+              latitude: 50.735851
+              longitude: 7.10066
+            propertyAddress:
+              id: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+              addressLine1: 123 Main St
+              addressLine2: Suite 456
+              streetNr: '123'
+              streetNrSuffix: A
+              streetNrLast: '125'
+              streetNrLastSuffix: B
+              streetName: Main
+              subUnitType: Apartment
+              subUnitNr: A12
+              levelType: Floor
+              levelNr: '3'
+              buildingName: Sunset Towers
+              privateStreetName: Private Rd
+              locality: Example Locality
+              city: Example State
+              stateOrProvince: EX
+              country: United States
+              postCode: '12345'
+              postCodeExtension: '6789'
+      required:
+        - id
+      example:
+        id: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+        name: Example Service Site 1
+        description: This is the first example service site
+        location:
+          geographicPoint:
+            latitude: 50.735851
+            longitude: 7.10066
+          propertyAddress:
+            id: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+            addressLine1: 123 Main St
+            addressLine2: Suite 456
+            streetNr: '123'
+            streetNrSuffix: A
+            streetNrLast: '125'
+            streetNrLastSuffix: B
+            streetName: Main
+            subUnitType: Apartment
+            subUnitNr: A12
+            levelType: Floor
+            levelNr: '3'
+            buildingName: Sunset Towers
+            privateStreetName: Private Rd
+            locality: Example Locality
+            city: Example State
+            stateOrProvince: EX
+            country: United States
+            postCode: '12345'
+            postCodeExtension: '6789'
+    NetworkAccessDevice:
+      description: |
+        Represents a network access device managed within the network access management system.
+        This schema represents operator-supplied network access equipment (e.g., gateways, mesh Wi-Fi systems).
+        It extends the Commonalities Device model but MUST NOT be confused with end-user devices.
+        The identifiers and addressing fields reflect the operator-managed equipment, not client equipment.
+      allOf:
+        - $ref: '#/components/schemas/ResourceIdentifier'
+        - $ref: '#/components/schemas/Device'
+        - type: object
+          properties:
+            id:
+              readOnly: true
+            name:
+              type: string
+              minLength: 1
+              maxLength: 100
+              description: The name of the device
+              example: Gateway-1
+            description:
+              type: string
+              minLength: 0
+              maxLength: 255
+              description: A description of the device
+              example: A Wi-Fi gateway device
+            hardwareAddress:
+              description: The hardware address of the device
+              oneOf:
+                - type: object
+                  properties:
+                    hardwareAddressType:
+                      type: string
+                      enum:
+                        - EUI-48
+                      example: EUI-48
+                    value:
+                      type: string
+                      pattern: ^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$
+                      maxLength: 17
+                      example: 12:34:56:78:9A:BC
+                  required:
+                    - hardwareAddressType
+                    - value
+              discriminator:
+                propertyName: hardwareAddressType
+              example:
+                hardwareAddressType: EUI-48
+                value: 12:34:56:78:9A:BC
+            serviceSite:
+              $ref: '#/components/schemas/ServiceSite'
+            deviceStatus:
+              type: string
+              enum:
+                - connected
+                - disconnected
+                - unavailable
+              default: unavailable
+              description: The current status of the device
+              example: connected
+          required:
+            - id
+          example:
+            id: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+            deviceStatus: connected
+            name: Gateway-1
+            description: A Wi-Fi gateway device
+            hardwareAddress:
+              hardwareAddressType: EUI-48
+              value: 12:34:56:78:9A:BC
+            serviceSite:
+              id: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+              name: Primary Residence
+              description: 123 Main Street
+              location:
+                id: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+                addressLine1: 123 Main St
+                addressLine2: Suite 456
+                streetNr: '123'
+                streetNrSuffix: A
+                streetNrLast: '125'
+                streetNrLastSuffix: B
+                streetName: Main
+                subUnitType: Apartment
+                subUnitNr: A12
+                levelType: Floor
+                levelNr: '3'
+                buildingName: Sunset Towers
+                privateStreetName: Private Rd
+                locality: Example Locality
+                city: Example State
+                stateOrProvince: EX
+                country: United States
+                postCode: '12345'
+                postCodeExtension: '6789'
+    NetworkAccessDeviceList:
+      type: array
+      description: A list of network access devices.
+      items:
+        $ref: '#/components/schemas/NetworkAccessDevice'
+      maxItems: 100
+      example:
+        - id: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+          deviceStatus: connected
+          name: Gateway-1
+          description: A Wi-Fi gateway device
+          hardwareAddress:
+            hardwareAddressType: EUI-48
+            value: 12:34:56:78:9A:BC
+          serviceSite:
+            id: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+            name: Primary Residence
+            description: 123 Main Street
+            location:
+              id: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+              addressLine1: 123 Main St
+              addressLine2: Suite 456
+              streetNr: '123'
+              streetNrSuffix: A
+              streetNrLast: '125'
+              streetNrLastSuffix: B
+              streetName: Main
+              subUnitType: Apartment
+              subUnitNr: A12
+              levelType: Floor
+              levelNr: '3'
+              buildingName: Sunset Towers
+              privateStreetName: Private Rd
+              locality: Example Locality
+              city: Example State
+              stateOrProvince: EX
+              country: United States
+              postCode: '12345'
+              postCodeExtension: '6789'
+        - id: 123e4567-e89b-12d3-a456-426614174000
+          deviceStatus: disconnected
+          name: Gateway-2
+          description: Another Wi-Fi gateway device
+          hardwareAddress:
+            hardwareAddressType: EUI-48
+            value: AB:CD:EF:12:34:56
+          serviceSite:
+            id: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+            name: Primary Residence
+            description: 123 Main Street
+            location:
+              id: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+              addressLine1: 123 Main St
+              addressLine2: Suite 456
+              streetNr: '123'
+              streetNrSuffix: A
+              streetNrLast: '125'
+              streetNrLastSuffix: B
+              streetName: Main
+              subUnitType: Apartment
+              subUnitNr: A12
+              levelType: Floor
+              levelNr: '3'
+              buildingName: Sunset Towers
+              privateStreetName: Private Rd
+              locality: Example Locality
+              city: Example State
+              stateOrProvince: EX
+              country: United States
+              postCode: '12345'
+              postCodeExtension: '6789'
+    XCorrelator:
+      type: string
+      description: Correlator string, UUID format recommended but any string matching the pattern can be used
+      pattern: ^[a-zA-Z0-9-_:;.\/<>{}]{0,256}$
+      maxLength: 256
+      example: b4333c46-49c0-4f62-80d7-f0ef930f1c46
+    ErrorInfo:
+      type: object
+      description: A structured error response providing details about a failed request, including the HTTP status code, an error code, and a human-readable message
+      required:
+        - status
+        - code
+        - message
+      properties:
+        status:
+          type: integer
+          format: int32
+          minimum: 100
+          maximum: 599
+          description: HTTP response status code
+        code:
+          type: string
+          maxLength: 96
+          description: A human-readable code to describe the error
+        message:
+          type: string
+          maxLength: 512
+          description: A human-readable description of what the event represents
+    DateTime:
+      type: string
+      format: date-time
+      maxLength: 64
+      description: |
+        It must follow [RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339#section-5.6) and must have time zone.
+        Recommended format is yyyy-MM-dd'T'HH:mm:ss.SSSZ (i.e. which allows 2023-07-03T14:27:08.312+02:00 or
+        2023-07-03T12:27:08.312Z)
+      example: '2023-07-03T14:27:08.312+02:00'
+    RebootRequestUpdate:
+      type: object
+      description: Represents updatable fields for a reboot request, including optional message and scheduling information.
+      properties:
+        message:
+          type: string
+          maxLength: 255
+          description: A message related to the reboot request
+          example: reboot to correct performance
+        atTime:
+          allOf:
+            - $ref: '#/components/schemas/DateTime'
+            - description: |
+                The date and time to reboot the device. Do not include 'atTime' to request immediate reboot.  It must
+                follow [RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339#section-5.6) and must have time zone.
+                Recommended format is yyyy-MM-dd'T'HH:mm:ss.SSSZ (i.e. which allows 2023-07-03T14:27:08.312+02:00 or
+                2023-07-03T12:27:08.312Z).
+    RebootRequestCreate:
+      description: Represents the creation of a reboot request, including target devices and optional scheduling. If devices is omitted, the provider MAY infer a default device. Inference rules vary by implementation. If inference is unsupported or ambiguous, creation MUST fail.
+      allOf:
+        - $ref: '#/components/schemas/RebootRequestUpdate'
+        - properties:
+            devices:
+              type: array
+              items:
+                $ref: '#/components/schemas/UUID'
+              maxItems: 100
+              description: List of devices to reboot. When undefined, the reboot targets the 'default' device (simple use case that wouldn't use locations or devices). Throws an error when creating if there is no 'default' device.
+              example:
+                - 934ee3f4-1234-5678-9abc-abcdef123456
+                - 454ee3f4-1234-5678-9abc-abcdef123456
+    ResourceAudit:
+      type: object
+      properties:
+        createdAt:
+          allOf:
+            - $ref: '#/components/schemas/DateTime'
+            - description: |
+                The creation date and time of the trust domain.  It must follow [RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339#section-5.6)
+                and must have time zone. Recommended format is yyyy-MM-dd'T'HH:mm:ss.SSSZ (i.e. which allows
+                2023-07-03T14:27:08.312+02:00 or 2023-07-03T12:27:08.312Z).
+            - readOnly: true
+        createdBy:
+          allOf:
+            - $ref: '#/components/schemas/UUID'
+          description: |
+            The ID of the user or system that created this resource.
+          example: 550e8400-e29b-41d4-a716-446655440000
+          readOnly: true
+        modifiedAt:
+          allOf:
+            - $ref: '#/components/schemas/DateTime'
+            - description: |
+                The last update date and time of the trust domain.  It must follow [RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339#section-5.6)
+                and must have time zone. Recommended format is yyyy-MM-dd'T'HH:mm:ss.SSSZ (i.e. which allows
+                2023-07-03T14:27:08.312+02:00 or 2023-07-03T12:27:08.312Z).
+            - readOnly: true
+        modifiedBy:
+          allOf:
+            - $ref: '#/components/schemas/UUID'
+          description: |
+            The ID of the user or system that modified this resource.
+          example: 660e8400-e29b-41d4-a716-446655440000
+          readOnly: true
+      description: A generic schema for resources with unique identifiers and audit fields.
+    RebootRequest:
+      allOf:
+        - $ref: '#/components/schemas/ResourceIdentifier'
+        - $ref: '#/components/schemas/RebootRequestCreate'
+        - $ref: '#/components/schemas/ResourceAudit'
+        - type: object
+          properties:
+            id:
+              readOnly: true
+            createdAt:
+              readOnly: true
+            createdBy:
+              readOnly: true
+            modifiedAt:
+              readOnly: true
+            modifiedBy:
+              readOnly: true
+      required:
+        - devices
+      description: Represents a reboot request for one or more network access devices.
+  headers:
+    x-correlator:
+      description: Correlation id for the different services
+      schema:
+        $ref: '#/components/schemas/XCorrelator'
+  responses:
+    Generic400:
+      description: Bad Request
+      headers:
+        x-correlator:
+          $ref: '#/components/headers/x-correlator'
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/ErrorInfo'
+              - type: object
+                properties:
+                  status:
+                    enum:
+                      - 400
+                  code:
+                    enum:
+                      - INVALID_ARGUMENT
+                      - OUT_OF_RANGE
+          examples:
+            GENERIC_400_INVALID_ARGUMENT:
+              description: Invalid Argument. Generic Syntax Exception
+              value:
+                status: 400
+                code: INVALID_ARGUMENT
+                message: Client specified an invalid argument, request body or query param.
+            GENERIC_400_OUT_OF_RANGE:
+              description: Out of Range. Specific Syntax Exception used when a given field has a pre-defined range or a invalid filter criteria combination is requested
+              value:
+                status: 400
+                code: OUT_OF_RANGE
+                message: Client specified an invalid range.
+    Generic401:
+      description: Unauthorized
+      headers:
+        x-correlator:
+          $ref: '#/components/headers/x-correlator'
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/ErrorInfo'
+              - type: object
+                properties:
+                  status:
+                    enum:
+                      - 401
+                  code:
+                    enum:
+                      - UNAUTHENTICATED
+          examples:
+            GENERIC_401_UNAUTHENTICATED:
+              description: Request cannot be authenticated and a new authentication is required
+              value:
+                status: 401
+                code: UNAUTHENTICATED
+                message: Request not authenticated due to missing, invalid, or expired credentials. A new authentication is required.
+    Generic403:
+      description: Forbidden
+      headers:
+        x-correlator:
+          $ref: '#/components/headers/x-correlator'
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/ErrorInfo'
+              - type: object
+                properties:
+                  status:
+                    enum:
+                      - 403
+                  code:
+                    enum:
+                      - PERMISSION_DENIED
+                      - INVALID_TOKEN_CONTEXT
+          examples:
+            GENERIC_403_PERMISSION_DENIED:
+              description: Permission denied. OAuth2 token access does not have the required scope or when the user fails operational security
+              value:
+                status: 403
+                code: PERMISSION_DENIED
+                message: Client does not have sufficient permissions to perform this action.
+            GENERIC_403_INVALID_TOKEN_CONTEXT:
+              description: Reflect some inconsistency between information in some field of the API and the related OAuth2 Token
+              value:
+                status: 403
+                code: INVALID_TOKEN_CONTEXT
+                message: Request body is not consistent with access token.
+    Generic404:
+      description: Not found
+      headers:
+        x-correlator:
+          $ref: '#/components/headers/x-correlator'
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/ErrorInfo'
+              - type: object
+                properties:
+                  status:
+                    enum:
+                      - 404
+                  code:
+                    enum:
+                      - NOT_FOUND
+                      - IDENTIFIER_NOT_FOUND
+          examples:
+            GENERIC_404_NOT_FOUND:
+              description: Resource is not found
+              value:
+                status: 404
+                code: NOT_FOUND
+                message: The specified resource is not found.
+            GENERIC_404_IDENTIFIER_NOT_FOUND:
+              description: Some identifier cannot be matched to a device
+              value:
+                status: 404
+                code: IDENTIFIER_NOT_FOUND
+                message: Device identifier not found.
+    Generic500:
+      description: Internal Server Error
+      headers:
+        x-correlator:
+          $ref: '#/components/headers/x-correlator'
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/ErrorInfo'
+              - type: object
+                properties:
+                  status:
+                    enum:
+                      - 500
+                  code:
+                    enum:
+                      - INTERNAL
+          examples:
+            GENERIC_500_INTERNAL:
+              description: Problem in Server side. Regular Server Exception
+              value:
+                status: 500
+                code: INTERNAL
+                message: Unknown server error. Typically a server bug.
+    Generic503:
+      description: Service Unavailable
+      headers:
+        x-correlator:
+          $ref: '#/components/headers/x-correlator'
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/ErrorInfo'
+              - type: object
+                properties:
+                  status:
+                    enum:
+                      - 503
+                  code:
+                    enum:
+                      - UNAVAILABLE
+          examples:
+            GENERIC_503_UNAVAILABLE:
+              description: Service is not available. Temporary situation usually related to maintenance process in the server side
+              value:
+                status: 503
+                code: UNAVAILABLE
+                message: Service Unavailable.
+    Generic409:
+      description: Conflict
+      headers:
+        x-correlator:
+          $ref: '#/components/headers/x-correlator'
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/ErrorInfo'
+              - type: object
+                properties:
+                  status:
+                    enum:
+                      - 409
+                  code:
+                    enum:
+                      - ABORTED
+                      - ALREADY_EXISTS
+                      - CONFLICT
+                      - INCOMPATIBLE_STATE
+          examples:
+            GENERIC_409_ABORTED:
+              description: The resource is undergoing modification by another process
+              value:
+                status: 409
+                code: ABORTED
+                message: Resource is being modified by another operation. Please wait, and retry if appropriate.
+            GENERIC_409_ALREADY_EXISTS:
+              description: Trying to create an existing resource
+              value:
+                status: 409
+                code: ALREADY_EXISTS
+                message: The resource that a client tried to create already exists.
+            GENERIC_409_CONFLICT:
+              description: Duplication of an existing resource
+              value:
+                status: 409
+                code: CONFLICT
+                message: A specified resource duplicate entry found.
+            GENERIC_409_INCOMPATIBLE_STATE:
+              description: |
+                The status of the referenced resource is not compatible.
+              value:
+                status: 409
+                code: INCOMPATIBLE_STATE
+                message: Resource must be in AVAILABLE state to extend. Current state is UNAVAILABLE.
+    Generic422:
+      description: Unprocessable Content
+      headers:
+        x-correlator:
+          $ref: '#/components/headers/x-correlator'
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/ErrorInfo'
+              - type: object
+                properties:
+                  status:
+                    enum:
+                      - 422
+                  code:
+                    enum:
+                      - SERVICE_NOT_APPLICABLE
+                      - MISSING_IDENTIFIER
+                      - UNSUPPORTED_IDENTIFIER
+                      - UNNECESSARY_IDENTIFIER
+          examples:
+            GENERIC_422_SERVICE_NOT_APPLICABLE:
+              description: Service not applicable for the provided identifier
+              value:
+                status: 422
+                code: SERVICE_NOT_APPLICABLE
+                message: The service is not available for the provided identifier.
+            GENERIC_422_MISSING_IDENTIFIER:
+              description: An identifier is not included in the request and the device or phone number identification cannot be derived from the 3-legged access token
+              value:
+                status: 422
+                code: MISSING_IDENTIFIER
+                message: The device cannot be identified.
+            GENERIC_422_UNSUPPORTED_IDENTIFIER:
+              description: None of the provided identifiers is supported by the implementation
+              value:
+                status: 422
+                code: UNSUPPORTED_IDENTIFIER
+                message: The identifier provided is not supported.
+            GENERIC_422_UNNECESSARY_IDENTIFIER:
+              description: An explicit identifier is provided when a device or phone number has already been identified from the access token
+              value:
+                status: 422
+                code: UNNECESSARY_IDENTIFIER
+                message: The device is already identified by the access token.
+  parameters:
+    networkAccessDeviceId:
+      name: networkAccessDeviceId
+      in: path
+      description: |
+        The unique identifier of the Network Access Device. If the device exists but the caller lacks permission to access it, the API returns 403.
+
+        Must be a valid UUID as defined by RFC 4122 (versions 1-5) using only lowercase hexadecimal characters.
+      required: true
+      schema:
+        $ref: '#/components/schemas/UUID'
+    rebootRequestId:
+      name: rebootRequestId
+      in: path
+      required: true
+      schema:
+        $ref: '#/components/schemas/UUID'
+      description: ID of the Reboot Request. If the Reboot Request exists but the caller lacks permission to access it, the API returns 403.
+  examples:
+    RebootRequestCreateImmediateDefaultDevice:
+      summary: Example of a Reboot Request for immediate reboot
+      value:
+        message: reboot to correct performance
+    RebootRequestCreateScheduledMultipleDevices:
+      summary: Example of a Reboot Request for scheduled reboot of multiple devices
+      value:
+        message: Scheduled reboot for maintenance
+        atTime: '2023-07-03T12:27:08.312Z'
+        devices:
+          - 934ee3f4-1234-5678-9abc-abcdef123456
+          - 454ee3f4-1234-5678-9abc-abcdef123456

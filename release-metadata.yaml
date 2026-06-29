@@ -1,0 +1,16 @@
+repository:
+  repository_name: NetworkAccessManagement
+  release_tag: r3.1
+  release_type: pre-release-rc
+  release_date: null
+  src_commit_sha: 115fe194d2d69327fbd8549f49f504923ac77df8
+apis:
+- api_name: network-access-devices
+  api_version: 0.3.0-rc.1
+  api_title: Home Devices - Network Access Devices
+- api_name: network-access-domains
+  api_version: 0.3.0-rc.1
+  api_title: Home Devices - Network Access Domains
+dependencies:
+  commonalities_release: r4.3 (0.8.0)
+  identity_consent_management_release: r4.2 (0.5.0)
