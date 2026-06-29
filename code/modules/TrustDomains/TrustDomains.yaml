@@ -64,7 +64,7 @@ components:
       in: path
       required: true
       schema:
-        $ref: "../NAM_Common.yaml#/components/schemas/UUID"
+        $ref: "../NAM_Common.yaml#/components/schemas/Uuid"
       description: ID of the Trust Domain. If the Trust Domain exists but the caller lacks permission to access it, the API returns 403.
 
   schemas:
@@ -90,12 +90,12 @@ components:
         expiration:
           allOf:
             - $ref: "../NAM_Common.yaml#/components/schemas/DateTime"
-            - description: |
-                The expiration date and time of the network.  It must follow [RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339#section-5.6)
-                and must have time zone. Recommended format is yyyy-MM-dd'T'HH:mm:ss.SSSZ (i.e. which allows
-                2023-07-03T14:27:08.312+02:00 or 2023-07-03T12:27:08.312Z).
+          description: |
+            The expiration date and time of the network.  It must follow [RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339#section-5.6)
+            and must have time zone. Recommended format is yyyy-MM-dd'T'HH:mm:ss.SSSZ (i.e. which allows
+            2023-07-03T14:27:08.312+02:00 or 2023-07-03T12:27:08.312Z).
 
-                If omitted, the trust domain will not automatically expire.
+            If omitted, the trust domain will not automatically expire.
         policies:
           $ref: "../Policy.yaml#/components/schemas/Policies"
         accessDetails:
@@ -140,15 +140,15 @@ components:
     TrustDomainCreate:
       allOf:
         - $ref: "#/components/schemas/TrustDomainUpdate"
+        - properties:
+            serviceId:
+              $ref: "../Services/Services.yaml#/components/schemas/ServiceId"
       description: Represents the creation of a new trust domain within the network access management system.
       required:
         - name
         - enabled
         - accessDetails
         - serviceId
-      properties:
-        serviceId:
-          $ref: "../Services/Services.yaml#/components/schemas/ServiceId"
 
     TrustDomain:
       allOf:
@@ -174,6 +174,7 @@ components:
 
     TrustDomainCreateWpa2Personal:
       summary: Create a Trust Domain with WPA2-Personal Wi-Fi access.
+      description: Creates a Trust Domain with a single WPA2-Personal Wi-Fi access detail that specifies an SSID.
       value:
         name: "Primary WiFi Network"
         description: "Request defines a Trust Domain with WPA2-Personal Wi-Fi access. The request specifies an SSID, implying the SSID is created on the network infrastructure."
@@ -184,6 +185,7 @@ components:
 
     TrustDomainCreateInferredSsid:
       summary: Create a Trust Domain with inferred SSID Wi-Fi access.
+      description: Creates a Trust Domain that omits the SSID, applying access to an existing SSID on the network infrastructure.
       value:
         name: "Inferred SSID Network"
         description: "Request defines a Trust Domain with inferred SSID Wi-Fi access. The request omits the SSID, implying the Trust Domain is applied to an existing SSID on the network infrastructure."
@@ -197,6 +199,7 @@ components:
 
     TrustDomainCreateEphemeral:
       summary: Create a Trust Domain with ephemeral access details.
+      description: Creates a time-limited Trust Domain using an 'expiration' timestamp and a max-devices policy.
       value:
         name: "Ephemeral Network"
         description: "Request defines a Trust Domain with ephemeral access details."
@@ -210,6 +213,7 @@ components:
 
     TrustDomainCreateThreadStructured:
       summary: Create a Trust Domain with Thread structured access details.
+      description: Creates a Trust Domain with a Thread structured access detail.
       value:
         name: "Thread Structured Network"
         description: "Request defines a Trust Domain with Thread structured access details."
@@ -220,6 +224,7 @@ components:
 
     TrustDomainCreateQoSPolicies:
       summary: Create a Trust Domain with QoS policies.
+      description: Creates a Trust Domain with bandwidth QoS policies applied to the domain.
       value:
         name: "QoS Policy Network"
         description: "Request defines a Trust Domain with QoS policies."

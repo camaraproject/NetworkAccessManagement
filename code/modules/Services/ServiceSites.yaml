@@ -33,7 +33,8 @@ components:
       properties:
         id:
           allOf:
-            - $ref: "../NAM_Common.yaml#/components/schemas/UUID"
+            - $ref: "../NAM_Common.yaml#/components/schemas/Uuid"
+          description: Unique identifier of the service site.
           readOnly: true
         name:
           type: string
