@@ -178,7 +178,8 @@ components:
       properties:
         id:
           allOf:
-            - $ref: "#/components/schemas/UUID"
+            - $ref: "#/components/schemas/Uuid"
+          description: Unique identifier of the resource.
           readOnly: true
       required:
         - id
@@ -190,14 +191,14 @@ components:
         createdAt:
           allOf:
             - $ref: "#/components/schemas/DateTime"
-            - description: |
-                The creation date and time of the trust domain.  It must follow [RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339#section-5.6)
-                and must have time zone. Recommended format is yyyy-MM-dd'T'HH:mm:ss.SSSZ (i.e. which allows
-                2023-07-03T14:27:08.312+02:00 or 2023-07-03T12:27:08.312Z).
-            - readOnly: true
+          description: |
+            The creation date and time of the resource.  It must follow [RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339#section-5.6)
+            and must have time zone. Recommended format is yyyy-MM-dd'T'HH:mm:ss.SSSZ (i.e. which allows
+            2023-07-03T14:27:08.312+02:00 or 2023-07-03T12:27:08.312Z).
+          readOnly: true
         createdBy:
           allOf:
-            - $ref: "#/components/schemas/UUID"
+            - $ref: "#/components/schemas/Uuid"
           description: |
             The ID of the user or system that created this resource.
           example: "550e8400-e29b-41d4-a716-446655440000"
@@ -205,21 +206,21 @@ components:
         modifiedAt:
           allOf:
             - $ref: "#/components/schemas/DateTime"
-            - description: |
-                The last update date and time of the trust domain.  It must follow [RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339#section-5.6)
-                and must have time zone. Recommended format is yyyy-MM-dd'T'HH:mm:ss.SSSZ (i.e. which allows
-                2023-07-03T14:27:08.312+02:00 or 2023-07-03T12:27:08.312Z).
-            - readOnly: true
+          description: |
+            The last update date and time of the resource.  It must follow [RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339#section-5.6)
+            and must have time zone. Recommended format is yyyy-MM-dd'T'HH:mm:ss.SSSZ (i.e. which allows
+            2023-07-03T14:27:08.312+02:00 or 2023-07-03T12:27:08.312Z).
+          readOnly: true
         modifiedBy:
           allOf:
-            - $ref: "#/components/schemas/UUID"
+            - $ref: "#/components/schemas/Uuid"
           description: |
             The ID of the user or system that modified this resource.
           example: "660e8400-e29b-41d4-a716-446655440000"
           readOnly: true
       description: A generic schema for resources with unique identifiers and audit fields.
 
-    UUID:
+    Uuid:
       type: string
       format: uuid
       pattern: '^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$'

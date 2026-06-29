@@ -183,6 +183,7 @@ components:
           type: array
           items:
             type: string
+            description: A destination address format supported by the egress allowed list policy.
             enum: ["IP", "FQDN", "CIDR"]
           maxItems: 3
           description: Supported destination address formats
@@ -204,6 +205,7 @@ components:
           type: array
           items:
             type: string
+            description: A Wi-Fi security mode type supported by the API provider.
             enum:
               - "WPA2-Personal"
               - "WPA3-Personal"

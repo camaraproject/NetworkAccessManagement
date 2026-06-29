@@ -44,7 +44,7 @@ components:
   schemas:
     ServiceId:
       allOf:
-        - $ref: "../NAM_Common.yaml#/components/schemas/UUID"
+        - $ref: "../NAM_Common.yaml#/components/schemas/Uuid"
       description: |
         A unique identifier that represents a service account associated with this resource.
 

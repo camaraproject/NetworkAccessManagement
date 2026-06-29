@@ -47,7 +47,7 @@ components:
       in: path
       required: true
       schema:
-        $ref: "../NAM_Common.yaml#/components/schemas/UUID"
+        $ref: "../NAM_Common.yaml#/components/schemas/Uuid"
       description: |
         The unique identifier of the Trust Domain Device. If the device exists but the caller
         lacks permission to access it, the API returns 403.
@@ -184,12 +184,12 @@ components:
         selectedProtocol:
           allOf:
             - $ref: "#/components/schemas/BootstrappingProtocol"
-            - readOnly: true
-              description: |
-                The bootstrapping protocol selected by the server for onboarding this
-                device. Present only in responses. Determined by intersecting the
-                device's configured protocols with the Trust Domain's capabilities,
-                respecting protocolPreference ordering if provided.
+          readOnly: true
+          description: |
+            The bootstrapping protocol selected by the server for onboarding this
+            device. Present only in responses. Determined by intersecting the
+            device's configured protocols with the Trust Domain's capabilities,
+            respecting protocolPreference ordering if provided.
         DPP:
           $ref: "#/components/schemas/DppBootstrappingConfig"
         MATTER:
@@ -239,11 +239,11 @@ components:
         selectedType:
           allOf:
             - $ref: "#/components/schemas/CredentialType"
-            - readOnly: true
-              description: |
-                The credential type the server selected. Present only in responses.
-                Determined by matching supportedTypes against the Trust Domain's
-                access configuration.
+          readOnly: true
+          description: |
+            The credential type the server selected. Present only in responses.
+            Determined by matching supportedTypes against the Trust Domain's
+            access configuration.
 
     AssignDeviceCredential:
       type: object
@@ -338,39 +338,39 @@ components:
         bootstrappingInfo:
           allOf:
             - $ref: "#/components/schemas/BootstrappingInfo"
-            - description: |
-                Provisioning protocol configurations that define how this device can be
-                onboarded to the Trust Domain. Each property identifies a bootstrapping
-                protocol and its configuration. A device may support multiple protocols.
-                Use `protocolPreference` to express the device's preferred protocol ordering
-                for deterministic server selection.
+          description: |
+            Provisioning protocol configurations that define how this device can be
+            onboarded to the Trust Domain. Each property identifies a bootstrapping
+            protocol and its configuration. A device may support multiple protocols.
+            Use `protocolPreference` to express the device's preferred protocol ordering
+            for deterministic server selection.
 
-                **Update Semantics**
-                - On update (PATCH), the object replaces the previous object entirely when
-                  included. Partial merge semantics are not defined; clients MUST supply the
-                  complete desired configuration for this field.
+            **Update Semantics**
+            - On update (PATCH), the object replaces the previous object entirely when
+              included. Partial merge semantics are not defined; clients MUST supply the
+              complete desired configuration for this field.
         deviceCredential:
           $ref: "#/components/schemas/DeviceCredential"
 
     TrustDomainDeviceCreate:
       allOf:
         - $ref: "#/components/schemas/TrustDomainDeviceUpdate"
+        - properties:
+            externalId:
+              type: string
+              minLength: 1
+              maxLength: 255
+              description: |
+                A manufacturer or user-assigned identifier for the device (e.g., serial number,
+                model code, or asset tag). This is distinct from the system-generated UUID `id`
+                and can be used for cross-referencing the device with external systems.
+              example: "SN-12345-ABCDE"
       description: |
         Represents the creation payload for registering a new device to a Trust Domain.
         Extends TrustDomainDeviceUpdate with additional creation-only fields and required field constraints.
       required:
         - deviceName
         - enabled
-      properties:
-        externalId:
-          type: string
-          minLength: 1
-          maxLength: 255
-          description: |
-            A manufacturer or user-assigned identifier for the device (e.g., serial number,
-            model code, or asset tag). This is distinct from the system-generated UUID `id`
-            and can be used for cross-referencing the device with external systems.
-          example: "SN-12345-ABCDE"
 
     TrustDomainDevice:
       allOf:
@@ -430,6 +430,7 @@ components:
 
     TrustDomainDeviceCreateIoT:
       summary: Register an IoT device with DPP bootstrapping and server-generated credential.
+      description: Registers an IoT device that bootstraps over DPP and requests a server-generated credential.
       value:
         deviceName: "Smart Thermostat"
         externalId: "SN-THERMO-001"
@@ -442,12 +443,14 @@ components:
 
     TrustDomainDeviceCreateMinimal:
       summary: Register a device with minimal required fields.
+      description: Registers a device supplying only the required fields (deviceName and enabled).
       value:
         deviceName: "Guest Laptop"
         enabled: true
 
     TrustDomainDeviceCreateMatter:
       summary: Register a Matter device.
+      description: Registers a Matter device that bootstraps using Matter onboarding information.
       value:
         deviceName: "Smart Light Bulb"
         externalId: "MATTER-BULB-42"
