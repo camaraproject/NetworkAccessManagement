@@ -11,6 +11,10 @@ info:
     Service enabling API for managing network operator supplied **Network Access Devices** (gateways, routers, and
     access points): retrieving device information and creating and monitoring **Reboot Requests** for that equipment.
 
+    Network Access Devices are operator-managed infrastructure — not end-user equipment. This API lets a consumer
+    enumerate that equipment, inspect its status, and request immediate or scheduled reboots (for example, to recover
+    a gateway from a faulty network state).
+
     # Introduction
     A reboot request is simply a request to reboot a network operator supplied network access device. API consumers
     can create these requests which could be useful in scenarios such as:
@@ -19,11 +23,9 @@ info:
     - A property manager wants to reboot multiple devices at one or more locations such as common areas, offices, etc.
 
     # Relevant Terms and Definitions
-    - **Trust Domain**: a declarative, intent-level grouping that defines which devices are permitted to communicate with each other as if they were on the same LAN and what high-level access policies apply to that group.
-    - **Reboot Request**: A request to reboot a network operator supplied network access device.
-    - **Network Access Device**: A network operator supplied network access device that supports network segmentation technologies.  Multiple devices
-    that support LAN connectivity across the same Trust Domain (e.g., mesh Wi-Fi, Thread personal area network,
-    etc.) SHOULD be presented as a single device for implementations of this API.
+    - **Network Access Device**: network-operator-supplied access equipment (e.g., gateway, router, access point) that supports network segmentation technologies. Multiple devices that provide LAN connectivity for the same Trust Domain (e.g., mesh Wi-Fi, Thread personal area network) SHOULD be presented as a single device for implementations of this API.
+    - **Reboot Request**: A request to reboot one or more network operator supplied Network Access Devices, immediately or at a scheduled time.
+    - **Trust Domain**: a declarative, intent-level grouping that defines which devices are permitted to communicate with each other as if they were on the same LAN and what high-level access policies apply to that group. (Trust Domains, and the subscriber/IoT *Trust Domain Devices* registered to them, are managed by the companion *Network Access Domains* API — not here.)
     - **API Provider**: Provider that implements this API.
     - **Network Operator**: Service provider that has operational control of supporting devices.
     - **Service Owner**: Customer of a network operator and resource owner with one or more devices that supports this
@@ -41,6 +43,12 @@ info:
     # API Functionality
     This API allows API Consumers to retrieve Network Access Devices and create reboot requests against them.
 
+    - **Network Access Devices** — `GET /network-access-devices` lists the operator-supplied equipment associated with
+      the subscriber; each device reports a `deviceStatus` (`connected`, `disconnected`, or `unavailable`) and, subject
+      to scope, identifying detail such as its hardware address and service site.
+    - **Reboot Requests** — `POST /reboot-requests` triggers an immediate or scheduled reboot of one or more devices;
+      the resulting resource can be read, rescheduled, or cancelled.
+
     <!-- CAMARA:MANDATORY:authorization-and-authentication:BEGIN -->
     # Authorization and authentication
 
@@ -51,7 +59,7 @@ info:
     In cases where personal data is processed by the API and users can exercise their rights through mechanisms such as opt-in and/or opt-out, the use of three-legged access tokens is mandatory. This ensures that the API remains in compliance with privacy regulations, upholding the principles of transparency and user-centric privacy-by-design.
     <!-- CAMARA:MANDATORY:authorization-and-authentication:END -->
 
-    ### Scopes
+    # Scopes
     Scopes are used to protect the service owner's information and privacy.  The general format is
     `<API_name>-<Resource>-<Permission>`.  A resource may be further broken down into `<Resource_name>-<Field>` or
     `<Resource_name>-<Role>` for granular permissions. Scopes also control output information as opposed to just
@@ -68,15 +76,21 @@ info:
     |-------|-------------|
     | **network-access-devices:reboot** | Create, list, and manage Reboot Requests for owned devices. |
 
-    ## Comments for API Clients
+    <!-- CAMARA:MANDATORY:request-body-strictness:BEGIN -->
+    # Request body strictness
 
-    ### Reboot Requests
+    This API rejects requests with JSON request bodies that contain properties not declared in this specification, at any nesting level. Unknown properties result in a `400 INVALID_ARGUMENT` response.
+    <!-- CAMARA:MANDATORY:request-body-strictness:END -->
+
+    # Comments for API Clients
+
+    ## Reboot Requests
     Reboot Requests provide a declarative mechanism for API clients to trigger an
     immediate or scheduled reboot of one or more Network Access Devices associated
     with a subscriber. The following clarifies expected behavior, device inference
     rules, and recommended client patterns.
 
-    #### Device Targeting
+    ### Device Targeting
     Clients MAY target devices in one of two ways:
 
     1. **Explicit Targeting**
@@ -95,7 +109,7 @@ info:
        If inference fails, the request MUST be rejected (e.g., 400 INVALID_ARGUMENT or
        422 MISSING_IDENTIFIER).
 
-    #### Behavior Guarantees
+    ### Behavior Guarantees
 
     - If `devices` is omitted and inference succeeds, the response MUST contain the
       provider-resolved device list.
@@ -104,7 +118,7 @@ info:
     - Partial success is not allowed.
     - Providers MAY reject duplicate reboot requests targeting the same devices and time.
 
-    #### Interaction with Related Endpoints
+    ### Interaction with Related Endpoints
 
     - `GET /network-access-devices`
       Used to enumerate devices and their configuration.
@@ -116,7 +130,7 @@ info:
       Retrieve the status of a previously-created request. Implementations MAY extend
       the status model over time.
 
-    #### Recommended Client Flow
+    ### Recommended Client Flow
 
     1. (Optional) Query device capabilities using `/network-access-devices`.
     2. If multiple devices exist or inference is unsupported, build an explicit
@@ -124,10 +138,10 @@ info:
     3. Create the reboot request with immediate or scheduled execution (`atTime`).
     4. (Optional) Poll the individual reboot request status for asynchronous flows.
 
-    ## Comments for Network Operators
+    # Comments for Network Operators
     The following comments are for Network Operators implementing this API.
 
-    ### Mesh Systems
+    ## Mesh Systems
     Mesh systems SHOULD be represented as a single device when implementing this API due to the undefined behavior of
     LAN connectivity across multiple devices with the same Trust Domain.  The recommendation is to use the gateway
     hardware address of the mesh system when exposing that field, though the hardware address of any node in the mesh
@@ -144,12 +158,6 @@ info:
 
     As a specific rule, error `501 - NOT_IMPLEMENTED` can be only a possible error response if it is explicitly documented in the API.
     <!-- CAMARA:MANDATORY:additional-error-responses:END -->
-
-    <!-- CAMARA:MANDATORY:request-body-strictness:BEGIN -->
-    # Request body strictness
-
-    This API rejects requests with JSON request bodies that contain properties not declared in this specification, at any nesting level. Unknown properties result in a `400 INVALID_ARGUMENT` response.
-    <!-- CAMARA:MANDATORY:request-body-strictness:END -->
 
 externalDocs:
   description: Product documentation at CAMARA

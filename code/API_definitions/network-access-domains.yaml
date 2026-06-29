@@ -12,6 +12,11 @@ info:
     connectivity and access policies applied to them and the registration and onboarding of subscriber and IoT
     devices into those segments.
 
+    A Trust Domain lets an API consumer express *intent* — "these devices should share a private network with this
+    Wi-Fi/Thread configuration and these policies" — which the network operator translates into configuration on the
+    subscriber's network access equipment. The API also enumerates the subscriber's services and service sites so a
+    consumer can target the correct account and location.
+
     # Introduction
     A Trust Domain is a network access configuration where each configuration is for a logically separated Local
     Area Network (LAN). API consumers can create, modify, or remove these networks which could be useful in
@@ -20,16 +25,21 @@ info:
     - A property owner wants to create a temporary network for the duration of a short-term booking or long-term rental.
     - A property manager wants to replicate the network access details across multiple network access devices at one or
       more locations such as common areas, offices, etc.
-    - A security/privacy-minded user wants to create one or more networks for their guests or Internet-of-Thing (IoT)
+    - A security/privacy-minded user wants to create one or more networks for their guests or Internet-of-Things (IoT)
       network clients.
+    - An IoT platform wants to onboard a new device onto a subscriber's network and apply a specific connectivity
+      policy to it.
 
     # Relevant Terms and Definitions
     - **Trust Domain**: a declarative, intent-level grouping that defines which devices are permitted to communicate with each other as if they were on the same LAN and what high-level access policies apply to that group.
-    - **Network Access Device**: A network operator supplied network access device that supports network segmentation technologies.  Multiple devices
-    that support LAN connectivity across the same Trust Domain (e.g., mesh Wi-Fi, Thread personal area network,
-    etc.) SHOULD be presented as a single device for implementations of this API.
+    - **Access Detail**: one admittance configuration for a Trust Domain — an access type (Wi-Fi WPA Personal/Enterprise, Thread Structured/TLV) together with its security parameters. A Trust Domain has one or more.
+    - **Policy**: an optional, independently-applied constraint on a Trust Domain (e.g., maximum number of devices, up/downstream rate limit, egress allow-list).
+    - **Trust Domain Device**: a subscriber or IoT device (laptop, phone, IoT sensor, etc.) registered to a Trust Domain so that it may join the segment under that domain's access configuration and policies. **This is distinct from a Network Access Device** — it is end-user/subscriber equipment, not operator infrastructure.
+    - **Network Access Device**: network-operator-supplied access equipment (e.g., gateway, router, access point) that enforces Trust Domains and supports network segmentation technologies. Multiple devices that provide LAN connectivity for the same Trust Domain (e.g., mesh Wi-Fi, Thread personal area network) SHOULD be presented as a single device for implementations of this API. (Inventory and reboot of this equipment are handled by the companion *Network Access Devices* API.)
+    - **Bootstrapping / Provisioning Protocol**: the mechanism (DPP, Matter, WKSO) used to securely onboard a Trust Domain Device onto the network.
     - **API Provider**: Provider that implements this API.
     - **Network Operator**: Service provider that has operational control of supporting devices.
+    - **Service**: a logical commercial subscription or account relationship between a network operator and a subscriber (residential, commercial, public Wi-Fi, etc.).
     - **Service Owner**: Customer of a network operator and resource owner with one or more devices that supports this
     API across one or more service sites.
     - **Service Site**: A distinct service owner location, as interpreted by the network operator, with one or more
@@ -43,7 +53,56 @@ info:
     - **API Consumer**: A first- or third-party software system using this API.
 
     # API Functionality
-    This API allows API Consumers to manage Trust Domains and register subscriber/IoT devices within them.
+    This API allows API Consumers to manage Trust Domains, configure their access and policy, register subscriber/IoT
+    devices into them, and enumerate the services and service sites those resources belong to.
+
+    ## Trust Domains
+    A Trust Domain is created against a `serviceId` and carries one or more **access details** plus optional
+    **policies** and an optional **expiration**.
+
+    - **Access details** (`accessDetails`) describe how end-user devices may join the domain. Each entry is one access
+      type — Wi-Fi (WPA Personal/Enterprise) or Thread (Structured/TLV) — with its security parameters. A domain has at
+      least one entry, each access type SHOULD appear at most once, and on update the supplied list **replaces** the
+      previous list in full (there is no partial merge). All Network Access Devices configured with the domain apply
+      all of its access details.
+    - **Policies** (`policies`) are optional, independently-applied constraints: a maximum device count, maximum
+      up/downstream domain rate, and an egress allow-list (FQDN/CIDR). Omitting a policy means "no constraint" for that
+      category.
+    - **Expiration** lets a domain auto-expire. When a Trust Domain is no longer configured on any device it SHOULD be
+      auto-deleted (see *Comments for Network Operators*).
+
+    ## Devices in a Trust Domain
+    The `/trust-domains/{trustDomainId}/devices` endpoints register subscriber or IoT devices into a Trust Domain so
+    they receive its connectivity and policy. Registration is a general association mechanism: it underpins automated
+    ("zero-touch") onboarding when bootstrapping information is supplied, but it is equally valid to register a device
+    simply to grant it a connectivity policy.
+
+    - **Provisioning / bootstrapping** — a device may carry `bootstrappingInfo` describing one or more onboarding
+      protocols: **DPP** (Wi-Fi Alliance Device Provisioning Protocol), **Matter** (Connectivity Standards Alliance), or
+      **WKSO** (Well-Known SSID Onboarding — provisional/proof-of-concept). When several are supplied,
+      `protocolPreference` orders them and the provider selects the first protocol the domain's infrastructure also
+      supports.
+    - **Credentials** — a device may request a server-generated per-device credential (`GENERATE`), supply its own
+      (`ASSIGN`), or omit credentials entirely to use the Trust Domain's shared credential from `accessDetails`.
+    - **Lifecycle / status** — registration is distinct from connection. A device is registered once created, becomes
+      `associated` once it has completed onboarding on the infrastructure, and is reported `connected` while actively on
+      the network (`associated` and `connected` are read-only). `enabled` controls whether the device may authenticate;
+      `blocked` stops it forwarding data even when it is enabled and connected.
+
+    ## Services and Service Sites
+    A **Service** represents a subscriber's commercial relationship/account with the operator. Use `/services` to
+    enumerate the services accessible to the authenticated identity (for example, to obtain the `serviceId` to associate
+    with a Trust Domain). Location-specific services carry an embedded **Service Site** (a name, and optionally
+    geographic coordinates and/or postal-address detail); general services such as public Wi-Fi may have none. Service
+    Site information is exposed as part of a Service rather than through a standalone endpoint. The exact location and a
+    device's hardware address are regulated fields that may require additional scope, to help reconcile information when
+    the API client operator has an existing relationship with the service owner.
+
+    ## Discovering provider capabilities
+    Different operators support different access types, security modes, and limits. Call
+    `GET /trust-domains/capabilities` **before** creating a Trust Domain to discover what the target provider supports
+    (Wi-Fi/Thread variants, policy ranges, configuration limits). Capabilities describe what the *provider* offers, as
+    opposed to `accessDetails`, which is what an *API client* requests.
 
     <!-- CAMARA:MANDATORY:authorization-and-authentication:BEGIN -->
     # Authorization and authentication
@@ -55,7 +114,7 @@ info:
     In cases where personal data is processed by the API and users can exercise their rights through mechanisms such as opt-in and/or opt-out, the use of three-legged access tokens is mandatory. This ensures that the API remains in compliance with privacy regulations, upholding the principles of transparency and user-centric privacy-by-design.
     <!-- CAMARA:MANDATORY:authorization-and-authentication:END -->
 
-    ### Scopes
+    # Scopes
     Scopes are used to protect the service owner's information and privacy.  The general format is
     `<API_name>-<Resource>-<Permission>`.  A resource may be further broken down into `<Resource_name>-<Field>` or
     `<Resource_name>-<Role>` for granular permissions. Scopes also control output information as opposed to just
@@ -67,6 +126,8 @@ info:
     - Scopes have inheritance when one scope would otherwise require the inherited scope.
     - Read scopes for one resource impacts the output of another resource when the requested resource has a relationship
     with the first (e.g., listing networks on a device requires both device and network read scopes).
+    - Unless a `:read-all` (or `:admin`) variant is granted, a scope only grants access to resources created by the same
+    API client.
 
     | Scope | Description |
     |-------|-------------|
@@ -75,23 +136,37 @@ info:
     | **network-access-domains:devices** | Register, manage, and deregister subscriber/IoT devices within Trust Domains created by the calling API client. |
     | **network-access-domains:services:read** | List services accessible to the authenticated identity |
 
-    ## General Usage
-    This API is intended for creating, modifying, or deleting Trust Domains using the `/trust-domains` endpoints
-    to build access detail configurations. The `/service-sites` endpoints are used for iterating over a service owner's
-    locations. The exact location may be requested with an additional scope to assist with reconciling information about
-    service sites when the API client operator has an existing relationship with the service owner. Similarly, the
-    `/devices` endpoints are used for iterating over and configuring a service owner's devices.  The hardware address
-    may be requested for the same purpose of reconciling information from another source (e.g., database, persons with
-    physical device access, etc.).
+    <!-- CAMARA:MANDATORY:request-body-strictness:BEGIN -->
+    # Request body strictness
 
-    ## Comments for Network Operators
+    This API rejects requests with JSON request bodies that contain properties not declared in this specification, at any nesting level. Unknown properties result in a `400 INVALID_ARGUMENT` response.
+    <!-- CAMARA:MANDATORY:request-body-strictness:END -->
+
+    # Comments for API Clients
+    The following notes help API clients use this API effectively.
+
+    ## Recommended flow
+    1. (Optional) Call `GET /trust-domains/capabilities` to confirm the access types, security modes, and limits the
+       provider supports.
+    2. (Optional) Call `GET /services` to find the `serviceId` (and service site) to associate with the Trust Domain.
+    3. `POST /trust-domains` with the desired access details and any policies.
+    4. `POST /trust-domains/{trustDomainId}/devices` for each subscriber/IoT device to onboard, or to attach to the
+       domain's policy, supplying `bootstrappingInfo` and/or `deviceCredential` as needed.
+    5. (Optional) Read the device resource to observe `associated` / `connected` status as onboarding completes.
+
+    ## Update semantics
+    - `accessDetails`, and a device's `bootstrappingInfo` / `deviceCredential`, use **full replacement** when included
+      in an update — supply the complete desired value, not a partial fragment.
+    - Trust Domain changes are automatically applied to every Network Access Device where the domain is configured.
+
+    # Comments for Network Operators
     The following comments are for Network Operators implementing this API.
 
-    ### Auto-Deleting Trust Domains
+    ## Auto-Deleting Trust Domains
     When a Trust Domain is not configured on any device the network configuration and its identifier SHOULD be
     auto-deleted.  API clients MUST not be expected to delete Trust Domains not configured on any device.
 
-    ### Mesh Systems
+    ## Mesh Systems
     Mesh systems SHOULD be represented as a single device when implementing this API due to the undefined behavior of
     LAN connectivity across multiple devices with the same Trust Domain.  The recommendation is to use the gateway
     hardware address of the mesh system when exposing that field, though the hardware address of any node in the mesh
@@ -108,12 +183,6 @@ info:
 
     As a specific rule, error `501 - NOT_IMPLEMENTED` can be only a possible error response if it is explicitly documented in the API.
     <!-- CAMARA:MANDATORY:additional-error-responses:END -->
-
-    <!-- CAMARA:MANDATORY:request-body-strictness:BEGIN -->
-    # Request body strictness
-
-    This API rejects requests with JSON request bodies that contain properties not declared in this specification, at any nesting level. Unknown properties result in a `400 INVALID_ARGUMENT` response.
-    <!-- CAMARA:MANDATORY:request-body-strictness:END -->
 
 externalDocs:
   description: Product documentation at CAMARA
@@ -476,9 +545,10 @@ paths:
         - openId:
             - network-access-domains:devices
       description: |
-        Registers a new subscriber or IoT device to the specified Trust Domain.
-        The device will be provisioned for network access according to the Trust Domain's
-        access configuration and the device's bootstrapping and credential settings.
+        Registers a subscriber or IoT device to the specified Trust Domain so that it may join the
+        segment under the domain's access configuration and policies. When `bootstrappingInfo` is
+        supplied it is used to onboard ("zero-touch") the device; when it is omitted, registration
+        simply associates the device with the domain (for example, to apply a connectivity policy).
       operationId: createTrustDomainDevice
       requestBody:
         description: Details of the device to register
