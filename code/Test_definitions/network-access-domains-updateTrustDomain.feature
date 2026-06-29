@@ -1,5 +1,5 @@
   @basic_tier
-Feature: CAMARA Network Access Domains API, vwip - Operation updateTrustDomain
+Feature: CAMARA Network Access Domains API, v0.3.0-rc.1 - Operation updateTrustDomain
   # Operation: PATCH /trust-domains/{trustDomainId}
   # Required scope: network-access-domains:trust-domains
   # Documented response codes: 200, 400, 401, 403, 404, 500, 503
@@ -12,7 +12,7 @@ Feature: CAMARA Network Access Domains API, vwip - Operation updateTrustDomain
 
   Background: Common updateTrustDomain setup
     Given an environment at "apiRoot"
-    And the resource "/network-access-domains/vwip/trust-domains/{trustDomainId}"
+    And the resource "/network-access-domains/v0.3rc1/trust-domains/{trustDomainId}"
     And the header "Content-Type" is set to "application/json"
     And the header "Authorization" is set to a valid access token
     And the access token has the scope "network-access-domains:trust-domains"

@@ -1,4 +1,4 @@
-Feature: CAMARA Network Access Domains API, vwip - Operation getService
+Feature: CAMARA Network Access Domains API, v0.3.0-rc.1 - Operation getService
   # Operation: GET /services/{serviceId}
   # Required scope: network-access-domains:services:read
   # Documented response codes: 200, 401, 403, 404, 500, 503
@@ -11,7 +11,7 @@ Feature: CAMARA Network Access Domains API, vwip - Operation getService
 
   Background: Common getService setup
     Given an environment at "apiRoot"
-    And the resource "/network-access-domains/vwip/services/{serviceId}"
+    And the resource "/network-access-domains/v0.3rc1/services/{serviceId}"
     And the header "Authorization" is set to a valid access token
     And the access token has the scope "network-access-domains:services:read"
     And the header "x-correlator" complies with the schema at "#/components/schemas/XCorrelator"
