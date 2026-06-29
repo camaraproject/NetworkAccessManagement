@@ -85,6 +85,7 @@ components:
         maxLength: 253
         description: FQDN or CIDR pattern
       minItems: 1
+      maxItems: 1024
       description: Restricts egress traffic to the specified destinations.
       example:
         - "api.vendor.com"

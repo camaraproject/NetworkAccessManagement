@@ -171,6 +171,7 @@ components:
           items:
             $ref: "#/components/schemas/BootstrappingProtocol"
           minItems: 1
+          maxItems: 3
           description: |
             Bootstrapping protocols in order of preference (most preferred first).
             The server selects the first protocol compatible with the Trust Domain's
@@ -227,6 +228,7 @@ components:
           items:
             $ref: "#/components/schemas/CredentialType"
           minItems: 1
+          maxItems: 2
           description: |
             Credential types the device supports, ordered by preference (most
             preferred first). The server selects the first type compatible with
@@ -422,6 +424,7 @@ components:
       description: A list of devices registered to a Trust Domain.
       items:
         $ref: "#/components/schemas/TrustDomainDevice"
+      maxItems: 1024
 
   examples:
 

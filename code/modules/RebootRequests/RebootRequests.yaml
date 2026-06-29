@@ -50,6 +50,7 @@ components:
               type: array
               items:
                 $ref: "../NAM_Common.yaml#/components/schemas/UUID"
+              maxItems: 100
               description: >-
                 List of devices to reboot. When undefined, the reboot targets the 'default' device (simple use case that
                 wouldn't use locations or devices). Throws an error when creating if there is no 'default' device.
@@ -80,6 +81,7 @@ components:
       type: array
       items:
         $ref: "#/components/schemas/RebootRequest"
+      maxItems: 100
 
   examples:
     RebootRequestCreateImmediateDefaultDevice:
