@@ -1,15 +1,16 @@
 openapi: 3.0.3
 
 info:
-  title: Home Devices - Network Access Management
+  title: Home Devices - Network Access Domains
   license:
     name: Apache 2.0
     url: https://www.apache.org/licenses/LICENSE-2.0.html
   version: wip
   x-camara-commonalities: 0.8.0-rc.2
   description: |
-    Service enabling API for managing network operator supplied network access devices. This API's initial focus is on
-    managing **Trust Domains** and device reboot requests.
+    Service enabling API for managing **Trust Domains** — declarative, LAN-like network segments — including the
+    connectivity and access policies applied to them and the registration and onboarding of subscriber and IoT
+    devices into those segments.
 
     # Introduction
     A Trust Domain is a network access configuration where each configuration is for a logically separated Local
@@ -22,15 +23,8 @@ info:
     - A security/privacy-minded user wants to create one or more networks for their guests or Internet-of-Thing (IoT)
       network clients.
 
-    A reboot request is simply a request to reboot a network operator supplied network access device. API consumers
-    can create these requests which could be useful in scenarios such as:
-
-    - A property owner wants to recover from a faulty network state by rebooting a gateway device.
-    - A property manager wants to reboot multiple devices at one or more locations such as common areas, offices, etc.
-
     # Relevant Terms and Definitions
     - **Trust Domain**: a declarative, intent-level grouping that defines which devices are permitted to communicate with each other as if they were on the same LAN and what high-level access policies apply to that group.
-    - **Reboot Request**: A request to reboot a network operator supplied network access device.
     - **Network Access Device**: A network operator supplied network access device that supports network segmentation technologies.  Multiple devices
     that support LAN connectivity across the same Trust Domain (e.g., mesh Wi-Fi, Thread personal area network,
     etc.) SHOULD be presented as a single device for implementations of this API.
@@ -49,7 +43,7 @@ info:
     - **API Consumer**: A first- or third-party software system using this API.
 
     # API Functionality
-    This API allows API Consumers to manage Trust Domains and reboot network access devices.
+    This API allows API Consumers to manage Trust Domains and register subscriber/IoT devices within them.
 
     ### Authorization and authentication
 
@@ -74,11 +68,10 @@ info:
 
     | Scope | Description |
     |-------|-------------|
-    | **network-access-management:trust-domains** | Manage the caller's own Trust Domains (create, modify, delete, view). |
-    | **network-access-management:trust-domains:read-all** | Read all Trust Domains belonging to the subscriber, including those created by other clients (requires subscriber consent). |
-    | **network-access-management:devices** | Register, manage, and deregister subscriber/IoT devices within Trust Domains created by the calling API client. |
-    | **network-access-management:reboot** | Create, list, and manage Reboot Requests for owned devices. |
-    | **network-access-management:services:read** | List services accessible to the authenticated identity |
+    | **network-access-domains:trust-domains** | Manage the caller's own Trust Domains (create, modify, delete, view). |
+    | **network-access-domains:trust-domains:read-all** | Read all Trust Domains belonging to the subscriber, including those created by other clients (requires subscriber consent). |
+    | **network-access-domains:devices** | Register, manage, and deregister subscriber/IoT devices within Trust Domains created by the calling API client. |
+    | **network-access-domains:services:read** | List services accessible to the authenticated identity |
 
     ## General Usage
     This API is intended for creating, modifying, or deleting Trust Domains using the `/trust-domains` endpoints
@@ -88,62 +81,6 @@ info:
     `/devices` endpoints are used for iterating over and configuring a service owner's devices.  The hardware address
     may be requested for the same purpose of reconciling information from another source (e.g., database, persons with
     physical device access, etc.).
-
-    ## Comments for API Clients
-
-    ### Reboot Requests
-    Reboot Requests provide a declarative mechanism for API clients to trigger an
-    immediate or scheduled reboot of one or more Network Access Devices associated
-    with a subscriber. The following clarifies expected behavior, device inference
-    rules, and recommended client patterns.
-
-    #### Device Targeting
-    Clients MAY target devices in one of two ways:
-
-    1. **Explicit Targeting**
-       The client provides a `devices` array containing one or more device UUIDs.
-       This mode MUST be used when:
-       - multiple devices exist for the subscriber
-       - reboot is intended for a subset of devices
-       - the provider indicates that inference is unsupported
-
-    2. **Implicit (“Default Device”) Targeting**
-       Clients MAY omit the `devices` array to reboot a default device, if and only if:
-       - exactly one device is provisioned for the subscriber
-       - the provider supports inference
-       - the device is reboot-capable
-
-       If inference fails, the request MUST be rejected (e.g., 400 INVALID_ARGUMENT or
-       422 MISSING_IDENTIFIER).
-
-    #### Behavior Guarantees
-
-    - If `devices` is omitted and inference succeeds, the response MUST contain the
-      provider-resolved device list.
-    - Validation is atomic: if any device ID is invalid, unauthorized, or not
-      reboot-capable, the request MUST fail without side effects.
-    - Partial success is not allowed.
-    - Providers MAY reject duplicate reboot requests targeting the same devices and time.
-
-    #### Interaction with Related Endpoints
-
-    - `GET /network-access-devices`
-      Used to enumerate devices and their configuration.
-
-    - `POST /reboot-requests`
-      Create a reboot request (immediate or scheduled).
-
-    - `GET /reboot-requests/{id}`
-      Retrieve the status of a previously-created request. Implementations MAY extend
-      the status model over time.
-
-    #### Recommended Client Flow
-
-    1. (Optional) Query device capabilities using `/network-access-devices`.
-    2. If multiple devices exist or inference is unsupported, build an explicit
-       device list.
-    3. Create the reboot request with immediate or scheduled execution (`atTime`).
-    4. (Optional) Poll the individual reboot request status for asynchronous flows.
 
     ## Comments for Network Operators
     The following comments are for Network Operators implementing this API.
@@ -173,7 +110,7 @@ externalDocs:
   url: https://github.com/camaraproject/NetworkAccessManagement
 
 servers:
-  - url: "{apiRoot}/network-access-management/vwip"
+  - url: "{apiRoot}/network-access-domains/vwip"
     variables:
       apiRoot:
         default: http://localhost:9091
@@ -188,9 +125,6 @@ tags:
     description: |
       Operations to register and manage subscriber/IoT devices within Trust Domains.
       These devices are distinct from Network Access Devices (operator-supplied equipment).
-  - name: Reboot Requests
-    description: |
-      Operations to Create and Manage Reboot Requests for Network Access Devices
 
 paths:
 
@@ -201,7 +135,7 @@ paths:
       summary: Get all services accessible to the authenticated identity
       security:
         - openId:
-            - network-access-management:services:read
+            - network-access-domains:services:read
       operationId: getServices
       description: |
         Returns all services accessible to the calling identity. Services represent
@@ -238,7 +172,7 @@ paths:
       summary: Get a service by ID
       security:
         - openId:
-            - network-access-management:services:read
+            - network-access-domains:services:read
       operationId: getService
       description: |
         Returns a specific service corresponding to the given `serviceId`.
@@ -247,7 +181,7 @@ paths:
         API operations such as Trust Domain creation.
 
         **Required Scopes:**
-        - `network-access-management:services:read`
+        - `network-access-domains:services:read`
 
       parameters:
         - name: serviceId
@@ -286,7 +220,7 @@ paths:
       summary: Get Trust Domain capabilities
       security:
         - openId:
-            - network-access-management:trust-domains
+            - network-access-domains:trust-domains
       operationId: getTrustDomainCapabilities
       description: |
         Retrieves the set of Trust Domain configuration capabilities supported by the API provider.
@@ -326,7 +260,7 @@ paths:
       summary: Create a new Trust Domain
       security:
         - openId:
-            - network-access-management:trust-domains
+            - network-access-domains:trust-domains
       description: |
         Creates and returns the new Trust Domain.
 
@@ -380,15 +314,15 @@ paths:
       summary: Retrieves all Trust Domains visible to the calling API client
       security:
         - openId:
-            - network-access-management:trust-domains
+            - network-access-domains:trust-domains
         - openId:
-            - network-access-management:trust-domains:read-all
+            - network-access-domains:trust-domains:read-all
       operationId: getTrustDomains
       description: |
         Retrieves all Trust Domains visible to the calling API client.
 
-        If the caller has `network-access-management:trust-domains`, the response is limited to
-        Trust Domains created by the caller. If the caller has `network-access-management:trust-domains:read-all`,
+        If the caller has `network-access-domains:trust-domains`, the response is limited to
+        Trust Domains created by the caller. If the caller has `network-access-domains:trust-domains:read-all`,
         the response includes all Trust Domains associated with the subscriber.
       responses:
 
@@ -421,9 +355,9 @@ paths:
       summary: Get a specific Trust Domain
       security:
         - openId:
-            - network-access-management:trust-domains
+            - network-access-domains:trust-domains
         - openId:
-            - network-access-management:trust-domains:read-all
+            - network-access-domains:trust-domains:read-all
       operationId: getTrustDomain
       description: |
         Retrieves the Trust Domain identified by the given ID. Visibility of this Trust Domain depends on the caller's scope and ownership:
@@ -460,7 +394,7 @@ paths:
       summary: Update a specific Trust Domain
       security:
         - openId:
-            - network-access-management:trust-domains
+            - network-access-domains:trust-domains
       operationId: updateTrustDomain
       description: |
         Updates the Trust Domain identified by the given ID. Any changes are automatically applied to all network access devices where the Trust Domain is configured.
@@ -498,7 +432,7 @@ paths:
       summary: Delete a specific Trust Domain
       security:
         - openId:
-            - network-access-management:trust-domains
+            - network-access-domains:trust-domains
       operationId: deleteTrustDomain
       description: |
         Deletes the Trust Domain identified by the given ID and removes its configuration from all network access devices where it is applied.
@@ -529,7 +463,7 @@ paths:
       summary: Register a new device to a Trust Domain
       security:
         - openId:
-            - network-access-management:devices
+            - network-access-domains:devices
       description: |
         Registers a new subscriber or IoT device to the specified Trust Domain.
         The device will be provisioned for network access according to the Trust Domain's
@@ -580,7 +514,7 @@ paths:
       summary: List all devices registered to a Trust Domain
       security:
         - openId:
-            - network-access-management:devices
+            - network-access-domains:devices
       operationId: getTrustDomainDevices
       description: |
         Retrieves all devices registered to the specified Trust Domain that the caller is authorized to view.
@@ -618,7 +552,7 @@ paths:
       summary: Get a specific device in a Trust Domain
       security:
         - openId:
-            - network-access-management:devices
+            - network-access-domains:devices
       operationId: getTrustDomainDevice
       description: |
         Retrieves the device identified by the given ID within the specified Trust Domain.
@@ -651,7 +585,7 @@ paths:
       summary: Update a device in a Trust Domain
       security:
         - openId:
-            - network-access-management:devices
+            - network-access-domains:devices
       operationId: updateTrustDomainDevice
       description: |
         Updates the device identified by the given ID within the specified Trust Domain.
@@ -689,285 +623,13 @@ paths:
       summary: Remove a device from a Trust Domain
       security:
         - openId:
-            - network-access-management:devices
+            - network-access-domains:devices
       operationId: deleteTrustDomainDevice
       description: |
         Deregisters and removes the device identified by the given ID from the specified Trust Domain.
       responses:
         '204':
           description: Device removed successfully
-        '400':
-          $ref: '../common/CAMARA_common.yaml#/components/responses/Generic400'
-        '401':
-          $ref: '../common/CAMARA_common.yaml#/components/responses/Generic401'
-        '403':
-          $ref: '../common/CAMARA_common.yaml#/components/responses/Generic403'
-        '404':
-          $ref: '../common/CAMARA_common.yaml#/components/responses/Generic404'
-        '500':
-          $ref: '../common/CAMARA_common.yaml#/components/responses/Generic500'
-        '503':
-          $ref: '../common/CAMARA_common.yaml#/components/responses/Generic503'
-
-  /network-access-devices:
-    get:
-      tags:
-        - Reboot Requests
-      summary: Get all Network Access Devices associated with the service owner
-      security:
-        - openId:
-            - network-access-management:reboot
-      operationId: getNetworkAccessDevices
-      description: |
-        Retrieves all Network Access Devices associated with the subscriber that the caller is authorized to manage using the `network-access-management:reboot` scope.
-      responses:
-        "200":
-          description: Contains the list of network access devices
-          content:
-            application/json:
-              schema:
-                $ref: "../modules/NetworkAccessDevices/NetworkAccessDevices.yaml#/components/schemas/NetworkAccessDeviceList"
-        "400":
-          $ref: "../common/CAMARA_common.yaml#/components/responses/Generic400"
-        "401":
-          $ref: "../common/CAMARA_common.yaml#/components/responses/Generic401"
-        "403":
-          $ref: "../common/CAMARA_common.yaml#/components/responses/Generic403"
-        "404":
-          $ref: "../common/CAMARA_common.yaml#/components/responses/Generic404"
-        "500":
-          $ref: "../common/CAMARA_common.yaml#/components/responses/Generic500"
-        "503":
-          $ref: "../common/CAMARA_common.yaml#/components/responses/Generic503"
-
-  /network-access-devices/{networkAccessDeviceId}:
-    get:
-      tags:
-        - Reboot Requests
-      summary: Get a specific Network Access Device
-      security:
-        - openId:
-            - network-access-management:reboot
-      operationId: getNetworkAccessDevice
-      description: |
-         Retrieves the Network Access Device that matches the given ID.
-      parameters:
-        - $ref: '../modules/NetworkAccessDevices/NetworkAccessDevices.yaml#/components/parameters/networkAccessDeviceId'
-      responses:
-        "200":
-          description: Contains information about the specified network access device
-          content:
-            application/json:
-              schema:
-                $ref: "../modules/NetworkAccessDevices/NetworkAccessDevices.yaml#/components/schemas/NetworkAccessDevice"
-        "400":
-          $ref: "../common/CAMARA_common.yaml#/components/responses/Generic400"
-        "401":
-          $ref: "../common/CAMARA_common.yaml#/components/responses/Generic401"
-        "403":
-          $ref: "../common/CAMARA_common.yaml#/components/responses/Generic403"
-        "404":
-          $ref: "../common/CAMARA_common.yaml#/components/responses/Generic404"
-        "500":
-          $ref: "../common/CAMARA_common.yaml#/components/responses/Generic500"
-        "503":
-          $ref: "../common/CAMARA_common.yaml#/components/responses/Generic503"
-
-  /reboot-requests:
-    post:
-      tags:
-        - Reboot Requests
-      summary: Create a new Reboot Request
-      security:
-        - openId:
-            - network-access-management:reboot
-      description: |
-        Creates a new Reboot Request targeting one or more Network Access Devices.
-      operationId: createRebootRequest
-      requestBody:
-        description: |
-          Creates a reboot request for one or more network access devices. Supports two targeting modes:
-
-          Targeting modes:
-          - Inferred (implicit/default device): Omit the 'devices' array to request a reboot of the single
-            default device associated with the subscriber context. This is only valid when exactly one
-            device is eligible. If no default device exists or multiple devices are provisioned, the
-            request MUST be rejected (e.g. 400 INVALID_ARGUMENT or 422 MISSING_IDENTIFIER).
-          - Explicit (targeted devices): Provide a 'devices' array of one or more device UUIDs to request
-            reboots on those specific devices. Validation MUST fail if any supplied device ID is unknown,
-            not reboot-capable, or the caller lacks authorization.
-
-          Scheduling:
-          - Immediate reboot: Omit 'atTime'.
-          - Scheduled reboot: Include 'atTime' (RFC 3339 with timezone). Time MUST be in the future; past
-            values SHOULD produce a 400 OUT_OF_RANGE error.
-
-          Idempotency / duplication:
-          - Multiple identical pending reboot requests (same device set and same atTime) MAY be rejected
-            with 409 CONFLICT or collapsed by implementation.
-
-          Error conditions (examples):
-          - 400 INVALID_ARGUMENT: Unsupported time format, too many device IDs, malformed UUID.
-          - 404 IDENTIFIER_NOT_FOUND: One or more device IDs not found.
-          - 403 PERMISSION_DENIED: Caller lacks scope or device ownership.
-          - 409 CONFLICT: Reboot already scheduled for the same devices and time.
-          - 422 MISSING_IDENTIFIER (implementation-specific): 'devices' omitted but no default device.
-
-          Behavioral guarantees:
-          - If 'devices' omitted and inference succeeds, the response MUST reflect the resolved device list.
-          - If any device fails validation, no reboot request is created (atomic failure).
-          - Partial success is NOT permitted.
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '../modules/RebootRequests/RebootRequests.yaml#/components/schemas/RebootRequestCreate'
-            examples:
-              RebootRequestCreateImmediate:
-                $ref: '../modules/RebootRequests/RebootRequests.yaml#/components/examples/RebootRequestCreateImmediateDefaultDevice'
-              RebootRequestCreateScheduled:
-                $ref: '../modules/RebootRequests/RebootRequests.yaml#/components/examples/RebootRequestCreateScheduledMultipleDevices'
-      responses:
-        '201':
-          description: Reboot Request created successfully
-          content:
-            application/json:
-              schema:
-                $ref: '../modules/RebootRequests/RebootRequests.yaml#/components/schemas/RebootRequest'
-        '400':
-          $ref: '../common/CAMARA_common.yaml#/components/responses/Generic400'
-        '401':
-          $ref: '../common/CAMARA_common.yaml#/components/responses/Generic401'
-        '403':
-          $ref: '../common/CAMARA_common.yaml#/components/responses/Generic403'
-        '404':
-          $ref: '../common/CAMARA_common.yaml#/components/responses/Generic404'
-        '409':
-          $ref: '../common/CAMARA_common.yaml#/components/responses/Generic409'
-        '422':
-          $ref: '../common/CAMARA_common.yaml#/components/responses/Generic422'
-        '500':
-          $ref: '../common/CAMARA_common.yaml#/components/responses/Generic500'
-        '503':
-          $ref: '../common/CAMARA_common.yaml#/components/responses/Generic503'
-
-    get:
-      tags:
-        - Reboot Requests
-      summary: Get all Reboot Requests created by the calling API client
-      security:
-        - openId:
-            - network-access-management:reboot
-      operationId: getRebootRequests
-      description: |
-        This endpoint returns a list of Reboot Requests associated with the service owner created by the calling API client.
-      responses:
-        '200':
-          description: Contains information about all reboot requests
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '../modules/RebootRequests/RebootRequests.yaml#/components/schemas/RebootRequest'
-        '400':
-          $ref: '../common/CAMARA_common.yaml#/components/responses/Generic400'
-        '401':
-          $ref: '../common/CAMARA_common.yaml#/components/responses/Generic401'
-        '403':
-          $ref: '../common/CAMARA_common.yaml#/components/responses/Generic403'
-        '500':
-          $ref: '../common/CAMARA_common.yaml#/components/responses/Generic500'
-        '503':
-          $ref: '../common/CAMARA_common.yaml#/components/responses/Generic503'
-
-  /reboot-requests/{rebootRequestId}:
-    parameters:
-      - $ref: '../modules/RebootRequests/RebootRequests.yaml#/components/parameters/rebootRequestId'
-
-    get:
-      tags:
-        - Reboot Requests
-      summary: Get a specific Reboot Request
-      security:
-        - openId:
-            - network-access-management:reboot
-      operationId: getRebootRequest
-      description: |
-        Retrieves the Reboot Request that matches the given ID.
-      responses:
-        '200':
-          description: Contains information about the specified Reboot Request
-          content:
-            application/json:
-              schema:
-                $ref: '../modules/RebootRequests/RebootRequests.yaml#/components/schemas/RebootRequest'
-        '400':
-          $ref: '../common/CAMARA_common.yaml#/components/responses/Generic400'
-        '401':
-          $ref: '../common/CAMARA_common.yaml#/components/responses/Generic401'
-        '403':
-          $ref: '../common/CAMARA_common.yaml#/components/responses/Generic403'
-        '404':
-          $ref: '../common/CAMARA_common.yaml#/components/responses/Generic404'
-        '500':
-          $ref: '../common/CAMARA_common.yaml#/components/responses/Generic500'
-        '503':
-          $ref: '../common/CAMARA_common.yaml#/components/responses/Generic503'
-
-    patch:
-      tags:
-        - Reboot Requests
-      summary: Update an existing Reboot Request
-      security:
-        - openId:
-            - network-access-management:reboot
-      description: |
-        Updates an existing Reboot Request to modify its scheduled time or cancel it.
-      operationId: updateRebootRequest
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '../modules/RebootRequests/RebootRequests.yaml#/components/schemas/RebootRequestUpdate'
-        required: true
-      responses:
-        '200':
-          description: Reboot Request updated successfully
-          content:
-            application/json:
-              schema:
-                $ref: '../modules/RebootRequests/RebootRequests.yaml#/components/schemas/RebootRequest'
-        '400':
-          $ref: '../common/CAMARA_common.yaml#/components/responses/Generic400'
-        '401':
-          $ref: '../common/CAMARA_common.yaml#/components/responses/Generic401'
-        '403':
-          $ref: '../common/CAMARA_common.yaml#/components/responses/Generic403'
-        '404':
-          $ref: '../common/CAMARA_common.yaml#/components/responses/Generic404'
-        '409':
-          $ref: '../common/CAMARA_common.yaml#/components/responses/Generic409'
-        '422':
-          $ref: '../common/CAMARA_common.yaml#/components/responses/Generic422'
-        '500':
-          $ref: '../common/CAMARA_common.yaml#/components/responses/Generic500'
-        '503':
-          $ref: '../common/CAMARA_common.yaml#/components/responses/Generic503'
-
-    delete:
-      tags:
-        - Reboot Requests
-      summary: Delete an existing Reboot Request
-      security:
-        - openId:
-            - network-access-management:reboot
-      description: |
-        Deletes an existing Reboot Request, cancelling the scheduled reboot if it has not yet occurred.
-      operationId: deleteRebootRequest
-      responses:
-        '204':
-          description: Reboot Request deleted successfully
         '400':
           $ref: '../common/CAMARA_common.yaml#/components/responses/Generic400'
         '401':
