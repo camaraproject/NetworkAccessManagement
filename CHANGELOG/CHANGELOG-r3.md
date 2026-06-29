@@ -116,7 +116,7 @@ The API definition(s) are based on
 
 ### Breaking changes
 
-* Carved out of the former `network-access-management` API (alpha, r2.1). Reboot Requests and Network Access Device enumeration are now served by **network-access-devices** at basePath `/network-access-devices/vwip`, with the reboot scope renamed to `network-access-devices:reboot` (#153).
+* Carved out of the former `network-access-management` API (alpha, r2.1). Reboot Requests and Network Access Device enumeration are now provided by the **network-access-devices** API, with the reboot scope renamed to `network-access-devices:reboot` (#153).
 
 ### Added
 
@@ -149,7 +149,7 @@ The API definition(s) are based on
 
 ### Breaking changes
 
-* Carved out of the former `network-access-management` API (alpha, r2.1). Trust Domains, Trust Domain Devices, and Services are now served by **network-access-domains** at basePath `/network-access-domains/vwip`, with scopes renamed to `network-access-domains:trust-domains`, `network-access-domains:trust-domains:read-all`, `network-access-domains:devices`, and `network-access-domains:services:read` (#153).
+* Carved out of the former `network-access-management` API (alpha, r2.1). Trust Domains, Trust Domain Devices, and Services are now provided by the **network-access-domains** API, with scopes renamed to `network-access-domains:trust-domains`, `network-access-domains:trust-domains:read-all`, `network-access-domains:devices`, and `network-access-domains:services:read` (#153).
 
 ### Added
 
