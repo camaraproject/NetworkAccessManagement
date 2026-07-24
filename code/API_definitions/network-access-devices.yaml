@@ -190,8 +190,13 @@ paths:
       operationId: getNetworkAccessDevices
       description: |
         Retrieves all Network Access Devices associated with the subscriber that the caller is authorized to manage using the `network-access-devices:reboot` scope.
+      parameters:
+        - $ref: '../common/CAMARA_common.yaml#/components/parameters/x-correlator'
       responses:
         "200":
+          headers:
+            x-correlator:
+              $ref: '../common/CAMARA_common.yaml#/components/headers/x-correlator'
           description: Contains the list of network access devices
           content:
             application/json:
@@ -223,8 +228,12 @@ paths:
          Retrieves the Network Access Device that matches the given ID.
       parameters:
         - $ref: '../modules/NetworkAccessDevices/NetworkAccessDevices.yaml#/components/parameters/networkAccessDeviceId'
+        - $ref: '../common/CAMARA_common.yaml#/components/parameters/x-correlator'
       responses:
         "200":
+          headers:
+            x-correlator:
+              $ref: '../common/CAMARA_common.yaml#/components/headers/x-correlator'
           description: Contains information about the specified network access device
           content:
             application/json:
@@ -254,6 +263,8 @@ paths:
       description: |
         Creates a new Reboot Request targeting one or more Network Access Devices.
       operationId: createRebootRequest
+      parameters:
+        - $ref: '../common/CAMARA_common.yaml#/components/parameters/x-correlator'
       requestBody:
         description: |
           Creates a reboot request for one or more network access devices. Supports two targeting modes:
@@ -299,6 +310,9 @@ paths:
                 $ref: '../modules/RebootRequests/RebootRequests.yaml#/components/examples/RebootRequestCreateScheduledMultipleDevices'
       responses:
         '201':
+          headers:
+            x-correlator:
+              $ref: '../common/CAMARA_common.yaml#/components/headers/x-correlator'
           description: Reboot Request created successfully
           content:
             application/json:
@@ -331,8 +345,13 @@ paths:
       operationId: getRebootRequests
       description: |
         This endpoint returns a list of Reboot Requests associated with the service owner created by the calling API client.
+      parameters:
+        - $ref: '../common/CAMARA_common.yaml#/components/parameters/x-correlator'
       responses:
         '200':
+          headers:
+            x-correlator:
+              $ref: '../common/CAMARA_common.yaml#/components/headers/x-correlator'
           description: Contains information about all reboot requests
           content:
             application/json:
@@ -366,8 +385,13 @@ paths:
       operationId: getRebootRequest
       description: |
         Retrieves the Reboot Request that matches the given ID.
+      parameters:
+        - $ref: '../common/CAMARA_common.yaml#/components/parameters/x-correlator'
       responses:
         '200':
+          headers:
+            x-correlator:
+              $ref: '../common/CAMARA_common.yaml#/components/headers/x-correlator'
           description: Contains information about the specified Reboot Request
           content:
             application/json:
@@ -396,6 +420,8 @@ paths:
       description: |
         Updates an existing Reboot Request to modify its scheduled time or cancel it.
       operationId: updateRebootRequest
+      parameters:
+        - $ref: '../common/CAMARA_common.yaml#/components/parameters/x-correlator'
       requestBody:
         content:
           application/json:
@@ -404,6 +430,9 @@ paths:
         required: true
       responses:
         '200':
+          headers:
+            x-correlator:
+              $ref: '../common/CAMARA_common.yaml#/components/headers/x-correlator'
           description: Reboot Request updated successfully
           content:
             application/json:
@@ -436,8 +465,13 @@ paths:
       description: |
         Deletes an existing Reboot Request, cancelling the scheduled reboot if it has not yet occurred.
       operationId: deleteRebootRequest
+      parameters:
+        - $ref: '../common/CAMARA_common.yaml#/components/parameters/x-correlator'
       responses:
         '204':
+          headers:
+            x-correlator:
+              $ref: '../common/CAMARA_common.yaml#/components/headers/x-correlator'
           description: Reboot Request deleted successfully
         '400':
           $ref: '../common/CAMARA_common.yaml#/components/responses/Generic400'

@@ -225,8 +225,13 @@ paths:
         has received subscriber authorization and must enumerate services to link with
         Network Client Devices or Trust Domains.
 
+      parameters:
+        - $ref: '../common/CAMARA_common.yaml#/components/parameters/x-correlator'
       responses:
         "200":
+          headers:
+            x-correlator:
+              $ref: '../common/CAMARA_common.yaml#/components/headers/x-correlator'
           description: Contains all services associated with the identity
           content:
             application/json:
@@ -272,8 +277,12 @@ paths:
             The ID of the service to retrieve.
 
             Must be a valid UUID as defined by RFC 4122 (versions 1-5) using only lowercase hexadecimal characters.
+        - $ref: '../common/CAMARA_common.yaml#/components/parameters/x-correlator'
       responses:
         "200":
+          headers:
+            x-correlator:
+              $ref: '../common/CAMARA_common.yaml#/components/headers/x-correlator'
           description: Information about the service
           content:
             application/json:
@@ -314,8 +323,13 @@ paths:
         Use this endpoint before creating Trust Domains to ensure your configuration
         is supported by the target API provider/network operator.
 
+      parameters:
+        - $ref: '../common/CAMARA_common.yaml#/components/parameters/x-correlator'
       responses:
         "200":
+          headers:
+            x-correlator:
+              $ref: '../common/CAMARA_common.yaml#/components/headers/x-correlator'
           description: Trust Domain capabilities supported by this API provider
           content:
             application/json:
@@ -344,6 +358,8 @@ paths:
         Creates and returns the new Trust Domain.
 
       operationId: createTrustDomain
+      parameters:
+        - $ref: '../common/CAMARA_common.yaml#/components/parameters/x-correlator'
       requestBody:
         description: Details of the Trust Domain to be created
         required: true
@@ -364,6 +380,9 @@ paths:
                 $ref: '../modules/TrustDomains/TrustDomains.yaml#/components/examples/TrustDomainCreateQoSPolicies'
       responses:
         '201':
+          headers:
+            x-correlator:
+              $ref: '../common/CAMARA_common.yaml#/components/headers/x-correlator'
           description: Trust Domain created successfully
           content:
             application/json:
@@ -403,9 +422,14 @@ paths:
         If the caller has `network-access-domains:trust-domains`, the response is limited to
         Trust Domains created by the caller. If the caller has `network-access-domains:trust-domains:read-all`,
         the response includes all Trust Domains associated with the subscriber.
+      parameters:
+        - $ref: '../common/CAMARA_common.yaml#/components/parameters/x-correlator'
       responses:
 
         "200":
+          headers:
+            x-correlator:
+              $ref: '../common/CAMARA_common.yaml#/components/headers/x-correlator'
           description: Contains information about all trust domains
           content:
             application/json:
@@ -444,9 +468,14 @@ paths:
           - `trust-domains` restricts access to caller-owned Trust Domains.
           - `trust-domains:read-all` allows retrieval of any Trust Domain associated with the subscriber.
 
+      parameters:
+        - $ref: '../common/CAMARA_common.yaml#/components/parameters/x-correlator'
       responses:
 
         "200":
+          headers:
+            x-correlator:
+              $ref: '../common/CAMARA_common.yaml#/components/headers/x-correlator'
           description: Contains information about the specified trust domain
           content:
             application/json:
@@ -479,6 +508,8 @@ paths:
       description: |
         Updates the Trust Domain identified by the given ID. Any changes are automatically applied to all network access devices where the Trust Domain is configured.
 
+      parameters:
+        - $ref: '../common/CAMARA_common.yaml#/components/parameters/x-correlator'
       requestBody:
         content:
           application/json:
@@ -487,6 +518,9 @@ paths:
         required: true
       responses:
         "200":
+          headers:
+            x-correlator:
+              $ref: '../common/CAMARA_common.yaml#/components/headers/x-correlator'
           description: Contains information about the updated trust domain
           content:
             application/json:
@@ -517,8 +551,13 @@ paths:
       description: |
         Deletes the Trust Domain identified by the given ID and removes its configuration from all network access devices where it is applied.
 
+      parameters:
+        - $ref: '../common/CAMARA_common.yaml#/components/parameters/x-correlator'
       responses:
         "204":
+          headers:
+            x-correlator:
+              $ref: '../common/CAMARA_common.yaml#/components/headers/x-correlator'
           description: Trust Domain deleted successfully
         "400":
           $ref: "../common/CAMARA_common.yaml#/components/responses/Generic400"
@@ -550,6 +589,8 @@ paths:
         supplied it is used to onboard ("zero-touch") the device; when it is omitted, registration
         simply associates the device with the domain (for example, to apply a connectivity policy).
       operationId: createTrustDomainDevice
+      parameters:
+        - $ref: '../common/CAMARA_common.yaml#/components/parameters/x-correlator'
       requestBody:
         description: Details of the device to register
         required: true
@@ -566,6 +607,9 @@ paths:
                 $ref: '../modules/TrustDomainDevices/TrustDomainDevices.yaml#/components/examples/TrustDomainDeviceCreateMatter'
       responses:
         '201':
+          headers:
+            x-correlator:
+              $ref: '../common/CAMARA_common.yaml#/components/headers/x-correlator'
           description: Device registered successfully
           content:
             application/json:
@@ -599,8 +643,13 @@ paths:
       operationId: getTrustDomainDevices
       description: |
         Retrieves all devices registered to the specified Trust Domain that the caller is authorized to view.
+      parameters:
+        - $ref: '../common/CAMARA_common.yaml#/components/parameters/x-correlator'
       responses:
         '200':
+          headers:
+            x-correlator:
+              $ref: '../common/CAMARA_common.yaml#/components/headers/x-correlator'
           description: Contains the list of registered devices
           content:
             application/json:
@@ -637,8 +686,13 @@ paths:
       operationId: getTrustDomainDevice
       description: |
         Retrieves the device identified by the given ID within the specified Trust Domain.
+      parameters:
+        - $ref: '../common/CAMARA_common.yaml#/components/parameters/x-correlator'
       responses:
         '200':
+          headers:
+            x-correlator:
+              $ref: '../common/CAMARA_common.yaml#/components/headers/x-correlator'
           description: Contains information about the specified device
           content:
             application/json:
@@ -672,6 +726,8 @@ paths:
         Updates the device identified by the given ID within the specified Trust Domain.
         Only the fields included in the request body will be updated. The `bootstrappingInfo`
         and `deviceCredential` fields use full replacement semantics when included.
+      parameters:
+        - $ref: '../common/CAMARA_common.yaml#/components/parameters/x-correlator'
       requestBody:
         content:
           application/json:
@@ -680,6 +736,9 @@ paths:
         required: true
       responses:
         '200':
+          headers:
+            x-correlator:
+              $ref: '../common/CAMARA_common.yaml#/components/headers/x-correlator'
           description: Device updated successfully
           content:
             application/json:
@@ -708,8 +767,13 @@ paths:
       operationId: deleteTrustDomainDevice
       description: |
         Deregisters and removes the device identified by the given ID from the specified Trust Domain.
+      parameters:
+        - $ref: '../common/CAMARA_common.yaml#/components/parameters/x-correlator'
       responses:
         '204':
+          headers:
+            x-correlator:
+              $ref: '../common/CAMARA_common.yaml#/components/headers/x-correlator'
           description: Device removed successfully
         '400':
           $ref: '../common/CAMARA_common.yaml#/components/responses/Generic400'
