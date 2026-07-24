@@ -343,6 +343,8 @@ paths:
       description: |
         Creates and returns the new Trust Domain.
 
+        A 409 ALREADY_EXISTS is returned if a Trust Domain with the same name already exists for the
+        referenced service.
       operationId: createTrustDomain
       requestBody:
         description: Details of the Trust Domain to be created
@@ -549,6 +551,8 @@ paths:
         segment under the domain's access configuration and policies. When `bootstrappingInfo` is
         supplied it is used to onboard ("zero-touch") the device; when it is omitted, registration
         simply associates the device with the domain (for example, to apply a connectivity policy).
+
+        A 409 ALREADY_EXISTS is returned if the device is already registered to the Trust Domain.
       operationId: createTrustDomainDevice
       requestBody:
         description: Details of the device to register
