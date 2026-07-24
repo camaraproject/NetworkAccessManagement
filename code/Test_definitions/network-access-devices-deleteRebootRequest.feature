@@ -1,5 +1,5 @@
   @basic_tier
-Feature: CAMARA Network Access Devices API, vwip - Operation deleteRebootRequest
+Feature: CAMARA Network Access Devices API, v0.3.0-rc.1 - Operation deleteRebootRequest
   # Operation: DELETE /reboot-requests/{rebootRequestId}
   # Required scope: network-access-devices:reboot
   # Documented response codes: 204, 401, 403, 404, 500, 503
@@ -12,7 +12,7 @@ Feature: CAMARA Network Access Devices API, vwip - Operation deleteRebootRequest
 
   Background: Common deleteRebootRequest setup
     Given an environment at "apiRoot"
-    And the resource "/network-access-devices/vwip/reboot-requests/{rebootRequestId}"
+    And the resource "/network-access-devices/v0.3rc1/reboot-requests/{rebootRequestId}"
     And the header "Authorization" is set to a valid access token
     And the access token has the scope "network-access-devices:reboot"
     And the header "x-correlator" complies with the schema at "#/components/schemas/XCorrelator"

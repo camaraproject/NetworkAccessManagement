@@ -1,4 +1,4 @@
-Feature: CAMARA Network Access Devices API, vwip - Operation getNetworkAccessDevice
+Feature: CAMARA Network Access Devices API, v0.3.0-rc.1 - Operation getNetworkAccessDevice
   # Operation: GET /network-access-devices/{networkAccessDeviceId}
   # Required scope: network-access-devices:reboot
   # Documented response codes: 200, 401, 403, 404, 500, 503
@@ -11,7 +11,7 @@ Feature: CAMARA Network Access Devices API, vwip - Operation getNetworkAccessDev
 
   Background: Common getNetworkAccessDevice setup
     Given an environment at "apiRoot"
-    And the resource "/network-access-devices/vwip/network-access-devices/{networkAccessDeviceId}"
+    And the resource "/network-access-devices/v0.3rc1/network-access-devices/{networkAccessDeviceId}"
     And the header "Authorization" is set to a valid access token
     And the access token has the scope "network-access-devices:reboot"
     And the header "x-correlator" complies with the schema at "#/components/schemas/XCorrelator"

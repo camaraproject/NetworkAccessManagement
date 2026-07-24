@@ -1,4 +1,4 @@
-Feature: CAMARA Network Access Domains API, vwip - Operation createTrustDomain
+Feature: CAMARA Network Access Domains API, v0.3.0-rc.1 - Operation createTrustDomain
   # Reference:
   # - API spec: https://github.com/camaraproject/NetworkAccessManagement/blob/main/code/API_definitions/network-access-domains.yaml
   # - CAMARA API Testing Guidelines: https://github.com/camaraproject/Commonalities/blob/main/documentation/API-Testing-Guidelines.md
@@ -16,7 +16,7 @@ Feature: CAMARA Network Access Domains API, vwip - Operation createTrustDomain
 
   Background: Common createTrustDomain setup
     Given an environment at "apiRoot"
-    And the resource "/network-access-domains/vwip/trust-domains"
+    And the resource "/network-access-domains/v0.3rc1/trust-domains"
     And the header "Content-Type" is set to "application/json"
     And the header "Authorization" is set to a valid access token
     And the access token has the scope "network-access-domains:trust-domains"
