@@ -128,8 +128,9 @@ The API definition(s) are based on
 
 ### Changed
 
+* Aligned conflict responses with Commonalities: the deprecated `409 CONFLICT` code is replaced by `ALREADY_EXISTS` (duplicate reboot request) and `INCOMPATIBLE_STATE` (update conflict) (#166).
 * Tightened schema constraints: integer `format` with min/max bounds and string `maxLength` (#150), and `maxItems` bounds on array fields (#156).
-* Dependency on Commonalities updated to r4.3 (0.8.0); ICM dependency r4.2 (0.5.0) (#144, #145).
+* Dependency on Commonalities updated to r4.3 (0.8.0) (#144, #145).
 
 ### Fixed
 
@@ -162,8 +163,9 @@ The API definition(s) are based on
 
 ### Changed
 
+* Aligned conflict responses with Commonalities: the deprecated `409 CONFLICT` code is replaced by `ALREADY_EXISTS` for duplicate resources (Trust Domain name, device registration) (#166).
 * Tightened schema constraints: integer `format` with min/max bounds and string `maxLength` (#150), and `maxItems` bounds on array fields (#156).
-* Dependency on Commonalities updated to r4.3 (0.8.0); ICM dependency r4.2 (0.5.0) (#144, #145).
+* Dependency on Commonalities updated to r4.3 (0.8.0) (#144, #145).
 
 ### Fixed
 
