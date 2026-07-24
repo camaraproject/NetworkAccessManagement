@@ -198,7 +198,7 @@ Feature: CAMARA Network Access Domains API, vwip - Operation createTrustDomain
     Then the response status code is 403
     And the response property "$.code" is "PERMISSION_DENIED"
   # =====================================================================
-  # 409 CONFLICT — business-rule conflict (full tier)
+  # 409 ALREADY_EXISTS — duplicate resource (full tier)
   # =====================================================================
 
   @network_access_domains_createTrustDomain_409_01_duplicate_name @full_tier @backend_controlled
@@ -208,4 +208,4 @@ Feature: CAMARA Network Access Domains API, vwip - Operation createTrustDomain
     When the request "createTrustDomain" is sent
     Then the response status code is 409
     And the response property "$.status" is 409
-    And the response property "$.code" is "CONFLICT"
+    And the response property "$.code" is "ALREADY_EXISTS"

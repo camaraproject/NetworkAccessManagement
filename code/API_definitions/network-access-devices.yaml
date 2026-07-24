@@ -285,13 +285,13 @@ paths:
 
           Idempotency / duplication:
           - Multiple identical pending reboot requests (same device set and same atTime) MAY be rejected
-            with 409 CONFLICT or collapsed by implementation.
+            with 409 ALREADY_EXISTS or collapsed by implementation.
 
           Error conditions (examples):
           - 400 INVALID_ARGUMENT: Unsupported time format, too many device IDs, malformed UUID.
           - 404 IDENTIFIER_NOT_FOUND: One or more device IDs not found.
           - 403 PERMISSION_DENIED: Caller lacks scope or device ownership.
-          - 409 CONFLICT: Reboot already scheduled for the same devices and time.
+          - 409 ALREADY_EXISTS: Reboot already scheduled for the same devices and time.
           - 422 MISSING_IDENTIFIER (implementation-specific): 'devices' omitted but no default device.
 
           Behavioral guarantees:
@@ -419,6 +419,9 @@ paths:
             - network-access-devices:reboot
       description: |
         Updates an existing Reboot Request to modify its scheduled time or cancel it.
+
+        A 409 INCOMPATIBLE_STATE is returned if the Reboot Request is in a state that does not allow the
+        requested change (for example, it is already executing or has completed).
       operationId: updateRebootRequest
       parameters:
         - $ref: '../common/CAMARA_common.yaml#/components/parameters/x-correlator'
