@@ -2,7 +2,7 @@ repository:
   repository_name: NetworkAccessManagement
   release_tag: r3.1
   release_type: pre-release-rc
-  release_date: null
+  release_date: '2026-07-24T17:11:44Z'
   src_commit_sha: d1b328d2a0c3d614b849f7e578fe8b62709716d1
 apis:
 - api_name: network-access-devices
