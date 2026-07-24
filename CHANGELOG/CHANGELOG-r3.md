@@ -118,17 +118,18 @@ The API definition(s) are based on
 
 ### Breaking changes
 * Carved out of the former `network-access-management` API (alpha, r2.1). Reboot Requests and Network Access Device enumeration are now provided by the **network-access-devices** API, with the reboot scope renamed to `network-access-devices:reboot` (#153).
+* Conflict error handling changed to align with Commonalities (which deprecated the `409 CONFLICT` code): a client that handled `409 CONFLICT` must now handle `409 ALREADY_EXISTS` and `409 INCOMPATIBLE_STATE` (#166).
 
 ### Added
 
 * Initial **network-access-devices** API surface (split from network-access-management):
     - **Reboot Requests** — CRUD operations for immediate or scheduled reboot of operator-supplied network access devices.
-    - **Network Access Devices** — read-only enumeration of operator-supplied network access equipment (`GET /network-access-devices`, `GET /network-access-devices/{networkAccessDeviceId}`).
+    - **Network Access Devices** — read-only enumeration of operator-supplied network access equipment (`GET /network-access-devices`, `GET /network-access-devices/{networkAccessDeviceId}`), including each device's reported `deviceStatus` (#56).
 * `400` input-validation response on all read and delete operations (#149).
+* `409 ALREADY_EXISTS` (duplicate reboot request) and `409 INCOMPATIBLE_STATE` (update of a reboot request in a conflicting state) error codes (#166).
 
 ### Changed
 
-* Aligned conflict responses with Commonalities: the deprecated `409 CONFLICT` code is replaced by `ALREADY_EXISTS` (duplicate reboot request) and `INCOMPATIBLE_STATE` (update conflict) (#166).
 * Tightened schema constraints: integer `format` with min/max bounds and string `maxLength` (#150), and `maxItems` bounds on array fields (#156).
 * Dependency on Commonalities updated to r4.3 (0.8.0) (#144, #145).
 
@@ -138,7 +139,7 @@ The API definition(s) are based on
 
 ### Removed
 
-* N/A
+* `409 CONFLICT` error code — deprecated by Commonalities; replaced by `ALREADY_EXISTS` / `INCOMPATIBLE_STATE` (#166).
 
 ## network-access-domains 0.3.0-rc.1
 
@@ -152,6 +153,7 @@ The API definition(s) are based on
 ### Breaking changes
 
 * Carved out of the former `network-access-management` API (alpha, r2.1). Trust Domains, Trust Domain Devices, and Services are now provided by the **network-access-domains** API, with scopes renamed to `network-access-domains:trust-domains`, `network-access-domains:trust-domains:read-all`, `network-access-domains:devices`, and `network-access-domains:services:read` (#153).
+* Conflict error handling changed to align with Commonalities (which deprecated the `409 CONFLICT` code): a client that handled `409 CONFLICT` must now handle `409 ALREADY_EXISTS` (#166).
 
 ### Added
 
@@ -160,10 +162,10 @@ The API definition(s) are based on
     - **Trust Domain Devices** — CRUD operations for registering subscriber and IoT devices into Trust Domains with Zero-Touch Onboarding via DPP, Matter, and Well-Known SSID Onboarding (WKSO) bootstrapping protocols.
     - **Services** — read-only enumeration of subscriber service instances (`GET /services`, `GET /services/{serviceId}`).
 * `400` input-validation response on all read and delete operations (#149).
+* `409 ALREADY_EXISTS` error code (duplicate Trust Domain name or device registration) (#166).
 
 ### Changed
 
-* Aligned conflict responses with Commonalities: the deprecated `409 CONFLICT` code is replaced by `ALREADY_EXISTS` for duplicate resources (Trust Domain name, device registration) (#166).
 * Tightened schema constraints: integer `format` with min/max bounds and string `maxLength` (#150), and `maxItems` bounds on array fields (#156).
 * Dependency on Commonalities updated to r4.3 (0.8.0) (#144, #145).
 
@@ -173,6 +175,6 @@ The API definition(s) are based on
 
 ### Removed
 
-* N/A
+* `409 CONFLICT` error code — deprecated by Commonalities; replaced by `ALREADY_EXISTS` (#166).
 
 **Full Changelog**: https://github.com/camaraproject/NetworkAccessManagement/commits/r3.1
