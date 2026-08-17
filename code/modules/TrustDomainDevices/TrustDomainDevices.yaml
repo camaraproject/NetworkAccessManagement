@@ -211,8 +211,12 @@ components:
         consumer provides the credential types the device supports, in preference
         order (most preferred first). The server selects the first type that is
         compatible with the Trust Domain's access configuration and generates a
-        unique credential of that type. The generated credential is exchanged
-        with the device during bootstrapping (DPP, Matter, etc.).
+        unique credential of that type.
+
+        The generated credential value is **never returned to the API caller** —
+        responses include only `selectedType` (the credential type the server chose).
+        The credential itself is delivered directly to the device over the bootstrapping
+        channel (DPP, Matter, or WKSO), so the API caller never handles the device's secret.
       required:
         - credentialAction
         - supportedTypes
@@ -249,7 +253,9 @@ components:
       type: object
       description: |
         Assign a specific credential value to the device. The API consumer
-        provides both the credential type and the passphrase to use.
+        provides both the credential type and the passphrase to use. The supplied
+        `value` is write-only — it is applied to the device but is never returned in
+        API responses.
       required:
         - credentialAction
         - credentialType

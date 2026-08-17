@@ -159,6 +159,11 @@ info:
       in an update — supply the complete desired value, not a partial fragment.
     - Trust Domain changes are automatically applied to every Network Access Device where the domain is configured.
 
+    ## Collection responses
+    List endpoints (`GET /trust-domains`, `GET /trust-domains/{trustDomainId}/devices`, and `GET /services`) return
+    `200 OK` with a JSON array. When no resources match, the response is `200 OK` with an empty array (`[]`); an empty
+    collection is never signalled with `404`.
+
     # Comments for Network Operators
     The following comments are for Network Operators implementing this API.
 
@@ -173,6 +178,14 @@ info:
     may be used.  If an end-user replaces the equipment, all existing Trust Domains SHOULD be synced to the new
     device representing this mesh.  Alternatively, a synthetic hardware address may also be used if the specification
     for the address type allows.
+
+    # Error handling
+    Client errors on create/update operations follow the CAMARA error model and fall into two classes:
+
+    - **`400`** (`INVALID_ARGUMENT`, `OUT_OF_RANGE`) — the request is malformed: it fails to parse, violates the
+      schema (wrong type, missing required field, failed pattern or range), or includes properties not declared in this
+      specification (see *Request body strictness*).
+    - **`422`** — the request is well-formed but cannot be processed for a semantic reason, per the CAMARA error model.
 
     <!-- CAMARA:MANDATORY:additional-error-responses:BEGIN -->
     # Additional CAMARA error responses
