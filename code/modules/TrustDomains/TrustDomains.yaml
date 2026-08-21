@@ -71,7 +71,7 @@ components:
 
     TrustDomainUpdate:
       type: object
-      description: Represents the updatable fields of a trust domain within the network access management system.
+      description: Represents the updatable fields of a trust domain within the Network Access Domains API.
       properties:
         name:
           type: string
@@ -143,7 +143,7 @@ components:
         - properties:
             serviceId:
               $ref: "../Services/Services.yaml#/components/schemas/ServiceId"
-      description: Represents the creation of a new trust domain within the network access management system.
+      description: Represents the creation of a new trust domain within the Network Access Domains API.
       required:
         - name
         - enabled
@@ -167,7 +167,7 @@ components:
               readOnly: true
             modifiedBy:
               readOnly: true
-      description: Represents a trust domain within the network access management system.
+      description: Represents a trust domain within the Network Access Domains API.
 
 
   examples:
