@@ -23,7 +23,7 @@ info:
     - A property manager wants to reboot multiple devices at one or more locations such as common areas, offices, etc.
 
     # Relevant Terms and Definitions
-    - **Network Access Device**: network-operator-supplied access equipment (e.g., gateway, router, access point) that supports network segmentation technologies. Multiple devices that provide LAN connectivity for the same Trust Domain (e.g., mesh Wi-Fi, Thread personal area network) SHOULD be presented as a single device for implementations of this API.
+    - **Network Access Device**: network-operator-supplied access equipment (e.g., gateway, router, access point) that supports network segmentation technologies. Multiple devices that provide LAN connectivity for the same Trust Domain (e.g., mesh Wi-Fi) SHOULD be presented as a single device for implementations of this API.
     - **Reboot Request**: A request to reboot one or more network operator supplied Network Access Devices, immediately or at a scheduled time.
     - **Trust Domain**: a declarative, intent-level grouping that defines which devices are permitted to communicate with each other as if they were on the same LAN and what high-level access policies apply to that group. (Trust Domains, and the subscriber/IoT *Trust Domain Devices* registered to them, are managed by the companion *Network Access Domains* API — not here.)
     - **API Provider**: Provider that implements this API.
