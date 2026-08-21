@@ -44,7 +44,7 @@ components:
             2023-07-03T12:27:08.312Z).
 
     RebootRequestCreate:
-      description: Represents the creation of a reboot request, including target devices and optional scheduling. If devices is omitted, the provider MAY infer a default device. Inference rules vary by implementation. If inference is unsupported or ambiguous, creation MUST fail.
+      description: Represents the creation of a reboot request, including target devices and optional scheduling. If devices is omitted, the API Provider MAY infer a default device. Inference rules vary by implementation. If inference is unsupported or ambiguous, creation MUST fail.
       allOf:
         - $ref: "#/components/schemas/RebootRequestUpdate"
         - properties:

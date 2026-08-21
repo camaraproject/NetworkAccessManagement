@@ -7,7 +7,7 @@ Feature: CAMARA Network Access Devices API, vwip - Operation getRebootRequests
   # - @network_access_devices_getRebootRequests_NN_<slug>  unique scenario id
   # - @basic_tier   release-candidate gate (sunny-day + schema validation)
   # - @full_tier    public-release gate (rainy-day matrix)
-  # - @requires_oidc scenario depends on real OIDC enforcement at the API provider
+  # - @requires_oidc scenario depends on real OIDC enforcement at the API Provider
 
   Background: Common getRebootRequests setup
     Given an environment at "apiRoot"

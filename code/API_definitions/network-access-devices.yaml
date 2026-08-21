@@ -11,12 +11,12 @@ info:
     Service enabling API for managing network operator supplied **Network Access Devices** (gateways, routers, and
     access points): retrieving device information and creating and monitoring **Reboot Requests** for that equipment.
 
-    Network Access Devices are operator-managed infrastructure — not end-user equipment. This API lets a consumer
+    Network Access Devices are operator-managed infrastructure — not end-user equipment. This API lets an API Consumer
     enumerate that equipment, inspect its status, and request immediate or scheduled reboots (for example, to recover
     a gateway from a faulty network state).
 
     # Introduction
-    A reboot request is simply a request to reboot a network operator supplied network access device. API consumers
+    A reboot request is simply a request to reboot a network operator supplied network access device. API Consumers
     can create these requests which could be useful in scenarios such as:
 
     - A property owner wants to recover from a faulty network state by rebooting a gateway device.
@@ -26,16 +26,20 @@ info:
     - **Network Access Device**: network-operator-supplied access equipment (e.g., gateway, router, access point) that supports network segmentation technologies. Multiple devices that provide LAN connectivity for the same Trust Domain (e.g., mesh Wi-Fi, Thread personal area network) SHOULD be presented as a single device for implementations of this API.
     - **Reboot Request**: A request to reboot one or more network operator supplied Network Access Devices, immediately or at a scheduled time.
     - **Trust Domain**: a declarative, intent-level grouping that defines which devices are permitted to communicate with each other as if they were on the same LAN and what high-level access policies apply to that group. (Trust Domains, and the subscriber/IoT *Trust Domain Devices* registered to them, are managed by the companion *Network Access Domains* API — not here.)
-    - **API Provider**: Provider that implements this API.
-    - **Network Operator**: Service provider that has operational control of supporting devices.
+    - **API Provider**: The entity that implements and operates this API.
+    - **Network Operator**: The entity that operates the access network and supplies the Network Access Devices at a
+    service site.  Commonly the same organization as the API Provider, but the two are distinct roles.
+    - **Service**: a logical commercial subscription or account relationship between a network operator and a subscriber (residential, commercial, public Wi-Fi, etc.).
     - **Service Owner**: Customer of a network operator and resource owner with one or more devices that supports this
     API across one or more service sites.
-    - **Service Site**: A distinct service owner location, as interpreted by the network operator, with one or more
-    devices.  A service site typically has a one-to-one relationship with the mailing address of the location.  Network
-    operators that support a single identity or interchangeable identities for multiple service sites at the same
+    - **Service Site**: A distinct service owner location, as interpreted by the API Provider, with one or more
+    devices.  A service site typically has a one-to-one relationship with the mailing address of the location.  API
+    Providers that support a single identity or interchangeable identities for multiple service sites at the same
     mailing address (e.g., a residential and business account, an office and common area account, etc.) MUST provide
     some distinction in the property address (e.g., attn: Home Office, attn: Common Area, etc.).  Multiple service
     sites, for the same mailing address, but for unrelated service owner identities, do not have this requirement.
+    - **Subscriber**: The person or organization that receives network service from a network operator at one or more
+    service sites.  This specification uses *Subscriber* and *Service Owner* interchangeably.
     - **End-User**: The user connecting to a Trust Domain with a network client.
     - **Network Client**: End-user equipment connecting to a Trust Domain (e.g., laptop, phone, IoT device, etc.).
     - **API Consumer**: A first- or third-party software system using this API.
@@ -67,7 +71,7 @@ info:
     needed to access additional information. Below are some general rules for scopes in this API.
 
     - Regulated information, such as physical locations or hardware addresses of network devices, have special scopes.
-    Network operators are expected to follow any local regulations when sharing this information with an API client.
+    API Providers are expected to follow any local regulations when sharing this information with an API Consumer.
     - Scopes have inheritance when one scope would otherwise require the inherited scope.
     - Read scopes for one resource impacts the output of another resource when the requested resource has a relationship
     with the first (e.g., listing networks on a device requires both device and network read scopes).
@@ -82,28 +86,29 @@ info:
     This API rejects requests with JSON request bodies that contain properties not declared in this specification, at any nesting level. Unknown properties result in a `400 INVALID_ARGUMENT` response.
     <!-- CAMARA:MANDATORY:request-body-strictness:END -->
 
-    # Comments for API Clients
+    # Comments for API Consumers
 
     ## Reboot Requests
-    Reboot Requests provide a declarative mechanism for API clients to trigger an
+    Reboot Requests provide a declarative mechanism for API Consumers to trigger an
     immediate or scheduled reboot of one or more Network Access Devices associated
     with a subscriber. The following clarifies expected behavior, device inference
-    rules, and recommended client patterns.
+    rules, and recommended API Consumer patterns.
 
     ### Device Targeting
-    Clients MAY target devices in one of two ways:
+    API Consumers MAY target devices in one of two ways:
 
     1. **Explicit Targeting**
-       The client provides a `devices` array containing one or more device UUIDs.
-       This mode MUST be used when:
+       The API Consumer provides a `devices` array containing one or more device
+       UUIDs. This mode MUST be used when:
        - multiple devices exist for the subscriber
        - reboot is intended for a subset of devices
-       - the provider indicates that inference is unsupported
+       - the API Provider indicates that inference is unsupported
 
     2. **Implicit (“Default Device”) Targeting**
-       Clients MAY omit the `devices` array to reboot a default device, if and only if:
+       API Consumers MAY omit the `devices` array to reboot a default device, if and
+       only if:
        - exactly one device is provisioned for the subscriber
-       - the provider supports inference
+       - the API Provider supports inference
        - the device is reboot-capable
 
        If inference fails, the request MUST be rejected (e.g., 400 INVALID_ARGUMENT or
@@ -112,11 +117,12 @@ info:
     ### Behavior Guarantees
 
     - If `devices` is omitted and inference succeeds, the response MUST contain the
-      provider-resolved device list.
+      device list resolved by the API Provider.
     - Validation is atomic: if any device ID is invalid, unauthorized, or not
       reboot-capable, the request MUST fail without side effects.
     - Partial success is not allowed.
-    - Providers MAY reject duplicate reboot requests targeting the same devices and time.
+    - API Providers MAY reject duplicate reboot requests targeting the same devices
+      and time.
 
     ### Interaction with Related Endpoints
 
@@ -130,7 +136,7 @@ info:
       Retrieve the status of a previously-created request. Implementations MAY extend
       the status model over time.
 
-    ### Recommended Client Flow
+    ### Recommended API Consumer Flow
 
     1. (Optional) Query device capabilities using `/network-access-devices`.
     2. If multiple devices exist or inference is unsupported, build an explicit
@@ -143,8 +149,8 @@ info:
     no resources match, the response is `200 OK` with an empty array (`[]`); an empty collection is never signalled
     with `404`.
 
-    # Comments for Network Operators
-    The following comments are for Network Operators implementing this API.
+    # Comments for API Providers
+    The following comments are for API Providers implementing this API.
 
     ## Mesh Systems
     Mesh systems SHOULD be represented as a single device when implementing this API due to the undefined behavior of
@@ -163,7 +169,7 @@ info:
       here as `OUT_OF_RANGE`.
     - **`422`** — the request is well-formed but cannot be processed for a semantic reason. The `422` case defined by
       this API is `MISSING_IDENTIFIER`: a `POST /reboot-requests` that omits the `devices` array when no single default
-      device can be inferred (see *Comments for API Clients → Reboot Requests → Device Targeting*).
+      device can be inferred (see *Comments for API Consumers → Reboot Requests → Device Targeting*).
 
     <!-- CAMARA:MANDATORY:additional-error-responses:BEGIN -->
     # Additional CAMARA error responses
@@ -199,7 +205,7 @@ paths:
     get:
       tags:
         - Network Access Devices
-      summary: Get all Network Access Devices associated with the service owner
+      summary: Get all Network Access Devices associated with the subscriber
       security:
         - openId:
             - network-access-devices:reboot
@@ -362,13 +368,13 @@ paths:
     get:
       tags:
         - Reboot Requests
-      summary: Get all Reboot Requests created by the calling API client
+      summary: Get all Reboot Requests created by the calling API Consumer
       security:
         - openId:
             - network-access-devices:reboot
       operationId: getRebootRequests
       description: |
-        This endpoint returns a list of Reboot Requests associated with the service owner created by the calling API client.
+        This endpoint returns a list of Reboot Requests associated with the subscriber and created by the calling API Consumer.
       parameters:
         - $ref: '../common/CAMARA_common.yaml#/components/parameters/x-correlator'
       responses:

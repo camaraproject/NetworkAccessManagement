@@ -7,7 +7,7 @@ Feature: CAMARA Network Access Domains API, vwip - Operation getService
   # - @network_access_domains_getService_NN_<slug>  unique scenario id
   # - @basic_tier   release-candidate gate (sunny-day + schema validation)
   # - @full_tier    public-release gate (rainy-day matrix)
-  # - @requires_oidc scenario depends on real OIDC enforcement at the API provider
+  # - @requires_oidc scenario depends on real OIDC enforcement at the API Provider
 
   Background: Common getService setup
     Given an environment at "apiRoot"

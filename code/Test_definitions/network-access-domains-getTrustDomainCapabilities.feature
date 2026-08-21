@@ -7,7 +7,7 @@ Feature: CAMARA Network Access Domains API, vwip - Operation getTrustDomainCapab
   # - @network_access_domains_getTrustDomainCapabilities_NN_<slug>  unique scenario id
   # - @basic_tier   release-candidate gate (sunny-day + schema validation)
   # - @full_tier    public-release gate (rainy-day matrix)
-  # - @requires_oidc scenario depends on real OIDC enforcement at the API provider
+  # - @requires_oidc scenario depends on real OIDC enforcement at the API Provider
 
   Background: Common getTrustDomainCapabilities setup
     Given an environment at "apiRoot"
@@ -17,7 +17,7 @@ Feature: CAMARA Network Access Domains API, vwip - Operation getTrustDomainCapab
     And the header "x-correlator" complies with the schema at "#/components/schemas/XCorrelator"
 
   @network_access_domains_getTrustDomainCapabilities_01_get_capabilities_success @basic_tier
-  Scenario: Retrieve the Trust Domain capabilities advertised by the API provider
+  Scenario: Retrieve the Trust Domain capabilities advertised by the API Provider
     When the request "getTrustDomainCapabilities" is sent
     Then the response status code is 200
     And the response header "Content-Type" is "application/json"

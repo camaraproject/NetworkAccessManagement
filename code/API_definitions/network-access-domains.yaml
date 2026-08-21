@@ -12,14 +12,14 @@ info:
     connectivity and access policies applied to them and the registration and onboarding of subscriber and IoT
     devices into those segments.
 
-    A Trust Domain lets an API consumer express *intent* — "these devices should share a private network with this
-    Wi-Fi/Thread configuration and these policies" — which the network operator translates into configuration on the
-    subscriber's network access equipment. The API also enumerates the subscriber's services and service sites so a
-    consumer can target the correct account and location.
+    A Trust Domain lets an API Consumer express *intent* — "these devices should share a private network with this
+    Wi-Fi/Thread configuration and these policies" — which the API Provider translates into configuration on the
+    subscriber's network access equipment. The API also enumerates the subscriber's services and service sites so an
+    API Consumer can target the correct account and location.
 
     # Introduction
     A Trust Domain is a network access configuration where each configuration is for a logically separated Local
-    Area Network (LAN). API consumers can create, modify, or remove these networks which could be useful in
+    Area Network (LAN). API Consumers can create, modify, or remove these networks which could be useful in
     scenarios such as:
 
     - A property owner wants to create a temporary network for the duration of a short-term booking or long-term rental.
@@ -37,17 +37,20 @@ info:
     - **Trust Domain Device**: a subscriber or IoT device (laptop, phone, IoT sensor, etc.) registered to a Trust Domain so that it may join the segment under that domain's access configuration and policies. **This is distinct from a Network Access Device** — it is end-user/subscriber equipment, not operator infrastructure.
     - **Network Access Device**: network-operator-supplied access equipment (e.g., gateway, router, access point) that enforces Trust Domains and supports network segmentation technologies. Multiple devices that provide LAN connectivity for the same Trust Domain (e.g., mesh Wi-Fi, Thread personal area network) SHOULD be presented as a single device for implementations of this API. (Inventory and reboot of this equipment are handled by the companion *Network Access Devices* API.)
     - **Bootstrapping / Provisioning Protocol**: the mechanism (DPP, Matter, WKSO) used to securely onboard a Trust Domain Device onto the network.
-    - **API Provider**: Provider that implements this API.
-    - **Network Operator**: Service provider that has operational control of supporting devices.
+    - **API Provider**: The entity that implements and operates this API.
+    - **Network Operator**: The entity that operates the access network and supplies the Network Access Devices at a
+    service site.  Commonly the same organization as the API Provider, but the two are distinct roles.
     - **Service**: a logical commercial subscription or account relationship between a network operator and a subscriber (residential, commercial, public Wi-Fi, etc.).
     - **Service Owner**: Customer of a network operator and resource owner with one or more devices that supports this
     API across one or more service sites.
-    - **Service Site**: A distinct service owner location, as interpreted by the network operator, with one or more
-    devices.  A service site typically has a one-to-one relationship with the mailing address of the location.  Network
-    operators that support a single identity or interchangeable identities for multiple service sites at the same
+    - **Service Site**: A distinct service owner location, as interpreted by the API Provider, with one or more
+    devices.  A service site typically has a one-to-one relationship with the mailing address of the location.  API
+    Providers that support a single identity or interchangeable identities for multiple service sites at the same
     mailing address (e.g., a residential and business account, an office and common area account, etc.) MUST provide
     some distinction in the property address (e.g., attn: Home Office, attn: Common Area, etc.).  Multiple service
     sites, for the same mailing address, but for unrelated service owner identities, do not have this requirement.
+    - **Subscriber**: The person or organization that receives network service from a network operator at one or more
+    service sites.  This specification uses *Subscriber* and *Service Owner* interchangeably.
     - **End-User**: The user connecting to a Trust Domain with a network client.
     - **Network Client**: End-user equipment connecting to a Trust Domain (e.g., laptop, phone, IoT device, etc.).
     - **API Consumer**: A first- or third-party software system using this API.
@@ -69,7 +72,7 @@ info:
       up/downstream domain rate, and an egress allow-list (FQDN/CIDR). Omitting a policy means "no constraint" for that
       category.
     - **Expiration** lets a domain auto-expire. When a Trust Domain is no longer configured on any device it SHOULD be
-      auto-deleted (see *Comments for Network Operators*).
+      auto-deleted (see *Comments for API Providers*).
 
     ## Devices in a Trust Domain
     The `/trust-domains/{trustDomainId}/devices` endpoints register subscriber or IoT devices into a Trust Domain so
@@ -80,8 +83,8 @@ info:
     - **Provisioning / bootstrapping** — a device may carry `bootstrappingInfo` describing one or more onboarding
       protocols: **DPP** (Wi-Fi Alliance Device Provisioning Protocol), **Matter** (Connectivity Standards Alliance), or
       **WKSO** (Well-Known SSID Onboarding — provisional/proof-of-concept). When several are supplied,
-      `protocolPreference` orders them and the provider selects the first protocol the domain's infrastructure also
-      supports.
+      `protocolPreference` orders them and the API Provider selects the first protocol the domain's infrastructure
+      also supports.
     - **Credentials** — a device may request a server-generated per-device credential (`GENERATE`), supply its own
       (`ASSIGN`), or omit credentials entirely to use the Trust Domain's shared credential from `accessDetails`.
     - **Lifecycle / status** — registration is distinct from connection. A device is registered once created, becomes
@@ -96,13 +99,13 @@ info:
     geographic coordinates and/or postal-address detail); general services such as public Wi-Fi may have none. Service
     Site information is exposed as part of a Service rather than through a standalone endpoint. The exact location and a
     device's hardware address are regulated fields that may require additional scope, to help reconcile information when
-    the API client operator has an existing relationship with the service owner.
+    the API Consumer has an existing relationship with the service owner.
 
-    ## Discovering provider capabilities
-    Different operators support different access types, security modes, and limits. Call
-    `GET /trust-domains/capabilities` **before** creating a Trust Domain to discover what the target provider supports
-    (Wi-Fi/Thread variants, policy ranges, configuration limits). Capabilities describe what the *provider* offers, as
-    opposed to `accessDetails`, which is what an *API client* requests.
+    ## Discovering API Provider capabilities
+    Different API Providers support different access types, security modes, and limits. Call
+    `GET /trust-domains/capabilities` **before** creating a Trust Domain to discover what the target API Provider
+    supports (Wi-Fi/Thread variants, policy ranges, configuration limits). Capabilities describe what the
+    *API Provider* offers, as opposed to `accessDetails`, which is what an *API Consumer* requests.
 
     <!-- CAMARA:MANDATORY:authorization-and-authentication:BEGIN -->
     # Authorization and authentication
@@ -122,7 +125,7 @@ info:
     needed to access additional information. Below are some general rules for scopes in this API.
 
     - Regulated information, such as physical locations or hardware addresses of network devices, have special scopes.
-    Network operators are expected to follow any local regulations when sharing this information with an API client.
+    API Providers are expected to follow any local regulations when sharing this information with an API Consumer.
     - Scopes have inheritance when one scope would otherwise require the inherited scope.
     - Read scopes for one resource impacts the output of another resource when the requested resource has a relationship
     with the first (e.g., listing networks on a device requires both device and network read scopes).
@@ -142,12 +145,12 @@ info:
     This API rejects requests with JSON request bodies that contain properties not declared in this specification, at any nesting level. Unknown properties result in a `400 INVALID_ARGUMENT` response.
     <!-- CAMARA:MANDATORY:request-body-strictness:END -->
 
-    # Comments for API Clients
-    The following notes help API clients use this API effectively.
+    # Comments for API Consumers
+    The following notes help API Consumers use this API effectively.
 
     ## Recommended flow
     1. (Optional) Call `GET /trust-domains/capabilities` to confirm the access types, security modes, and limits the
-       provider supports.
+       API Provider supports.
     2. (Optional) Call `GET /services` to find the `serviceId` (and service site) to associate with the Trust Domain.
     3. `POST /trust-domains` with the desired access details and any policies.
     4. `POST /trust-domains/{trustDomainId}/devices` for each subscriber/IoT device to onboard, or to attach to the
@@ -164,12 +167,12 @@ info:
     `200 OK` with a JSON array. When no resources match, the response is `200 OK` with an empty array (`[]`); an empty
     collection is never signalled with `404`.
 
-    # Comments for Network Operators
-    The following comments are for Network Operators implementing this API.
+    # Comments for API Providers
+    The following comments are for API Providers implementing this API.
 
     ## Auto-Deleting Trust Domains
     When a Trust Domain is not configured on any device the network configuration and its identifier SHOULD be
-    auto-deleted.  API clients MUST not be expected to delete Trust Domains not configured on any device.
+    auto-deleted.  API Consumers MUST not be expected to delete Trust Domains not configured on any device.
 
     ## Mesh Systems
     Mesh systems SHOULD be represented as a single device when implementing this API due to the undefined behavior of
@@ -236,7 +239,7 @@ paths:
 
         This endpoint supports workflows where an API Consumer (e.g., AirBnB, Amazon)
         has received subscriber authorization and must enumerate services to link with
-        Network Client Devices or Trust Domains.
+        Trust Domain Devices or Trust Domains.
 
       parameters:
         - $ref: '../common/CAMARA_common.yaml#/components/parameters/x-correlator'
@@ -327,17 +330,17 @@ paths:
             - network-access-domains:trust-domains
       operationId: getTrustDomainCapabilities
       description: |
-        Retrieves the set of Trust Domain configuration capabilities supported by the API provider.
+        Retrieves the set of Trust Domain configuration capabilities supported by the API Provider.
         Capabilities describe supported access types, policy constraints, and configuration limits.
 
-        This endpoint enables API clients to discover:
+        This endpoint enables API Consumers to discover:
         - Which access types are supported (Wi-Fi variants, Thread modes, etc.)
         - What policy types are available
         - Operational limits and constraints
         - Advanced features and configuration options
 
         Use this endpoint before creating Trust Domains to ensure your configuration
-        is supported by the target API provider/network operator.
+        is supported by the target API Provider.
 
       parameters:
         - $ref: '../common/CAMARA_common.yaml#/components/parameters/x-correlator'
@@ -346,7 +349,7 @@ paths:
           headers:
             x-correlator:
               $ref: '../common/CAMARA_common.yaml#/components/headers/x-correlator'
-          description: Trust Domain capabilities supported by this API provider
+          description: Trust Domain capabilities supported by this API Provider
           content:
             application/json:
               schema:
