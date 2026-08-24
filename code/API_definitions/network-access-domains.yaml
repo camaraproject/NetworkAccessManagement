@@ -250,6 +250,9 @@ paths:
             application/json:
               schema:
                 $ref: "../modules/Services/Services.yaml#/components/schemas/ServiceList"
+              examples:
+                ServiceListResponse:
+                  $ref: "../modules/Services/Services.yaml#/components/examples/ServiceListResponse"
         "400":
           $ref: "../common/CAMARA_common.yaml#/components/responses/Generic400"
         "401":
@@ -622,6 +625,8 @@ paths:
                 $ref: '../modules/TrustDomainDevices/TrustDomainDevices.yaml#/components/examples/TrustDomainDeviceCreateMinimal'
               TrustDomainDeviceCreateMatter:
                 $ref: '../modules/TrustDomainDevices/TrustDomainDevices.yaml#/components/examples/TrustDomainDeviceCreateMatter'
+              TrustDomainDeviceCreateAssignCredential:
+                $ref: '../modules/TrustDomainDevices/TrustDomainDevices.yaml#/components/examples/TrustDomainDeviceCreateAssignCredential'
       responses:
         '201':
           headers:

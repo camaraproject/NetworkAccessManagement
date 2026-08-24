@@ -1,5 +1,11 @@
 # This file defines the AccessDetail schema model for different network access types.
 # It includes Wi-Fi and Thread access details with various security modes.
+#
+# Examples: property-level only. No object-level `example:` blocks here — several of
+# these schemas carry writeOnly secrets, and an object-level example is printed
+# verbatim into the response pane, defeating the writeOnly filter. Renderers
+# synthesize object samples from the property examples below and honor
+# readOnly/writeOnly while doing so.
 
 components:
   schemas:
@@ -15,7 +21,7 @@ components:
           maxLength: 255
           pattern: "^[\\x20-\\x7E]{8,63}$"
           description: The password for the WPA Personal Wi-Fi network
-          example: &wpa-personal-password "my-password"
+          example: "my-password"
         securityModeType:
           type: string
           enum:
@@ -25,13 +31,10 @@ components:
           description: |
             The security mode type for the WPA Personal Wi-Fi network.
             Leave blank to auto-select.
-          example: &wpa-personal-security-mode-type "WPA3-Personal"
+          example: "WPA3-Personal"
       additionalProperties: false
       required:
         - password
-      example: &wpa-personal
-        password: *wpa-personal-password
-        securityModeType: *wpa-personal-security-mode-type
 
     WpaEnterpriseDetail:
       type: object
@@ -41,20 +44,17 @@ components:
           type: string
           maxLength: 255
           description: The authentication server for the WPA Enterprise Wi-Fi network
-          example: &wpa-enterprise-auth-server "1.2.3.4"
+          example: "1.2.3.4"
         securityModeType:
           type: string
           enum:
             - WPA2-Enterprise
             - WPA3-Enterprise
           description: The security mode type for the WPA Enterprise Wi-Fi network
-          example: &wpa-enterprise-security-mode-type "WPA3-Enterprise"
+          example: "WPA3-Enterprise"
       additionalProperties: false
       required:
         - securityModeType
-      example: &wpa-enterprise
-        authServer: *wpa-enterprise-auth-server
-        securityModeType: *wpa-enterprise-security-mode-type
 
     # Flattened concrete implementations for Wi-Fi
     WiFiWpaPersonalAccessDetail:
@@ -83,15 +83,10 @@ components:
           allOf:
             - $ref: "#/components/schemas/WpaPersonalDetail"
           description: WPA Personal security mode details
-          example: *wpa-personal
       additionalProperties: false
       required:
         - accessType
         - securityMode
-      example: &wifi-wpa-personal-access-detail
-        accessType: "Wi-Fi:WPA_PERSONAL"
-        ssid: *wifi-ssid
-        securityMode: *wpa-personal
 
     WiFiWpaEnterpriseAccessDetail:
       type: object
@@ -119,15 +114,10 @@ components:
           allOf:
             - $ref: "#/components/schemas/WpaEnterpriseDetail"
           description: WPA Enterprise security mode details
-          example: *wpa-enterprise
       additionalProperties: false
       required:
         - accessType
         - securityMode
-      example: &wifi-wpa-enterprise-access-detail
-        accessType: "Wi-Fi:WPA_ENTERPRISE"
-        ssid: *wifi-ssid
-        securityMode: *wpa-enterprise
 
     ThreadStructuredAccessDetail:
       type: object
@@ -178,13 +168,6 @@ components:
         - networkKey
         - networkName
         - panId
-      example: &thread-structured-access-detail
-        accessType: "Thread:STRUCTURED"
-        channel: 13
-        extendedPanId: "d63e8e3e495ebbc3"
-        networkKey: "dfd34f0f05cad978ec4e32b0413038ff"
-        networkName: "Spec-Thread-B3AF"
-        panId: "d63e"
 
     ThreadTlvAccessDetail:
       type: object
@@ -205,9 +188,6 @@ components:
       required:
         - accessType
         - operationalDataset
-      example: &thread-tlv-access-detail
-        accessType: "Thread:TLV"
-        operationalDataset: "0e08000000000000010010000102030405060708090a0b0c0d0e0f"
 
     # Single discriminated union with namespaced values
     AccessDetail:
@@ -226,4 +206,3 @@ components:
       required:
         - accessType
       description: Network access details for different network types and variants
-      example: *wifi-wpa-personal-access-detail

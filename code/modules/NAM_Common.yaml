@@ -41,7 +41,7 @@ components:
         It must follow [RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339#section-5.6) and must have time zone.
         Recommended format is yyyy-MM-dd'T'HH:mm:ss.SSSZ (i.e. which allows 2023-07-03T14:27:08.312+02:00 or
         2023-07-03T12:27:08.312Z)
-      example: &date-time "2023-07-03T14:27:08.312+02:00"
+      example: "2023-07-03T14:27:08.312+02:00"
 
     PropertyAddress:
       type: object
@@ -55,123 +55,104 @@ components:
           description: The unique identifier for the property address
           minLength: 1
           maxLength: 64
-          example: &property-address-id "address-123"
+          example: "address-123"
         addressLine1:
           type: string
           maxLength: 128
           description: The first line of the address
-          example: &property-address-address-line-1 "123 Main St"
+          example: "123 Main St"
         addressLine2:
           type: string
           maxLength: 128
           description: The second line of the address
-          example: &property-address-address-line-2 "Suite 456"
+          example: "Suite 456"
         streetNr:
           type: string
           maxLength: 64
           description: The street number
-          example: &property-address-street-nr "123"
+          example: "123"
         streetNrSuffix:
           type: string
           maxLength: 64
           description: The suffix for the street number
-          example: &property-address-street-nr-suffix "A"
+          example: "A"
         streetNrLast:
           type: string
           maxLength: 64
           description: The last street number
-          example: &property-address-street-nr-last "125"
+          example: "125"
         streetNrLastSuffix:
           type: string
           maxLength: 64
           description: The suffix for the last street number
-          example: &property-address-street-nr-last-suffix "B"
+          example: "B"
         streetName:
           type: string
           maxLength: 64
           description: The name of the street
-          example: &property-address-street-name "Main"
+          example: "Main"
         subUnitType:
           type: string
           maxLength: 64
           description: The type of sub-unit (e.g., Apartment, Suite)
-          example: &property-address-sub-unit-type "Apartment"
+          example: "Apartment"
         subUnitNr:
           type: string
           maxLength: 64
           description: The number of the sub-unit
-          example: &property-address-sub-unit-nr "A12"
+          example: "A12"
         levelType:
           type: string
           maxLength: 64
           description: The type of level (e.g., Floor, Basement)
-          example: &property-address-level-type "Floor"
+          example: "Floor"
         levelNr:
           type: string
           maxLength: 64
           description: The number of the level
-          example: &property-address-level-nr "3"
+          example: "3"
         buildingName:
           type: string
           maxLength: 64
           description: The name of the building
-          example: &property-address-building-name "Example Building"
+          example: "Example Building"
         privateStreetName:
           type: string
           maxLength: 64
           description: The name of a private street
-          example: &property-address-private-street-name "Private Rd"
+          example: "Private Rd"
         locality:
           type: string
           maxLength: 64
           description: The locality (neighborhood, area)
-          example: &property-address-locality "Example Locality"
+          example: "Example Locality"
         city:
           type: string
           maxLength: 128
           description: The city or town
-          example: &property-address-city "Example State"
+          example: "Example State"
         stateOrProvince:
           type: string
           maxLength: 64
           description: The state or province
-          example: &property-address-state-or-province "EX"
+          example: "EX"
         country:
           type: string
           maxLength: 64
           description: The country
-          example: &property-address-country "United States"
+          example: "United States"
         postCode:
           type: string
           maxLength: 64
           description: The postal code or ZIP code
-          example: &property-address-post-code "12345"
+          example: "12345"
         postCodeExtension:
           type: string
           maxLength: 64
           description: The postal code extension
-          example: &property-address-post-code-extension "6789"
-      example: &property-address
-        id: *property-address-id
-        addressLine1: *property-address-address-line-1
-        addressLine2: *property-address-address-line-2
-        streetNr: *property-address-street-nr
-        streetNrSuffix: *property-address-street-nr-suffix
-        streetNrLast: *property-address-street-nr-last
-        streetNrLastSuffix: *property-address-street-nr-last-suffix
-        streetName: *property-address-street-name
-        subUnitType: *property-address-sub-unit-type
-        subUnitNr: *property-address-sub-unit-nr
-        levelType: *property-address-level-type
-        levelNr: *property-address-level-nr
-        buildingName: *property-address-building-name
-        privateStreetName: *property-address-private-street-name
-        locality: *property-address-locality
-        city: *property-address-city
-        stateOrProvince: *property-address-state-or-province
-        country: *property-address-country
-        postCode: *property-address-post-code
-        postCodeExtension: *property-address-post-code-extension
+          example: "6789"
+      # No object-level example: every property above carries one, and renderers
+      # synthesize the object sample from those.
 
     ResourceIdentifier:
       type: object
@@ -180,6 +161,7 @@ components:
           allOf:
             - $ref: "#/components/schemas/Uuid"
           description: Unique identifier of the resource.
+          example: "3fa85f64-5717-4562-b3fc-2c963f66afa6"
           readOnly: true
       required:
         - id
@@ -210,6 +192,7 @@ components:
             The last update date and time of the resource.  It must follow [RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339#section-5.6)
             and must have time zone. Recommended format is yyyy-MM-dd'T'HH:mm:ss.SSSZ (i.e. which allows
             2023-07-03T14:27:08.312+02:00 or 2023-07-03T12:27:08.312Z).
+          example: "2023-07-06T09:15:22.104+02:00"
           readOnly: true
         modifiedBy:
           allOf:

@@ -4,6 +4,16 @@ extends:
 rules:
   no-unused-components: "off"
   no-empty-servers: "off"
+  # Promoted from warning to error. no-invalid-media-type-examples is the only check
+  # that validates examples with request/response context (writeOnly must not appear in
+  # a response example, readOnly must not appear in a request example); the centralized
+  # CAMARA Spectral pipeline cannot detect this class of defect because readOnly/writeOnly
+  # are JSON Schema annotations rather than assertions. no-invalid-schema-examples
+  # validates schema-level `example:` blocks structurally only — it has no
+  # request/response context, which is why the modules define examples at the property
+  # level and carry no object-level `example:` blocks at all.
+  no-invalid-media-type-examples: error
+  no-invalid-schema-examples: error
 
 resolve:
   file:

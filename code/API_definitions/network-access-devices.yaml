@@ -218,6 +218,9 @@ paths:
             application/json:
               schema:
                 $ref: "../modules/NetworkAccessDevices/NetworkAccessDevices.yaml#/components/schemas/NetworkAccessDeviceList"
+              examples:
+                NetworkAccessDeviceListResponse:
+                  $ref: "../modules/NetworkAccessDevices/NetworkAccessDevices.yaml#/components/examples/NetworkAccessDeviceListResponse"
         "400":
           $ref: "../common/CAMARA_common.yaml#/components/responses/Generic400"
         "401":
@@ -334,6 +337,11 @@ paths:
             application/json:
               schema:
                 $ref: '../modules/RebootRequests/RebootRequests.yaml#/components/schemas/RebootRequest'
+              examples:
+                RebootRequestResponseInferred:
+                  $ref: '../modules/RebootRequests/RebootRequests.yaml#/components/examples/RebootRequestResponseInferred'
+                RebootRequestResponseExplicit:
+                  $ref: '../modules/RebootRequests/RebootRequests.yaml#/components/examples/RebootRequestResponseExplicit'
         '400':
           $ref: '../common/CAMARA_common.yaml#/components/responses/Generic400'
         '401':
