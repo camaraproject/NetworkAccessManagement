@@ -118,9 +118,9 @@ components:
             - On update (PATCH), the list replaces the previous list entirely when included.
               Partial merge semantics are not defined; clients MUST supply the complete
               desired configuration for this field.
-            - To remove all access types, clients MAY provide an empty array, although the
-              API provider MAY reject configurations that result in no valid admittance
-              method for the Trust Domain.
+            - At least one entry is always required (`minItems: 1`, at most `maxItems: 4`); an empty
+              array is rejected with `400 INVALID_ARGUMENT`. A Trust Domain cannot exist with no valid
+              admittance method.
 
             **Validation Expectations**
             - The API provider MUST validate that the requested access types and their

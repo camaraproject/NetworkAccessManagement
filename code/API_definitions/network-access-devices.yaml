@@ -138,6 +138,11 @@ info:
     3. Create the reboot request with immediate or scheduled execution (`atTime`).
     4. (Optional) Poll the individual reboot request status for asynchronous flows.
 
+    ## Collection responses
+    List endpoints (`GET /network-access-devices` and `GET /reboot-requests`) return `200 OK` with a JSON array. When
+    no resources match, the response is `200 OK` with an empty array (`[]`); an empty collection is never signalled
+    with `404`.
+
     # Comments for Network Operators
     The following comments are for Network Operators implementing this API.
 
@@ -148,6 +153,17 @@ info:
     may be used.  If an end-user replaces the equipment, all existing Trust Domains SHOULD be synced to the new
     device representing this mesh.  Alternatively, a synthetic hardware address may also be used if the specification
     for the address type allows.
+
+    # Error handling
+    Client errors on create/update operations follow the CAMARA error model and fall into two classes:
+
+    - **`400`** (`INVALID_ARGUMENT`, `OUT_OF_RANGE`) — the request is malformed: it fails to parse, violates the
+      schema (wrong type, missing required field, failed pattern or range), or includes properties not declared in this
+      specification (see *Request body strictness*). A `POST /reboot-requests` with an `atTime` in the past is rejected
+      here as `OUT_OF_RANGE`.
+    - **`422`** — the request is well-formed but cannot be processed for a semantic reason. The `422` case defined by
+      this API is `MISSING_IDENTIFIER`: a `POST /reboot-requests` that omits the `devices` array when no single default
+      device can be inferred (see *Comments for API Clients → Reboot Requests → Device Targeting*).
 
     <!-- CAMARA:MANDATORY:additional-error-responses:BEGIN -->
     # Additional CAMARA error responses
