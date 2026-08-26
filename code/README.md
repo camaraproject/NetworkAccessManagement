@@ -17,11 +17,15 @@ code/
 ├── API_definitions/
 │   ├── network-access-devices.yaml              # Network Access Devices API — device info + reboot requests (committed on main)
 │   └── network-access-domains.yaml              # Network Access Domains API — segments, policy, device registration, services (committed on main)
-├── common/
-│   └── CAMARA_common.yaml                       # Local cached copy of the Commonalities shared error responses
+├── Test_definitions/                            # Gherkin (.feature) test definitions for both APIs (see its own README)
+├── common/                                      # Synced from CAMARA Commonalities — do not hand-edit
+│   ├── .sync-manifest.yaml                      # Upstream Commonalities release (r4.3) and the file hashes it pins
+│   ├── CAMARA_common.yaml                       # Commonalities shared error responses, parameters, headers and schemas
+│   ├── CAMARA_event_common.yaml                 # Commonalities event/subscription schemas (synced; not referenced by either spec today)
+│   └── info-description-templates.yaml          # Source text for the CAMARA:MANDATORY blocks in each spec's info.description
 └── modules/                                     # Modular domain-focused component files
-    ├── NAM_Common.yaml                          # Shared primitives (UUID, DateTime, PropertyAddress, ResourceIdentifier, securitySchemes)
     ├── AccessDetail.yaml                        # Discriminated access detail variants (Wi-Fi, Thread)
+    ├── NAM_Common.yaml                          # Shared primitives (Uuid, DateTime, PropertyAddress, ResourceIdentifier, ResourceAudit, securitySchemes)
     ├── Policy.yaml                              # Trust Domain policy schemas (maxDevices, bandwidth, egress)
     ├── NetworkAccessDevices/                    # Network Access Device resource schemas
     ├── RebootRequests/                          # Reboot Request lifecycle schemas
@@ -52,13 +56,21 @@ code/
 
 ### Component Breakdown
 
-| File | Purpose | Reusability |
-|------|---------|-------------|
-| `CAMARA_common.yaml` | CAMARA-wide error responses and shared schemas (cached from Commonalities) | High — required by every CAMARA API |
-| `NAM_Common.yaml` | NAM-wide primitives (UUID, DateTime, PropertyAddress, ResourceIdentifier, securitySchemes) | High — used across all NAM endpoints |
-| `Policy.yaml` | Trust Domain governance policies | Medium — Trust Domain specific |
-| `AccessDetail.yaml` | Network access configurations | Medium — Network-related schemas |
-| `TrustDomains.yaml` | Core Trust Domain schemas | Low — Trust Domain specific |
+Every component file the specs pull in, and which API pulls it in — either directly or transitively through another module:
+
+| File | Purpose | Used by |
+|------|---------|---------|
+| `common/CAMARA_common.yaml` | CAMARA-wide error responses, parameters, headers and the shared `Device` model (synced from Commonalities) | Both APIs |
+| `modules/NAM_Common.yaml` | NAM-wide primitives (`Uuid`, `DateTime`, `PropertyAddress`, `ResourceIdentifier`, `ResourceAudit`) and `securitySchemes` | Both APIs |
+| `modules/Services/ServiceSites.yaml` | Service Site schemas | Both APIs |
+| `modules/NetworkAccessDevices/NetworkAccessDevices.yaml` | Network Access Device resource schemas | Network Access Devices |
+| `modules/RebootRequests/RebootRequests.yaml` | Reboot Request lifecycle schemas | Network Access Devices |
+| `modules/AccessDetail.yaml` | Network access configurations | Network Access Domains |
+| `modules/Policy.yaml` | Trust Domain governance policies | Network Access Domains |
+| `modules/Services/Services.yaml` | Service schemas | Network Access Domains |
+| `modules/TrustDomainDevices/TrustDomainDevices.yaml` | Trust Domain Device resource schemas | Network Access Domains |
+| `modules/TrustDomains/TrustDomainCapabilities.yaml` | Trust Domain capability discovery schemas | Network Access Domains |
+| `modules/TrustDomains/TrustDomains.yaml` | Core Trust Domain schemas and examples | Network Access Domains |
 
 ## Bundling and Validation
 
@@ -121,23 +133,14 @@ Key bundling features:
 The repository defines **two** APIs. Both are committed on `main` with `$ref` references into `../common/` and `../modules/`; bundling resolves these into standalone OAS files.
 
 - **`API_definitions/network-access-devices.yaml`** - Network Access Devices API: retrieve operator-supplied devices (`/network-access-devices`) and create/monitor reboots (`/reboot-requests`). Uses the `NetworkAccessDevices` and `RebootRequests` modules plus the shared `ServiceSite`.
-- **`API_definitions/network-access-domains.yaml`** - Network Access Domains API: manage Trust Domains (`/trust-domains`), register subscriber/IoT devices (`/trust-domains/{id}/devices`), and enumerate services (`/services`). Uses the `TrustDomains`, `TrustDomainCapabilities`, `TrustDomainDevices`, `Policy`, `AccessDetail`, and `Service` modules.
+- **`API_definitions/network-access-domains.yaml`** - Network Access Domains API: manage Trust Domains (`/trust-domains`), register subscriber/IoT devices (`/trust-domains/{trustDomainId}/devices`), and enumerate services (`/services`). Uses the `TrustDomains`, `TrustDomainCapabilities`, `TrustDomainDevices`, `Policy`, `AccessDetail`, and `Service` modules.
 
-Modules referenced by **both** APIs (shared, authored once and bundled into each spec): `modules/NAM_Common.yaml`, `common/CAMARA_common.yaml`, and `modules/Services/ServiceSites.yaml` (`ServiceSite`).
+### Synchronized Commonalities Files
 
-### Component Files
+`common/` is synchronized from CAMARA Commonalities (release `r4.3`, pinned file-by-file in `common/.sync-manifest.yaml`) and must not be hand-edited here — changes belong upstream. Two of its files need more than the one-line purpose given in [Component Breakdown](#component-breakdown):
 
-- **`common/CAMARA_common.yaml`** - Shared CAMARA-style error responses and common schemas
-- **`modules/NAM_Common.yaml`** - Shared fundamental types (UUID, DateTime, ResourceAudit, securitySchemes)
-- **`modules/Policy.yaml`** - Trust Domain policy schemas (maxDevices, bandwidth limits, egress rules)
-- **`modules/AccessDetail.yaml`** - Network access configuration schemas (Wi-Fi, Thread, security modes)
-- **`modules/TrustDomains/TrustDomains.yaml`** - Core Trust Domain schemas and examples
-- **`modules/TrustDomains/TrustDomainCapabilities.yaml`** - Trust Domain capability discovery schemas
-- **`modules/TrustDomainDevices/TrustDomainDevices.yaml`** - Trust Domain Device resource schemas
-- **`modules/NetworkAccessDevices/NetworkAccessDevices.yaml`** - Network Access Device resource schemas
-- **`modules/RebootRequests/RebootRequests.yaml`** - Reboot Request lifecycle schemas
-- **`modules/Services/Services.yaml`** - Service schemas
-- **`modules/Services/ServiceSites.yaml`** - Service Site schemas
+- **`common/CAMARA_event_common.yaml`** - Kept in sync with upstream, but neither spec references it today.
+- **`common/info-description-templates.yaml`** - Source text for the `CAMARA:MANDATORY:<name>:BEGIN`/`:END` blocks embedded in each spec's `info.description`. The embedded text must stay byte-identical to this file.
 
 ## Best Practices
 

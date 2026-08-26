@@ -14,7 +14,7 @@ Sandbox API Repository to describe, develop, document, and test the NetworkAcces
 * API Repository [wiki page](https://lf-camaraproject.atlassian.net/wiki/x/5wCzHQ)
 
 ## Scope
-* Service APIs for “Network Access Management” of Home Devices (see APIBacklog.md)  
+* Service APIs for “Network Access Management” of Home Devices (see [APIbacklog.md](https://github.com/camaraproject/APIBacklog/blob/main/documentation/APIbacklog.md))  
 * It provides the API consumer with the ability to:  
   * **Network Access Domains** — create and manage Trust Domains (declarative LAN-like network segments) with their access and policy configuration, register and onboard subscriber/IoT devices into them, and enumerate the subscriber's services and service sites.
   * **Network Access Devices** — enumerate operator-supplied network access equipment (and its reported status) and request immediate or scheduled device reboots.

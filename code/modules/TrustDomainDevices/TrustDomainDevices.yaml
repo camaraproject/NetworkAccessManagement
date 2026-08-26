@@ -416,7 +416,7 @@ components:
                 if it has not completed the onboarding process.
               example: true
       description: |
-        Represents a device registered to a Trust Domain within the network access management system.
+        Represents a device registered to a Trust Domain within the Network Access Domains API.
         This schema represents subscriber or IoT devices that have been provisioned to join a Trust Domain,
         as opposed to NetworkAccessDevice which represents operator-supplied network access equipment.
 

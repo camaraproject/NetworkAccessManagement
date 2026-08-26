@@ -1,9 +1,11 @@
-# Network Access Management — Test Definitions
+# Network Access Devices & Network Access Domains — Test Definitions
 
-This directory contains Gherkin (`.feature`) test definitions for the
-Network Access Management API. The files describe the behavioral contract
-of each operation: happy paths, schema validation, and the documented
-error cases. They are runner-agnostic by design — see "Executing the tests"
+This directory contains Gherkin (`.feature`) test definitions for the two
+APIs defined in this repository — **Network Access Devices**
+(`network-access-devices`) and **Network Access Domains**
+(`network-access-domains`). The files describe the behavioral contract of
+each operation: happy paths, schema validation, and the documented error
+cases. They are runner-agnostic by design — see "Executing the tests"
 below.
 
 These tests are produced and graded against the
@@ -22,7 +24,7 @@ and the reusable templates in
 | Auth-dependent tag | `@requires_oidc` — scenario requires real OIDC enforcement; auto-skip when running against a facade in auth-disabled mode |
 | Backend-dependent tag | `@backend_controlled` — scenario depends on backend state the facade alone cannot drive (e.g. a 409 conflict where a duplicate must already exist on the server). Used sparingly: tag a scenario only when its setup truly requires backend cooperation a runner cannot simulate via client-side requests. |
 | Setup steps | Always factored into a `Background:` block (`apiRoot` + resource + `Authorization` with required scope + `x-correlator` schema check, plus `Content-Type` and a default-valid request body for write ops, plus any path parameters shared across all scenarios). Every file in this directory has at least 2 scenarios — single-scenario files cannot satisfy the lint rule trio above, which is why Group B GETs each carry a 401 `@requires_oidc` scenario alongside the happy path. |
-| Schema references | JSON Pointer into the **bundled** OAS (e.g. `/components/schemas/TrustDomain`), not into `modules/...` |
+| Schema references | JSON Pointer into the **bundled** OAS of the API under test (e.g. `/components/schemas/TrustDomain`), not into `modules/...` |
 | Error-code coverage | One named `Scenario:` per documented response code; `Scenario Outline:` for parameter-varied cases (e.g. each missing-required-field permutation) |
 
 ## Coverage tiers
@@ -47,7 +49,7 @@ coverage, and split into two structural groups:
   Domain Device CRUD, Reboot Request CRUD). Every scenario is
   basic-tier, so a single Feature-level `@basic_tier` tag covers all
   scenarios in the file.
-- **Group B** — the 9 single-resource GETs. Each carries a basic-tier
+- **Group B** — the 9 read-only GET files. Each carries a basic-tier
   happy-path scenario plus a `401` unauthenticated scenario tagged
   `@full_tier @requires_oidc`. The 401 scenario seeds the eventual
   full-tier expansion and also satisfies the `gherkin-lint` rule trio
@@ -60,15 +62,16 @@ workstream against the public-release readiness gate; see
 
 ## File inventory
 
-One `.feature` file per operationId, 20 files total, all committed.
+One `.feature` file per operationId across both APIs, 20 files total, all
+committed — 7 for `network-access-devices` and 13 for `network-access-domains`.
 
-| Tag group | Operations |
-|---|---|
-| Services | `getServices`, `getService` |
-| Trust Domains | `getTrustDomainCapabilities`, `createTrustDomain`*, `getTrustDomains`, `getTrustDomain`, `updateTrustDomain`, `deleteTrustDomain` |
-| Trust Domain Devices | `createTrustDomainDevice`, `getTrustDomainDevices`, `getTrustDomainDevice`, `updateTrustDomainDevice`, `deleteTrustDomainDevice` |
-| Network Access Devices | `getNetworkAccessDevices`, `getNetworkAccessDevice` |
-| Reboot Requests | `createRebootRequest`, `getRebootRequests`, `getRebootRequest`, `updateRebootRequest`, `deleteRebootRequest` |
+| API | Tag group | Operations |
+|---|---|---|
+| `network-access-domains` | Services | `getServices`, `getService` |
+| `network-access-domains` | Trust Domains | `getTrustDomainCapabilities`, `createTrustDomain`*, `getTrustDomains`, `getTrustDomain`, `updateTrustDomain`, `deleteTrustDomain` |
+| `network-access-domains` | Trust Domain Devices | `createTrustDomainDevice`, `getTrustDomainDevices`, `getTrustDomainDevice`, `updateTrustDomainDevice`, `deleteTrustDomainDevice` |
+| `network-access-devices` | Network Access Devices | `getNetworkAccessDevices`, `getNetworkAccessDevice` |
+| `network-access-devices` | Reboot Requests | `createRebootRequest`, `getRebootRequests`, `getRebootRequest`, `updateRebootRequest`, `deleteRebootRequest` |
 
 `*` = full-tier exemplar (full 4xx error matrix). The remaining 19 are
 basic-tier with a 401 `@requires_oidc` scenario added in each Group B

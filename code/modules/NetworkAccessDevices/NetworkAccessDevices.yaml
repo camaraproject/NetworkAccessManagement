@@ -46,7 +46,7 @@ components:
   schemas:
     NetworkAccessDevice:
       description: |
-        Represents a network access device managed within the network access management system.
+        Represents a network access device managed through the Network Access Devices API.
         This schema represents operator-supplied network access equipment (e.g., gateways, mesh Wi-Fi systems).
         It extends the Commonalities Device model but MUST NOT be confused with end-user devices.
         The identifiers and addressing fields reflect the operator-managed equipment, not client equipment.
