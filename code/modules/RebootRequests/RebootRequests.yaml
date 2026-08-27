@@ -1,9 +1,11 @@
-# Local anchor definitions for external component examples. There isn't a native OpenAPI way to
-# cross-reference examples across files, so we define them here for reuse.
+# Hand-maintained example fragments for the media-type examples below. OpenAPI cannot $ref
+# an example value across files, so these anchors are duplicated data and must be updated
+# by hand when the schemas change. Schemas themselves carry property-level examples only.
 _imported_examples:
   uuid-example: &uuid-example-1 "3fa85f64-5717-4562-b3fc-2c963f66afa6"
   uuid-example-2: &uuid-example-2 "123e4567-e89b-12d3-a456-426614174000"
   date-time: &date-time "2023-07-03T12:27:08.312Z"
+  scheduled-at: &scheduled-at "2023-07-10T02:00:00.000Z"
   device-uuid-1: &device-uuid-1 "934ee3f4-1234-5678-9abc-abcdef123456"
   device-uuid-2: &device-uuid-2 "454ee3f4-1234-5678-9abc-abcdef123456"
   device-id-list: &device-id-list
@@ -31,7 +33,7 @@ components:
           type: string
           maxLength: 255
           description: A message related to the reboot request
-          example: &reboot-message "reboot to correct performance"
+          example: "reboot to correct performance"
         atTime:
           allOf:
             - $ref: "../NAM_Common.yaml#/components/schemas/DateTime"
@@ -61,18 +63,8 @@ components:
         - $ref: "../NAM_Common.yaml#/components/schemas/ResourceIdentifier"
         - $ref: "#/components/schemas/RebootRequestCreate"
         - $ref: "../NAM_Common.yaml#/components/schemas/ResourceAudit"
-        - type: object
-          properties:
-            id:
-              readOnly: true
-            createdAt:
-              readOnly: true
-            createdBy:
-              readOnly: true
-            modifiedAt:
-              readOnly: true
-            modifiedBy:
-              readOnly: true
+      # No readOnly overlay: ResourceIdentifier.id and every ResourceAudit field already
+      # declare readOnly, and a bare stub blanks the property to null in generated samples.
       required:
         - devices
       description: Represents a reboot request for one or more network access devices.
@@ -95,17 +87,19 @@ components:
       description: Request a scheduled reboot of multiple explicitly listed devices at a future 'atTime'.
       value:
         message: "Scheduled reboot for maintenance"
-        atTime: *date-time
+        atTime: *scheduled-at
         devices: *device-id-list
 
     RebootRequestResponseInferred:
       summary: Response after inferred default device reboot request
+      description: |
+        Reboot Request created from a body that omitted 'devices'. The response reflects the
+        single default device the provider resolved.
       value:
         id: *uuid-example-1
         message: "reboot to correct performance"
         devices:
           - *device-uuid-1
-        atTime: *date-time
         createdAt: *date-time
         createdBy: *created-by-example
         modifiedAt: *date-time
@@ -113,11 +107,14 @@ components:
 
     RebootRequestResponseExplicit:
       summary: Response after explicit multi-device reboot request
+      description: |
+        Reboot Request created from a body that listed device IDs explicitly and scheduled
+        the reboot with 'atTime'.
       value:
         id: *uuid-example-2
-        message: "scheduled maintenance reboot"
+        message: "Scheduled reboot for maintenance"
         devices: *device-id-list
-        atTime: *date-time
+        atTime: *scheduled-at
         createdAt: *date-time
         createdBy: *created-by-example
         modifiedAt: *date-time

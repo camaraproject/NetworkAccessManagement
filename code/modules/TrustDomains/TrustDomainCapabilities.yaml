@@ -1,3 +1,5 @@
+# Examples: property-level only. Renderers synthesize object samples from those and
+# honor readOnly/writeOnly while doing so.
 components:
   schemas:
     TrustDomainCapabilities:
@@ -22,13 +24,6 @@ components:
               $ref: "#/components/schemas/BandwidthPolicyCapability"
             egressAllowedList:
               $ref: "#/components/schemas/EgressPolicyCapability"
-          example:
-            maxDevices:
-              maxValue: 100
-              minValue: 1
-            maxDomainDownstreamRate:
-              maxValue: 1000000000
-              minValue: 1000000
       required:
         - supportedAccessTypes
       description: Describes the Trust Domain configuration capabilities supported by this API provider

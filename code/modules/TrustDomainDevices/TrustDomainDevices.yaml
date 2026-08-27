@@ -1,5 +1,9 @@
-# Local anchor definitions for external component examples. There isn't a native OpenAPI way to
-# cross-reference examples across files, so we define them here for reuse.
+# Hand-maintained example fragments for the media-type examples below. OpenAPI cannot $ref
+# an example value across files, so these anchors are duplicated data and must be updated
+# by hand when the schemas change. Schemas themselves carry property-level examples only.
+#
+# `device-credential-assign-example` carries the writeOnly `value` and is therefore a
+# REQUEST-only fragment — never reuse it in a response example.
 _imported_examples:
   device-uuid-example: &device-uuid-example "a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d"
   device-uuid-example-2: &device-uuid-example-2 "b2c3d4e5-f6a7-4b8c-9d0e-1f2a3b4c5d6e"
@@ -384,21 +388,20 @@ components:
         - $ref: "#/components/schemas/TrustDomainDeviceCreate"
         - $ref: "../../common/CAMARA_common.yaml#/components/schemas/Device"
         - $ref: "../NAM_Common.yaml#/components/schemas/ResourceAudit"
+        # No stubs for id / createdAt / createdBy / modifiedAt / modifiedBy: those are
+        # already readOnly in ResourceIdentifier and ResourceAudit. A bare `readOnly: true`
+        # stub wins the allOf merge and blanks the property to null in generated samples.
+        # ipv4Address / ipv6Address DO need the override (Commonalities Device does not mark
+        # them readOnly), so they restate the underlying schema rather than being bare stubs.
         - type: object
           properties:
-            id:
-              readOnly: true
             ipv4Address:
+              allOf:
+                - $ref: "../../common/CAMARA_common.yaml#/components/schemas/DeviceIpv4Address"
               readOnly: true
             ipv6Address:
-              readOnly: true
-            createdAt:
-              readOnly: true
-            createdBy:
-              readOnly: true
-            modifiedAt:
-              readOnly: true
-            modifiedBy:
+              allOf:
+                - $ref: "../../common/CAMARA_common.yaml#/components/schemas/DeviceIpv6Address"
               readOnly: true
             connected:
               type: boolean
@@ -467,6 +470,9 @@ components:
 
     TrustDomainDeviceCreateAssignCredential:
       summary: Register a device with a client-provided credential.
+      description: |
+        Registers a device using ASSIGN, supplying the credential value directly. The
+        supplied 'value' is writeOnly and is never echoed back in the response.
       value:
         deviceName: "Office Switch"
         externalId: "SW-OFFICE-01"

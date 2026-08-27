@@ -1,36 +1,5 @@
-# Local anchor definitions for external component examples. There isn't a native OpenAPI way to
-# cross-reference examples across files, so we define them here for reuse.
-_imported_examples:
-  uuid-example: &uuid-example "3fa85f64-5717-4562-b3fc-2c963f66afa6"
-  uuid-example-2: &uuid-example-2 "123e4567-e89b-12d3-a456-426614174000"
-  uuid-example-3: &uuid-example-3 "123e4567-e89b-12d3-a456-426614174001"
-  property-address-example: &property-address-example
-    id: *uuid-example
-    addressLine1: "123 Main St"
-    addressLine2: "Suite 456"
-    streetNr: "123"
-    streetNrSuffix: "A"
-    streetNrLast: "125"
-    streetNrLastSuffix: "B"
-    streetName: "Main"
-    subUnitType: "Apartment"
-    subUnitNr: "A12"
-    levelType: "Floor"
-    levelNr: "3"
-    buildingName: "Sunset Towers"
-    privateStreetName: "Private Rd"
-    locality: "Example Locality"
-    city: "Example State"
-    stateOrProvince: "EX"
-    country: "United States"
-    postCode: "12345"
-    postCodeExtension: "6789"
-  service-site-example: &service-site-example
-    id: "3fa85f64-5717-4562-b3fc-2c963f66afa6"
-    name: "Primary Residence"
-    description: "123 Main Street"
-    location: *property-address-example
-
+# Examples: property-level only. Renderers synthesize the object and list samples from
+# those and honor readOnly/writeOnly while doing so.
 components:
   parameters:
     serviceId:
@@ -74,14 +43,6 @@ components:
           $ref: "./ServiceSites.yaml#/components/schemas/ServiceSite"
       required:
         - id
-      example:
-        id: *uuid-example
-        name: "Main Home Internet"
-        description: "Internet subscription for primary residence"
-        serviceSite:
-          id: *uuid-example-2
-          name: "Primary Residence"
-          description: "123 Main Street"
 
     ServiceList:
       type: array
@@ -89,14 +50,21 @@ components:
       items:
         $ref: "#/components/schemas/Service"
       maxItems: 100
-      example:
-        - id: *uuid-example
+
+  examples:
+    ServiceListResponse:
+      summary: List of services
+      description: |
+        Two services for the calling identity. The first is tied to a service site; the
+        second omits the optional 'serviceSite' (a service need not be location-specific).
+      value:
+        - id: "3fa85f64-5717-4562-b3fc-2c963f66afa6"
           name: "Main Home Internet"
           description: "Internet subscription for primary residence"
           serviceSite:
-            id: *uuid-example-2
+            id: "123e4567-e89b-12d3-a456-426614174000"
             name: "Primary Residence"
             description: "123 Main Street"
-        - id: *uuid-example-3
+        - id: "123e4567-e89b-12d3-a456-426614174001"
           name: "Vacation Home Internet"
           description: "Internet subscription for vacation home"

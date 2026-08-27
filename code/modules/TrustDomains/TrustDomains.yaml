@@ -1,14 +1,16 @@
-# Local anchor definitions for external component examples. There isn't a native OpenAPI way to
-# cross-reference examples across files, so we define them here for reuse.
+# Hand-maintained example fragments for the media-type examples below. OpenAPI cannot
+# $ref an example value across files, so these anchors are duplicated data — nothing ties
+# them to the schemas they illustrate. They must be updated by hand when those schemas
+# change.
+#
+# Request and response fragments are kept SEPARATE on purpose: reusing one anchor for both
+# leaks writeOnly fields into the response documentation. Response fragments must omit every
+# writeOnly field; request fragments must omit every readOnly field.
 _imported_examples:
   uuid-example: &uuid-example "3fa85f64-5717-4562-b3fc-2c963f66afa6"
   service-uuid-example: &service-uuid-example "123e4567-e89b-12d3-a456-426614174000"
-  wifi-wpa2-personal-basic-example: &wifi-wpa2-personal-basic-example
-    accessType: "Wi-Fi:WPA_PERSONAL"
-    securityMode:
-      password: "my-password"
-      securityModeType: "WPA2-Personal"
 
+  # --- request fragments (may carry writeOnly fields such as securityMode.password) ---
   wifi-wpa2-personal-example: &wifi-wpa2-personal-example
     accessType: "Wi-Fi:WPA_PERSONAL"
     ssid: "my-ssid"
@@ -23,6 +25,9 @@ _imported_examples:
       password: "my-password"
       securityModeType: "WPA3-Personal"
 
+  # Shared by request and response examples only because no Thread field is writeOnly.
+  # If networkKey ever becomes writeOnly, split this into separate request and response
+  # fragments like the Wi-Fi ones below.
   thread-structured-example: &thread-structured-example
     accessType: "Thread:STRUCTURED"
     channel: 13
@@ -31,10 +36,18 @@ _imported_examples:
     networkName: "Spec-Thread-B3AF"
     panId: "d63e"
 
-  thread-tlv-example: &thread-tlv-example
-    accessType: "Thread:TLV"
-    mode: tlv
-    operationalDataset: "0e08000000000000010010000102030405060708090a0b0c0d0e0f"
+  # --- response fragments (writeOnly fields omitted — the server never returns them) ---
+  wifi-wpa2-personal-response-example: &wifi-wpa2-personal-response-example
+    accessType: "Wi-Fi:WPA_PERSONAL"
+    ssid: "my-ssid"
+    securityMode:
+      securityModeType: "WPA2-Personal"
+
+  wifi-wpa3-personal-response-example: &wifi-wpa3-personal-response-example
+    accessType: "Wi-Fi:WPA_PERSONAL"
+    ssid: "my-ssid"
+    securityMode:
+      securityModeType: "WPA3-Personal"
 
   max-devices-policy-example: &max-devices-policy-example
     maxDevices: 10
@@ -155,18 +168,9 @@ components:
         - $ref: "../NAM_Common.yaml#/components/schemas/ResourceIdentifier"
         - $ref: "#/components/schemas/TrustDomainCreate"
         - $ref: "../NAM_Common.yaml#/components/schemas/ResourceAudit"
-        - type: object
-          properties:
-            id:
-              readOnly: true
-            createdAt:
-              readOnly: true
-            createdBy:
-              readOnly: true
-            modifiedAt:
-              readOnly: true
-            modifiedBy:
-              readOnly: true
+      # No readOnly overlay here: ResourceIdentifier.id and every ResourceAudit field
+      # already declare readOnly. A bare `readOnly: true` stub wins the allOf merge and
+      # blanks the property to null in generated samples.
       description: Represents a trust domain within the Network Access Domains API.
 
 
@@ -245,7 +249,7 @@ components:
         description: "A basic trust domain example"
         enabled: true
         accessDetails:
-          - <<: *wifi-wpa2-personal-example
+          - <<: *wifi-wpa2-personal-response-example
         serviceId: *service-uuid-example
         createdAt: "2025-10-21T14:27:08.312Z"
         createdBy: *created-by-example
@@ -264,7 +268,7 @@ components:
         policies:
           <<: *egress-allowed-list-policy-example
         accessDetails:
-          - <<: *wifi-wpa3-personal-example
+          - <<: *wifi-wpa3-personal-response-example
           - <<: *thread-structured-example
         serviceId: *service-uuid-example
         createdAt: "2025-10-21T14:27:08.312Z"
