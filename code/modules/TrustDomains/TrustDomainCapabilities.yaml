@@ -26,11 +26,11 @@ components:
               $ref: "#/components/schemas/EgressPolicyCapability"
       required:
         - supportedAccessTypes
-      description: Describes the Trust Domain configuration capabilities supported by this API provider
+      description: Describes the Trust Domain configuration capabilities supported by this API Provider
 
     SupportedAccessType:
       type: object
-      description: Access type capabilities with discriminated properties based on accessType. Represents the configuration options supported by the API provider for a given access type. This is distinct from AccessDetail, which represents the configuration requested by an API client.
+      description: Access type capabilities with discriminated properties based on accessType. Represents the configuration options supported by the API Provider for a given access type. This is distinct from AccessDetail, which represents the configuration requested by an API Consumer.
       properties:
         accessType:
           type: string
@@ -200,7 +200,7 @@ components:
           type: array
           items:
             type: string
-            description: A Wi-Fi security mode type supported by the API provider.
+            description: A Wi-Fi security mode type supported by the API Provider.
             enum:
               - "WPA2-Personal"
               - "WPA3-Personal"

@@ -133,9 +133,9 @@ components:
       type: object
       description: |
         Well-Known SSID Onboarding (WKSO) bootstrapping configuration. The device
-        connects to a well-known SSID and presents a client certificate; the operator
-        uses identity material extracted from the certificate to look up and
-        authorize the device on the Trust Domain.
+        connects to a well-known SSID and presents a client certificate; the API
+        Provider uses identity material extracted from the certificate to look up
+        and authorize the device on the Trust Domain.
 
         **Note:** The exact `bootstrappingUri` shape is provisional and
         implementation-specific. WKSO is not yet standardized; the format below
@@ -149,8 +149,8 @@ components:
           type: string
           maxLength: 2048
           description: |
-            A WKSO bootstrapping URI carrying the identity material the operator
-            uses to locate and authenticate the device.
+            A WKSO bootstrapping URI carrying the identity material the API
+            Provider uses to locate and authenticate the device.
 
             Format is provisional and may change as WKSO is standardized. The
             current proof-of-concept convention encodes the device's Organizational
@@ -212,7 +212,7 @@ components:
       type: object
       description: |
         Request the server to generate a unique per-device credential. The API
-        consumer provides the credential types the device supports, in preference
+        Consumer provides the credential types the device supports, in preference
         order (most preferred first). The server selects the first type that is
         compatible with the Trust Domain's access configuration and generates a
         unique credential of that type.
@@ -256,7 +256,7 @@ components:
     AssignDeviceCredential:
       type: object
       description: |
-        Assign a specific credential value to the device. The API consumer
+        Assign a specific credential value to the device. The API Consumer
         provides both the credential type and the passphrase to use. The supplied
         `value` is write-only — it is applied to the device but is never returned in
         API responses.
@@ -269,7 +269,7 @@ components:
           type: string
           enum:
             - ASSIGN
-          description: Indicates the client is providing a specific credential.
+          description: Indicates the API Consumer is providing a specific credential.
           example: "ASSIGN"
         credentialType:
           $ref: "#/components/schemas/CredentialType"
@@ -285,7 +285,7 @@ components:
 
     DeviceCredential:
       description: |
-        Per-device network credential configuration. Allows the API consumer to
+        Per-device network credential configuration. Allows the API Consumer to
         either request server-generated credentials (GENERATE) or assign a
         specific credential value (ASSIGN).
 
@@ -357,8 +357,8 @@ components:
 
             **Update Semantics**
             - On update (PATCH), the object replaces the previous object entirely when
-              included. Partial merge semantics are not defined; clients MUST supply the
-              complete desired configuration for this field.
+              included. Partial merge semantics are not defined; API Consumers MUST
+              supply the complete desired configuration for this field.
         deviceCredential:
           $ref: "#/components/schemas/DeviceCredential"
 
@@ -469,7 +469,7 @@ components:
         bootstrappingInfo: *bootstrapping-matter-example
 
     TrustDomainDeviceCreateAssignCredential:
-      summary: Register a device with a client-provided credential.
+      summary: Register a device with an API Consumer-provided credential.
       description: |
         Registers a device using ASSIGN, supplying the credential value directly. The
         supplied 'value' is writeOnly and is never echoed back in the response.

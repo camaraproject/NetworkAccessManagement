@@ -11,7 +11,7 @@ Feature: CAMARA Network Access Domains API, vwip - Operation createTrustDomain
   # - @network_access_domains_createTrustDomain_NN_<slug>  unique scenario id
   # - @basic_tier        scenario is part of the release-candidate basic test plan
   # - @full_tier         scenario only required for the full (public-release) test plan
-  # - @requires_oidc     scenario depends on real OIDC enforcement at the API provider
+  # - @requires_oidc     scenario depends on real OIDC enforcement at the API Provider
   #                      (skip when running against a facade in auth-disabled mode)
 
   Background: Common createTrustDomain setup
@@ -48,7 +48,7 @@ Feature: CAMARA Network Access Domains API, vwip - Operation createTrustDomain
     Then the response status code is 201
     And the response body complies with the OAS schema at "/components/schemas/TrustDomain"
     And the response property "$.accessDetails[0].accessType" is "Wi-Fi:WPA_PERSONAL"
-    And the response property "$.accessDetails[0]" does not contain a property "ssid" or contains the SSID resolved by the network operator
+    And the response property "$.accessDetails[0]" does not contain a property "ssid" or contains the SSID resolved by the API Provider
 
   @network_access_domains_createTrustDomain_03_thread_structured_success @basic_tier
   Scenario: Create a Trust Domain with Thread:STRUCTURED access
