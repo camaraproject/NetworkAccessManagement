@@ -1,5 +1,5 @@
 # This file defines the AccessDetail schema model for different network access types.
-# It includes Wi-Fi and Thread access details with various security modes.
+# It includes Wi-Fi access details with various security modes.
 #
 # Examples: property-level only. No object-level `example:` blocks here — several of
 # these schemas carry writeOnly secrets, and an object-level example is printed
@@ -119,90 +119,16 @@ components:
         - accessType
         - securityMode
 
-    ThreadStructuredAccessDetail:
-      type: object
-      description: Complete access details for Thread networks using structured (individual parameter) format.
-      properties:
-        accessType:
-          type: string
-          description: The type of network access.
-          enum:
-            - "Thread:STRUCTURED"
-          example: "Thread:STRUCTURED"
-        channel:
-          type: integer
-          format: int32
-          minimum: 11
-          maximum: 26
-          description: The Thread channel (IEEE 802.15.4 channel number)
-          example: 13
-        extendedPanId:
-          type: string
-          pattern: "^[0-9a-fA-F]{16}$"
-          maxLength: 16
-          description: The Extended PAN ID (16 hex digits)
-          example: "d63e8e3e495ebbc3"
-        networkKey:
-          type: string
-          pattern: "^[0-9a-fA-F]{32}$"
-          maxLength: 32
-          description: The Thread Network Key (32 hex digits)
-          example: "dfd34f0f05cad978ec4e32b0413038ff"
-        networkName:
-          type: string
-          minLength: 1
-          maxLength: 16
-          description: The Thread Network Name (1-16 ASCII characters)
-          example: "Spec-Thread-B3AF"
-        panId:
-          type: string
-          pattern: "^[0-9a-fA-F]{4}$"
-          maxLength: 4
-          description: The PAN ID (4 hex digits)
-          example: "d63e"
-      additionalProperties: false
-      required:
-        - accessType
-        - channel
-        - extendedPanId
-        - networkKey
-        - networkName
-        - panId
-
-    ThreadTlvAccessDetail:
-      type: object
-      description: Complete access details for Thread networks using TLV (Type-Length-Value) encoded operational dataset format.
-      properties:
-        accessType:
-          type: string
-          description: The type of network access.
-          enum:
-            - "Thread:TLV"
-          example: "Thread:TLV"
-        operationalDataset:
-          type: string
-          maxLength: 255
-          description: The Thread network credentials (operational dataset) encoded as a TLV hex string
-          example: "0e08000000000000010010000102030405060708090a0b0c0d0e0f"
-      additionalProperties: false
-      required:
-        - accessType
-        - operationalDataset
-
     # Single discriminated union with namespaced values
     AccessDetail:
       oneOf:
         - $ref: "#/components/schemas/WiFiWpaPersonalAccessDetail"
         - $ref: "#/components/schemas/WiFiWpaEnterpriseAccessDetail"
-        - $ref: "#/components/schemas/ThreadStructuredAccessDetail"
-        - $ref: "#/components/schemas/ThreadTlvAccessDetail"
       discriminator:
         propertyName: accessType
         mapping:
           "Wi-Fi:WPA_PERSONAL": "#/components/schemas/WiFiWpaPersonalAccessDetail"
           "Wi-Fi:WPA_ENTERPRISE": "#/components/schemas/WiFiWpaEnterpriseAccessDetail"
-          "Thread:STRUCTURED": "#/components/schemas/ThreadStructuredAccessDetail"
-          "Thread:TLV": "#/components/schemas/ThreadTlvAccessDetail"
       required:
         - accessType
       description: Network access details for different network types and variants
