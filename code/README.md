@@ -24,7 +24,7 @@ code/
 │   ├── CAMARA_event_common.yaml                 # Commonalities event/subscription schemas (synced; not referenced by either spec today)
 │   └── info-description-templates.yaml          # Source text for the CAMARA:MANDATORY blocks in each spec's info.description
 └── modules/                                     # Modular domain-focused component files
-    ├── AccessDetail.yaml                        # Discriminated access detail variants (Wi-Fi, Thread)
+    ├── AccessDetail.yaml                        # Discriminated access detail variants (Wi-Fi)
     ├── NAM_Common.yaml                          # Shared primitives (Uuid, DateTime, PropertyAddress, ResourceIdentifier, ResourceAudit, securitySchemes)
     ├── Policy.yaml                              # Trust Domain policy schemas (maxDevices, bandwidth, egress)
     ├── NetworkAccessDevices/                    # Network Access Device resource schemas

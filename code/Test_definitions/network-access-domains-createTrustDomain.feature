@@ -50,13 +50,13 @@ Feature: CAMARA Network Access Domains API, vwip - Operation createTrustDomain
     And the response property "$.accessDetails[0].accessType" is "Wi-Fi:WPA_PERSONAL"
     And the response property "$.accessDetails[0]" does not contain a property "ssid" or contains the SSID resolved by the network operator
 
-  @network_access_domains_createTrustDomain_03_thread_structured_success @basic_tier
-  Scenario: Create a Trust Domain with Thread:STRUCTURED access
-    Given the request body is set to the example "TrustDomainCreateThreadStructured" of the schema "TrustDomainCreate"
+  @network_access_domains_createTrustDomain_03_wpa_enterprise_success @basic_tier
+  Scenario: Create a Trust Domain with WPA-Enterprise Wi-Fi access
+    Given the request body is set to the example "TrustDomainCreateWpaEnterprise" of the schema "TrustDomainCreate"
     When the request "createTrustDomain" is sent
     Then the response status code is 201
     And the response body complies with the OAS schema at "/components/schemas/TrustDomain"
-    And the response property "$.accessDetails[0].accessType" is "Thread:STRUCTURED"
+    And the response property "$.accessDetails[0].accessType" is "Wi-Fi:WPA_ENTERPRISE"
 
   @network_access_domains_createTrustDomain_04_policies_success @basic_tier
   Scenario: Create a Trust Domain with QoS / bandwidth policies
@@ -124,7 +124,7 @@ Feature: CAMARA Network Access Domains API, vwip - Operation createTrustDomain
 
   @network_access_domains_createTrustDomain_400_05_access_type_payload_mismatch @full_tier
   Scenario: accessType discriminator does not match the supplied accessDetail variant
-    Given the request body property "$.accessDetails[0].accessType" is set to "Thread:STRUCTURED"
+    Given the request body property "$.accessDetails[0].accessType" is set to "Wi-Fi:WPA_ENTERPRISE"
     And the request body property "$.accessDetails[0]" contains the fields of a Wi-Fi:WPA_PERSONAL accessDetail except for "accessType"
     When the request "createTrustDomain" is sent
     Then the response status code is 400

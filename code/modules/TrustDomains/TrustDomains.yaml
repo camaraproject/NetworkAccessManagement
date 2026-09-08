@@ -25,16 +25,15 @@ _imported_examples:
       password: "my-password"
       securityModeType: "WPA3-Personal"
 
-  # Shared by request and response examples only because no Thread field is writeOnly.
-  # If networkKey ever becomes writeOnly, split this into separate request and response
-  # fragments like the Wi-Fi ones below.
-  thread-structured-example: &thread-structured-example
-    accessType: "Thread:STRUCTURED"
-    channel: 13
-    extendedPanId: "d63e8e3e495ebbc3"
-    networkKey: "dfd34f0f05cad978ec4e32b0413038ff"
-    networkName: "Spec-Thread-B3AF"
-    panId: "d63e"
+  # Shared by request and response examples only because no WPA-Enterprise field
+  # is writeOnly. If one becomes writeOnly, split this into separate request and
+  # response fragments like the WPA-Personal examples below.
+  wifi-wpa3-enterprise-example: &wifi-wpa3-enterprise-example
+    accessType: "Wi-Fi:WPA_ENTERPRISE"
+    ssid: "my-enterprise-ssid"
+    securityMode:
+      authServer: "1.2.3.4"
+      securityModeType: "WPA3-Enterprise"
 
   # --- response fragments (writeOnly fields omitted — the server never returns them) ---
   wifi-wpa2-personal-response-example: &wifi-wpa2-personal-response-example
@@ -113,12 +112,12 @@ components:
           $ref: "../Policy.yaml#/components/schemas/Policies"
         accessDetails:
           type: array
-          maxItems: 4
+          maxItems: 2
           # Each item grants access for a device to this Trust Domain, scoped by the associated AP/network access device or AP group.
           description: |
             A list of access configurations that define how end-user devices may join the
-            Trust Domain. Each entry represents one access type (e.g., Wi-Fi WPA Personal,
-            Wi-Fi WPA Enterprise, Thread Structured, Thread TLV).
+            Trust Domain. Each entry represents one access type (Wi-Fi WPA Personal or
+            Wi-Fi WPA Enterprise).
 
             **Multiplicity and Uniqueness**
             - A Trust Domain MUST contain at least one accessDetail entry.
@@ -131,7 +130,7 @@ components:
             - On update (PATCH), the list replaces the previous list entirely when included.
               Partial merge semantics are not defined; clients MUST supply the complete
               desired configuration for this field.
-            - At least one entry is always required (`minItems: 1`, at most `maxItems: 4`); an empty
+            - At least one entry is always required (`minItems: 1`, at most `maxItems: 2`); an empty
               array is rejected with `400 INVALID_ARGUMENT`. A Trust Domain cannot exist with no valid
               admittance method.
 
@@ -139,8 +138,8 @@ components:
             - The API provider MUST validate that the requested access types and their
               properties conform to the provider's advertised capabilities
               (via GET /trust-domains/capabilities).
-            - Providers MAY enforce additional constraints (e.g., SSID uniqueness,
-              channel restrictions, Thread dataset rules) based on local policy.
+            - Providers MAY enforce additional constraints (e.g., SSID uniqueness)
+              based on local policy.
 
             **Deployment Behavior**
             - All Network Access Devices configured with this Trust Domain MUST apply all
@@ -215,15 +214,15 @@ components:
           <<: *max-devices-policy-example
         serviceId: *service-uuid-example
 
-    TrustDomainCreateThreadStructured:
-      summary: Create a Trust Domain with Thread structured access details.
-      description: Creates a Trust Domain with a Thread structured access detail.
+    TrustDomainCreateWpaEnterprise:
+      summary: Create a Trust Domain with WPA-Enterprise Wi-Fi access.
+      description: Creates a Trust Domain with a single WPA-Enterprise Wi-Fi access detail that authenticates against an authentication server.
       value:
-        name: "Thread Structured Network"
-        description: "Request defines a Trust Domain with Thread structured access details."
+        name: "Enterprise WiFi Network"
+        description: "Request defines a Trust Domain with WPA-Enterprise Wi-Fi access. The request specifies an SSID and an authentication server, implying end-user credentials are validated against that server."
         enabled: true
         accessDetails:
-          - <<: *thread-structured-example
+          - <<: *wifi-wpa3-enterprise-example
         serviceId: *service-uuid-example
 
     TrustDomainCreateQoSPolicies:
@@ -256,9 +255,9 @@ components:
         modifiedAt: "2025-10-21T14:27:08.312Z"
         modifiedBy: *modified-by-example
 
-    TrustDomainResponseWiFiThread:
-      summary: Created Trust Domain (Wi-Fi + Thread)
-      description: Example of a created Trust Domain including Wi-Fi and Thread access details and populated policies.
+    TrustDomainResponseMultiAccess:
+      summary: Created Trust Domain (WPA-Personal + WPA-Enterprise)
+      description: Example of a created Trust Domain including WPA-Personal and WPA-Enterprise Wi-Fi access details and populated policies.
       value:
         id: *uuid-example
         name: "Primary WiFi Network"
@@ -269,7 +268,7 @@ components:
           <<: *egress-allowed-list-policy-example
         accessDetails:
           - <<: *wifi-wpa3-personal-response-example
-          - <<: *thread-structured-example
+          - <<: *wifi-wpa3-enterprise-example
         serviceId: *service-uuid-example
         createdAt: "2025-10-21T14:27:08.312Z"
         createdBy: *created-by-example

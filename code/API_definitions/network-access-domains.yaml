@@ -13,7 +13,7 @@ info:
     devices into those segments.
 
     A Trust Domain lets an API consumer express *intent* — "these devices should share a private network with this
-    Wi-Fi/Thread configuration and these policies" — which the network operator translates into configuration on the
+    Wi-Fi configuration and these policies" — which the network operator translates into configuration on the
     subscriber's network access equipment. The API also enumerates the subscriber's services and service sites so a
     consumer can target the correct account and location.
 
@@ -32,10 +32,10 @@ info:
 
     # Relevant Terms and Definitions
     - **Trust Domain**: a declarative, intent-level grouping that defines which devices are permitted to communicate with each other as if they were on the same LAN and what high-level access policies apply to that group.
-    - **Access Detail**: one admittance configuration for a Trust Domain — an access type (Wi-Fi WPA Personal/Enterprise, Thread Structured/TLV) together with its security parameters. A Trust Domain has one or more.
+    - **Access Detail**: one admittance configuration for a Trust Domain — an access type (Wi-Fi WPA Personal/Enterprise) together with its security parameters. A Trust Domain has one or more.
     - **Policy**: an optional, independently-applied constraint on a Trust Domain (e.g., maximum number of devices, up/downstream rate limit, egress allow-list).
     - **Trust Domain Device**: a subscriber or IoT device (laptop, phone, IoT sensor, etc.) registered to a Trust Domain so that it may join the segment under that domain's access configuration and policies. **This is distinct from a Network Access Device** — it is end-user/subscriber equipment, not operator infrastructure.
-    - **Network Access Device**: network-operator-supplied access equipment (e.g., gateway, router, access point) that enforces Trust Domains and supports network segmentation technologies. Multiple devices that provide LAN connectivity for the same Trust Domain (e.g., mesh Wi-Fi, Thread personal area network) SHOULD be presented as a single device for implementations of this API. (Inventory and reboot of this equipment are handled by the companion *Network Access Devices* API.)
+    - **Network Access Device**: network-operator-supplied access equipment (e.g., gateway, router, access point) that enforces Trust Domains and supports network segmentation technologies. Multiple devices that provide LAN connectivity for the same Trust Domain (e.g., mesh Wi-Fi) SHOULD be presented as a single device for implementations of this API. (Inventory and reboot of this equipment are handled by the companion *Network Access Devices* API.)
     - **Bootstrapping / Provisioning Protocol**: the mechanism (DPP, Matter, WKSO) used to securely onboard a Trust Domain Device onto the network.
     - **API Provider**: Provider that implements this API.
     - **Network Operator**: Service provider that has operational control of supporting devices.
@@ -61,10 +61,9 @@ info:
     **policies** and an optional **expiration**.
 
     - **Access details** (`accessDetails`) describe how end-user devices may join the domain. Each entry is one access
-      type — Wi-Fi (WPA Personal/Enterprise) or Thread (Structured/TLV) — with its security parameters. A domain has at
-      least one entry, each access type SHOULD appear at most once, and on update the supplied list **replaces** the
-      previous list in full (there is no partial merge). All Network Access Devices configured with the domain apply
-      all of its access details.
+      type — Wi-Fi (WPA Personal/Enterprise) — with its security parameters. A domain has at least one entry, each
+      access type SHOULD appear at most once, and on update the supplied list **replaces** the previous list in full
+      (there is no partial merge). All Network Access Devices configured with the domain apply all of its access details.
     - **Policies** (`policies`) are optional, independently-applied constraints: a maximum device count, maximum
       up/downstream domain rate, and an egress allow-list (FQDN/CIDR). Omitting a policy means "no constraint" for that
       category.
@@ -101,7 +100,7 @@ info:
     ## Discovering provider capabilities
     Different operators support different access types, security modes, and limits. Call
     `GET /trust-domains/capabilities` **before** creating a Trust Domain to discover what the target provider supports
-    (Wi-Fi/Thread variants, policy ranges, configuration limits). Capabilities describe what the *provider* offers, as
+    (Wi-Fi variants, policy ranges, configuration limits). Capabilities describe what the *provider* offers, as
     opposed to `accessDetails`, which is what an *API client* requests.
 
     <!-- CAMARA:MANDATORY:authorization-and-authentication:BEGIN -->
@@ -331,7 +330,7 @@ paths:
         Capabilities describe supported access types, policy constraints, and configuration limits.
 
         This endpoint enables API clients to discover:
-        - Which access types are supported (Wi-Fi variants, Thread modes, etc.)
+        - Which access types are supported (Wi-Fi variants)
         - What policy types are available
         - Operational limits and constraints
         - Advanced features and configuration options
@@ -390,8 +389,8 @@ paths:
                 $ref: '../modules/TrustDomains/TrustDomains.yaml#/components/examples/TrustDomainCreateWpa2Personal'
               TrustDomainCreateInferredSsid:
                 $ref: '../modules/TrustDomains/TrustDomains.yaml#/components/examples/TrustDomainCreateInferredSsid'
-              TrustDomainCreateThreadStructured:
-                $ref: '../modules/TrustDomains/TrustDomains.yaml#/components/examples/TrustDomainCreateThreadStructured'
+              TrustDomainCreateWpaEnterprise:
+                $ref: '../modules/TrustDomains/TrustDomains.yaml#/components/examples/TrustDomainCreateWpaEnterprise'
               TrustDomainCreateEphemeral:
                 $ref: '../modules/TrustDomains/TrustDomains.yaml#/components/examples/TrustDomainCreateEphemeral'
               TrustDomainCreateQoSPolicies:
@@ -409,8 +408,8 @@ paths:
               examples:
                 TrustDomainResponseBasic:
                   $ref: '../modules/TrustDomains/TrustDomains.yaml#/components/examples/TrustDomainResponseBasic'
-                TrustDomainResponseWiFiThread:
-                  $ref: '../modules/TrustDomains/TrustDomains.yaml#/components/examples/TrustDomainResponseWiFiThread'
+                TrustDomainResponseMultiAccess:
+                  $ref: '../modules/TrustDomains/TrustDomains.yaml#/components/examples/TrustDomainResponseMultiAccess'
         '400':
           $ref: '../common/CAMARA_common.yaml#/components/responses/Generic400'
         '401':
