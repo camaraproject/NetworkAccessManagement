@@ -23,7 +23,7 @@ Feature: CAMARA Network Access Devices API, vwip - Operation createRebootRequest
   @network_access_devices_createRebootRequest_01_immediate_default_device_success @backend_controlled
   Scenario: Request an immediate reboot of the default device (implicit targeting)
     Given the calling subscriber has exactly one reboot-capable Network Access Device
-    And the API provider supports default-device inference
+    And the API Provider supports default-device inference
     And the request body is set to the example "RebootRequestCreateImmediateDefaultDevice" of the schema "RebootRequestCreate"
     When the request "createRebootRequest" is sent
     Then the response status code is 201

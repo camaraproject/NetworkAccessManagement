@@ -7,7 +7,7 @@ Feature: CAMARA Network Access Domains API, vwip - Operation getTrustDomainDevic
   # - @network_access_domains_getTrustDomainDevice_NN_<slug>  unique scenario id
   # - @basic_tier   release-candidate gate (sunny-day + schema validation)
   # - @full_tier    public-release gate (rainy-day matrix)
-  # - @requires_oidc scenario depends on real OIDC enforcement at the API provider
+  # - @requires_oidc scenario depends on real OIDC enforcement at the API Provider
 
   Background: Common getTrustDomainDevice setup
     Given an environment at "apiRoot"

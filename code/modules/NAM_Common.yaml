@@ -16,7 +16,7 @@ components:
         **Scope Model:**
         This API uses a simplified scope model to balance clarity with flexibility.
         Functional authorization (e.g., managing Trust Domains) is handled by scopes,
-        while ownership enforcement is handled by the API provider.
+        while ownership enforcement is handled by the API Provider.
 
         **Available Scopes:**
         - `network-access-domains:trust-domains` — Full management of Trust Domains created by the calling API client
