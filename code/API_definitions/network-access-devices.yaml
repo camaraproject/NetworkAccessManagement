@@ -233,8 +233,6 @@ paths:
           $ref: "../common/CAMARA_common.yaml#/components/responses/Generic401"
         "403":
           $ref: "../common/CAMARA_common.yaml#/components/responses/Generic403"
-        "404":
-          $ref: "../common/CAMARA_common.yaml#/components/responses/Generic404"
         "500":
           $ref: "../common/CAMARA_common.yaml#/components/responses/Generic500"
         "503":
