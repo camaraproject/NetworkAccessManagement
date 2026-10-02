@@ -1,7 +1,7 @@
 Feature: CAMARA Network Access Devices API, vwip - Operation getNetworkAccessDevices
   # Operation: GET /network-access-devices
   # Required scope: network-access-devices:reboot
-  # Documented response codes: 200, 401, 403, 404, 500, 503
+  # Documented response codes: 200, 401, 403, 500, 503
   #
   # Tagging conventions:
   # - @network_access_devices_getNetworkAccessDevices_NN_<slug>  unique scenario id
