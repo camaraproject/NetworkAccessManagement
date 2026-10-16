@@ -16,7 +16,7 @@ repository:
   # Release tag -- first release for a repository is r1.1
   # - New release cycle (increment first number, reset second to 1)
   # - Progression in same cycle (increment second number)
-  target_release_tag: r3.1
+  target_release_tag: r3.2
 
   # Release type being prepared (must be set before release can be triggered)
   # Options: none | pre-release-alpha | pre-release-rc | public-release | maintenance-release
