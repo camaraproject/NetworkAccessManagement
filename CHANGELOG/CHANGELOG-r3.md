@@ -73,8 +73,6 @@ Changes documented below are compared to version 0.3.0-rc.1.
 ### Changed
 
 * `info.description` documents two API-wide conventions: list endpoints return `200` with an empty array when there is nothing to list, never `404` (*Collection responses*), and the boundary between `400` (malformed or schema-violating input) and `422` (well-formed but unprocessable input, such as `MISSING_IDENTIFIER`) (*Error handling*) (#174).
-* Actor terminology aligned with the CAMARA glossary: **API Provider** and **API Consumer** replace "Network Operator" and "API client" wherever they denote the API roles, and the glossary now defines **Subscriber** and **Service** (#187).
-* Schema descriptions name the API that exposes the resource instead of the pre-split "network access management system" (#186).
 
 ### Fixed
 
@@ -102,16 +100,13 @@ Changes documented below are compared to version 0.3.0-rc.1.
 
 ### Added
 
-* `TrustDomainCreateWpaEnterprise` request example, the first example for `Wi-Fi:WPA_ENTERPRISE` (#185).
+* N/A
 
 ### Changed
 
 * `maxItems` on `accessDetails` and `supportedAccessTypes` reduced from 4 to 2, matching the remaining Wi-Fi access types (#185).
 * `info.description` documents two API-wide conventions: list endpoints return `200` with an empty array when there is nothing to list, never `404` (*Collection responses*), and the boundary between `400` and `422` (*Error handling*) (#174).
 * `GenerateDeviceCredential` documents that a generated credential is never returned to the API Consumer (responses carry only `selectedType`) and is delivered to the device over the bootstrapping channel; `AssignDeviceCredential` documents its value as write-only (#174).
-* Actor terminology aligned with the CAMARA glossary: **API Provider** and **API Consumer** replace "Network Operator" and "API client" wherever they denote the API roles, and the glossary now defines **Subscriber** (#187).
-* Schema descriptions name the API that exposes the resource instead of the pre-split "network access management system" (#186).
-* Example `TrustDomainResponseWiFiThread` renamed to `TrustDomainResponseMultiAccess` (#185).
 
 ### Fixed
 
