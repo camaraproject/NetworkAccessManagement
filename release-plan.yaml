@@ -20,7 +20,7 @@ repository:
 
   # Release type being prepared (must be set before release can be triggered)
   # Options: none | pre-release-alpha | pre-release-rc | public-release | maintenance-release
-  target_release_type: public-release
+  target_release_type: rc
 
 # Dependencies on Commonalities and ICM releases
 # Update per ReleaseManagement requirements for each release cycle
@@ -35,7 +35,7 @@ dependencies:
 apis:
   - api_name: network-access-devices
     target_api_version: 0.3.0
-    target_api_status: public
+    target_api_status: rc
     main_contacts:
       - caubut-charter
       - mayur007
@@ -43,7 +43,7 @@ apis:
       - benhepworth
   - api_name: network-access-domains
     target_api_version: 0.3.0
-    target_api_status: public
+    target_api_status: rc
     main_contacts:
       - caubut-charter
       - mayur007
