@@ -29,11 +29,11 @@ Sandbox API Repository to describe, develop, document, and test the NetworkAcces
 > [!NOTE]
 > This repository has only pre-release versions available yet. Pre-releases are for testing and may change before public release.
 
-* The latest pre-release is [r3.1](https://github.com/camaraproject/NetworkAccessManagement/releases/tag/r3.1) (release candidate), with the following API versions:
-  * **network-access-devices 0.3.0-rc.1**
-  [[YAML]](https://github.com/camaraproject/NetworkAccessManagement/blob/r3.1/code/API_definitions/network-access-devices.yaml)  [[ReDoc]](https://redocly.github.io/redoc/?url=https://raw.githubusercontent.com/camaraproject/NetworkAccessManagement/r3.1/code/API_definitions/network-access-devices.yaml&nocors)  [[Swagger]](https://camaraproject.github.io/swagger-ui/?url=https://raw.githubusercontent.com/camaraproject/NetworkAccessManagement/r3.1/code/API_definitions/network-access-devices.yaml)
-  * **network-access-domains 0.3.0-rc.1**
-  [[YAML]](https://github.com/camaraproject/NetworkAccessManagement/blob/r3.1/code/API_definitions/network-access-domains.yaml)  [[ReDoc]](https://redocly.github.io/redoc/?url=https://raw.githubusercontent.com/camaraproject/NetworkAccessManagement/r3.1/code/API_definitions/network-access-domains.yaml&nocors)  [[Swagger]](https://camaraproject.github.io/swagger-ui/?url=https://raw.githubusercontent.com/camaraproject/NetworkAccessManagement/r3.1/code/API_definitions/network-access-domains.yaml)
+* The latest pre-release is [r3.2](https://github.com/camaraproject/NetworkAccessManagement/releases/tag/r3.2) (release candidate), with the following API versions:
+  * **network-access-devices 0.3.0-rc.2**
+  [[YAML]](https://github.com/camaraproject/NetworkAccessManagement/blob/r3.2/code/API_definitions/network-access-devices.yaml)  [[ReDoc]](https://redocly.github.io/redoc/?url=https://raw.githubusercontent.com/camaraproject/NetworkAccessManagement/r3.2/code/API_definitions/network-access-devices.yaml&nocors)  [[Swagger]](https://camaraproject.github.io/swagger-ui/?url=https://raw.githubusercontent.com/camaraproject/NetworkAccessManagement/r3.2/code/API_definitions/network-access-devices.yaml)
+  * **network-access-domains 0.3.0-rc.2**
+  [[YAML]](https://github.com/camaraproject/NetworkAccessManagement/blob/r3.2/code/API_definitions/network-access-domains.yaml)  [[ReDoc]](https://redocly.github.io/redoc/?url=https://raw.githubusercontent.com/camaraproject/NetworkAccessManagement/r3.2/code/API_definitions/network-access-domains.yaml&nocors)  [[Swagger]](https://camaraproject.github.io/swagger-ui/?url=https://raw.githubusercontent.com/camaraproject/NetworkAccessManagement/r3.2/code/API_definitions/network-access-domains.yaml)
 
 * For changes see [CHANGELOG](https://github.com/camaraproject/NetworkAccessManagement/tree/main/CHANGELOG)
 
