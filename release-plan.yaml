@@ -8,10 +8,10 @@
 repository:
   # How this repository participates in CAMARA releases
   # Options: independent (default) | meta-release
-  release_track: meta-release
+  release_track: independent
 
   # Uncomment and set when planning a meta-release participation:
-  meta_release: Sync26
+  # meta_release: Sync26
 
   # Release tag -- first release for a repository is r1.1
   # - New release cycle (increment first number, reset second to 1)
