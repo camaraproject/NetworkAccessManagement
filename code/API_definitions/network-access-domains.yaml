@@ -30,6 +30,8 @@ info:
     - An IoT platform wants to onboard a new device onto a subscriber's network and apply a specific connectivity
       policy to it.
 
+    These scenarios are subject to the prerelease authorization limitations below.
+
     # Relevant Terms and Definitions
     - **Trust Domain**: a declarative, intent-level grouping that defines which devices are permitted to communicate with each other as if they were on the same LAN and what high-level access policies apply to that group.
     - **Access Detail**: one admittance configuration for a Trust Domain — an access type (Wi-Fi WPA Personal/Enterprise) together with its security parameters. A Trust Domain has one or more.
@@ -116,6 +118,15 @@ info:
     In cases where personal data is processed by the API and users can exercise their rights through mechanisms such as opt-in and/or opt-out, the use of three-legged access tokens is mandatory. This ensures that the API remains in compliance with privacy regulations, upholding the principles of transparency and user-centric privacy-by-design.
     <!-- CAMARA:MANDATORY:authorization-and-authentication:END -->
 
+    ## Prerelease authorization limitations
+    This NAM prerelease supports only OAuth 2.0 Client Credentials / two-legged access tokens (2LO),
+    limited by ICM r4.2 to use cases without User-related information or processing of Personal Data.
+    The API Provider must assess purpose, applicable law, scopes, and subscriber/service-account ownership;
+    first-party status does not establish eligibility. Access remains limited to the appropriate account.
+    Use cases requiring 3LO or resource-owner consent are unsupported; 2LO does not replace required consent.
+    This prerelease defines no supported Service Owner account delegation to a backend partner.
+    See [Prerelease authorization limitations](https://github.com/camaraproject/NetworkAccessManagement/blob/main/README.md#prerelease-authorization-limitations).
+
     # Scopes
     Scopes are used to protect the service owner's information and privacy.  The general format is
     `<API_name>-<Resource>-<Permission>`.  A resource may be further broken down into `<Resource_name>-<Field>` or
@@ -134,7 +145,7 @@ info:
     | Scope | Description |
     |-------|-------------|
     | **network-access-domains:trust-domains** | Manage the caller's own Trust Domains (create, modify, delete, view). |
-    | **network-access-domains:trust-domains:read-all** | Read all Trust Domains belonging to the subscriber, including those created by other clients (requires subscriber consent). |
+    | **network-access-domains:trust-domains:read-all** | Read all Trust Domains belonging to the subscriber, including those created by other clients (requires subscriber consent); this consent-dependent use is outside this prerelease. |
     | **network-access-domains:devices** | Register, manage, and deregister subscriber/IoT devices within Trust Domains created by the calling API client. |
     | **network-access-domains:services:read** | List services accessible to the authenticated identity |
 
@@ -236,9 +247,9 @@ paths:
         a logical commercial relationship between a subscriber and a network operator,
         typically corresponding to a unique service account or subscription.
 
-        This endpoint supports workflows where an API Consumer (e.g., AirBnB, Amazon)
-        has received subscriber authorization and must enumerate services to link with
-        Trust Domain Devices or Trust Domains.
+        This endpoint supports account-scoped service discovery to link services with
+        Trust Domain Devices or Trust Domains, within the documented prerelease
+        authorization limitations and the appropriate subscriber/service account.
 
       parameters:
         - $ref: '../common/CAMARA_common.yaml#/components/parameters/x-correlator'

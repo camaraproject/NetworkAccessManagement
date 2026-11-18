@@ -5,7 +5,8 @@ components:
     openId:
       type: openIdConnect
       description: |
-        OpenID Connect authentication with scope-based authorization.
+        OpenID Connect authentication with scope-based authorization, subject to the
+        [API prerelease authorization limitations](https://github.com/camaraproject/NetworkAccessManagement/blob/main/README.md#prerelease-authorization-limitations).
 
         **Resource Isolation:**
         Unless otherwise specified, all scopes only grant access to resources
@@ -23,12 +24,14 @@ components:
           (includes create, read, modify, and delete actions).
         - `network-access-domains:trust-domains:read-all` — Read-only access to all Trust Domains
           associated with the same subscriber, including those created by other API clients.
-          Intended for use cases involving federated discovery or configuration replication.
+          Intended for use cases involving federated discovery or configuration replication;
+          use requiring subscriber consent is outside this prerelease's authorization limits.
         - `network-access-domains:devices` — Register, manage, and deregister subscriber/IoT devices
           within Trust Domains created by the calling API client.
         - `network-access-domains:services:read` — List services accessible to the authenticated identity.
         - `network-access-devices:reboot` — Create, list, and manage Reboot Requests for network
-          access devices owned by or delegated to the calling API client.
+          access devices the calling API client is authorized to manage within the appropriate
+          subscriber/service account, subject to the API prerelease authorization limits.
       openIdConnectUrl: https://example.com/.well-known/openid-configuration
 
   schemas:

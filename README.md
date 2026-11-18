@@ -21,6 +21,30 @@ Sandbox API Repository to describe, develop, document, and test the NetworkAcces
 * Describe, develop, document, and test the APIs (with 1-2 Telcos)  
 * Started: May 2024
 
+## Prerelease authorization limitations
+
+The current NAM prerelease supports only OAuth 2.0 Client Credentials / two-legged access tokens (2LO).
+Under [ICM r4.2's flow guidance](https://github.com/camaraproject/IdentityAndConsentManagement/blob/r4.2/documentation/CAMARA-API-access-and-user-consent.md#choosing-the-right-authorization-flow),
+this is limited to use cases that do not involve User-related information or processing of Personal Data.
+The API Provider must assess the declared purpose, applicable law, scopes, and ownership of the
+subscriber/service account for each use case; first-party status is not an exemption. No endpoint or
+resource is automatically eligible. Where the mandatory authorization template requires three-legged
+access tokens (3LO), the use case is unsupported in this prerelease; Client Credentials cannot substitute
+for required resource-owner consent.
+
+This prerelease does not standardize Service Owner account delegation to a backend partner, including
+initial resource-owner consent followed by partner backend calls. This NAM prerelease defines no supported
+3LO mechanism for that account-delegated scenario. [NAM #203](https://github.com/camaraproject/NetworkAccessManagement/issues/203)
+and [ICM #270](https://github.com/camaraproject/IdentityAndConsentManagement/issues/270) track open specification gaps.
+[ICM r4.2's Authorization Code Flow](https://github.com/camaraproject/IdentityAndConsentManagement/blob/r4.2/documentation/CAMARA-Security-Interoperability.md#oidc-authorization-code-flow)
+requires network-based authentication, and its [documented device relationship](https://github.com/camaraproject/IdentityAndConsentManagement/blob/r4.2/documentation/CAMARA-API-access-and-user-consent.md#choosing-the-right-authorization-flow)
+requires the Consumption, Authentication, and Target Devices to be the same. Merely adding a mobile
+frontend or conventional account login does not establish compatibility.
+
+In a multi-dwelling unit (MDU), an owner-held bulk service account differs from separately held tenant accounts.
+Master-account ownership does not authorize access to tenant-owned subscriptions or waive personal-data
+or user-rights obligations.
+
 <!-- CAMARA:RELEASE-INFO:START -->
 <!-- The following section is automatically maintained by the CAMARA project-administration tooling: https://github.com/camaraproject/project-administration -->
 
